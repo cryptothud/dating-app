@@ -1,0 +1,11 @@
+{
+  "name": "@dating-app/config",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "./typescript": "./typescript/index.json",
+    "./eslint-base": "./eslint/base.js",
+    "./eslint-next": "./eslint/next.js",
+    "./eslint-nest": "./eslint/nest.js"
+  }
+}

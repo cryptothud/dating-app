@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark mode by default */
+    --background: 222 15% 7%;
+    --foreground: 210 20% 95%;
+    --primary: 262 83% 68%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 222 12% 14%;
+    --muted-foreground: 215 16% 55%;
+    --border: 222 12% 16%;
+    --input: 222 12% 14%;
+    --ring: 262 83% 68%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Prevent layout shift from scrollbar */
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+@layer components {
+  .input {
+    @apply w-full h-11 px-3 rounded-lg text-sm bg-input border border-border
+      placeholder:text-muted-foreground text-foreground
+      focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+      disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center h-11 px-5 rounded-lg text-sm font-medium
+      bg-primary text-primary-foreground hover:opacity-90 active:opacity-80
+      transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+      disabled:opacity-50 disabled:cursor-not-allowed tap-highlight-none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center h-11 px-5 rounded-lg text-sm font-medium
+      bg-transparent hover:bg-muted text-foreground
+      transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+      disabled:opacity-50 disabled:cursor-not-allowed tap-highlight-none;
+  }
+}
+
+@layer utilities {
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
