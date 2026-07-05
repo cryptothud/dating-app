@@ -22,7 +22,7 @@ export function LocationRandomizer(): React.JSX.Element {
   useEffect(() => {
     api.get<{ fuzzRadius: number } | null>('/location/me')
       .then((loc) => {
-        if (loc?.fuzzRadius) setRadius(loc.fuzzRadius)
+        if (loc?.fuzzRadius) setRadius(Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, loc.fuzzRadius)))
       })
       .catch(() => { /* non-fatal */ })
       .finally(() => setLoaded(true))
