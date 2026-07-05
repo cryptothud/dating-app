@@ -3,10 +3,35 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Light mode ── */
   :root {
-    /* Dark mode by default */
+    --background: 220 20% 97%;
+    --foreground: 222 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 25% 10%;
+    --primary: 262 75% 58%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 220 16% 92%;
+    --muted-foreground: 220 10% 44%;
+    --border: 220 14% 87%;
+    --input: 220 16% 93%;
+    --ring: 262 75% 58%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --radius: 0.75rem;
+
+    /* Map dot colors */
+    --dot-idle: 262 75% 58%;
+    --dot-active: 330 85% 60%;
+    --dot-seeded: 220 10% 60%;
+  }
+
+  /* ── Dark mode ── */
+  .dark {
     --background: 222 15% 7%;
     --foreground: 210 20% 95%;
+    --card: 222 14% 10%;
+    --card-foreground: 210 20% 95%;
     --primary: 262 83% 68%;
     --primary-foreground: 0 0% 100%;
     --muted: 222 12% 14%;
@@ -14,17 +39,45 @@
     --border: 222 12% 16%;
     --input: 222 12% 14%;
     --ring: 262 83% 68%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 68% 58%;
     --destructive-foreground: 0 0% 100%;
-    --radius: 0.75rem;
+
+    --dot-idle: 262 83% 68%;
+    --dot-active: 330 90% 65%;
+    --dot-seeded: 215 16% 45%;
   }
 
   * {
     @apply border-border;
   }
 
-  html {
-    @apply dark;
+  /* Kill native outlines everywhere — at the element level (not just :focus)
+     so transition-all can never animate an outline into view even for 1 frame. */
+  input, button, select, textarea, a, [tabindex] {
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+  *:focus {
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+  /* Keyboard navigation: barely-visible ring for non-input elements.
+     Inputs use Tailwind focus:ring-1 only — this prevents double rings. */
+  *:focus-visible:not(input):not(textarea):not(select) {
+    outline: 1px solid hsl(var(--foreground) / 0.10) !important;
+    outline-offset: 2px !important;
+  }
+  /* Strip browser-native OS appearance from read-only and disabled inputs so
+     our border/background styles have full control (prevents the "raised" look). */
+  input, textarea, select {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:read-only, input:disabled,
+  textarea:read-only, textarea:disabled,
+  select:disabled {
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   body {
@@ -32,9 +85,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Prevent layout shift from scrollbar */
   html {
-    scrollbar-gutter: stable;
+    scroll-padding-top: 3.5rem; /* compensate for h-14 sticky header */
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.25) transparent;
   }
 }
 
@@ -42,21 +96,21 @@
   .input {
     @apply w-full h-11 px-3 rounded-lg text-sm bg-input border border-border
       placeholder:text-muted-foreground text-foreground
-      focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+      focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent
       disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150;
   }
 
   .btn-primary {
     @apply inline-flex items-center justify-center h-11 px-5 rounded-lg text-sm font-medium
       bg-primary text-primary-foreground hover:opacity-90 active:opacity-80
-      transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+      transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
       disabled:opacity-50 disabled:cursor-not-allowed tap-highlight-none;
   }
 
   .btn-ghost {
     @apply inline-flex items-center justify-center h-11 px-5 rounded-lg text-sm font-medium
       bg-transparent hover:bg-muted text-foreground
-      transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+      transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
       disabled:opacity-50 disabled:cursor-not-allowed tap-highlight-none;
   }
 }
@@ -65,4 +119,160 @@
   .tap-highlight-none {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* ── "You" marker — MapLibre Marker DOM element ── */
+.crush-you-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #9333ea;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease;
+}
+.crush-you-dot:hover {
+  transform: scale(1.2);
+}
+.crush-you-dot--active {
+  background: hsl(var(--dot-active));
+  border-color: hsl(var(--dot-active));
+}
+.crush-you-dot--active::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: hsl(var(--dot-active));
+  opacity: 0;
+  animation: crush-pulse 2s ease-out infinite;
+}
+.crush-you-dot::after {
+  content: 'You';
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: inherit;
+}
+
+/* ── Map user dots ── */
+.crush-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: hsl(var(--dot-idle));
+  /* double ring: white inner + dark outer — visible on both dark and light maps */
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px rgba(0,0,0,0.18);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s ease;
+}
+.crush-dot:hover {
+  transform: scale(1.4);
+}
+.crush-dot--verified {
+  box-shadow: 0 0 0 2.5px #fff, 0 0 0 4px hsl(var(--primary) / 0.5);
+}
+.crush-dot--active {
+  background: hsl(var(--dot-active));
+}
+.crush-dot--active::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: hsl(var(--dot-active));
+  opacity: 0;
+  animation: crush-pulse 2s ease-out infinite;
+}
+.crush-dot--seeded {
+  background: hsl(var(--dot-seeded));
+  opacity: 0.65;
+}
+
+@keyframes crush-pulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(3);   opacity: 0;   }
+}
+
+/* ── Range slider cross-browser ── */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: grab;
+  transition: box-shadow 0.15s;
+}
+input[type='range']::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.25);
+}
+input[type='range']::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  border: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: grab;
+}
+
+/* ── Custom scrollbar — 4 px, themed ── */
+::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+::-webkit-scrollbar-button {
+  display: none !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border)) !important;
+  border-radius: 9999px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35) !important;
+}
+
+/* ── MapLibre GL controls — light mode ── */
+html:not(.dark) .maplibregl-ctrl-group {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+}
+html:not(.dark) .maplibregl-ctrl-group button {
+  background-color: transparent !important;
+}
+html:not(.dark) .maplibregl-ctrl-group button:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+html:not(.dark) .maplibregl-ctrl-group button + button {
+  border-top-color: hsl(var(--border)) !important;
+}
+html:not(.dark) .maplibregl-ctrl-group .maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon,
+html:not(.dark) .maplibregl-ctrl-group .maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {
+  filter: invert(1) hue-rotate(180deg) brightness(0.2) !important;
 }

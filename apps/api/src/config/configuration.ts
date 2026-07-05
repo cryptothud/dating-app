@@ -13,11 +13,30 @@ const envSchema = z.object({
   TWILIO_AUTH_TOKEN: z.string().optional(),
   TWILIO_PHONE_NUMBER: z.string().optional(),
   TWILIO_VERIFY_SERVICE_SID: z.string().optional(),
-  CLIENT_URL: z.string().url().default('http://localhost:3000'),
+  WEB_URL: z.string().url().default('http://localhost:3000'),
   ALLOW_NSFW_CONTENT: z
     .string()
     .transform((v) => v === 'true')
     .default('true'),
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+  AZURE_CONTENT_SAFETY_ENDPOINT: z.string().optional(),
+  AZURE_CONTENT_SAFETY_KEY: z.string().optional(),
+  GOOGLE_VISION_API_KEY: z.string().optional(),
+  PHOTODNA_API_KEY: z.string().optional(),
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_IDENTITY_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PRICE_PREMIUM_MONTHLY: z.string().optional(),
+  STRIPE_PRICE_PREMIUM_ANNUAL: z.string().optional(),
+  STRIPE_PRICE_PREMIUM_PLUS_MONTHLY: z.string().optional(),
+  STRIPE_PRICE_PREMIUM_PLUS_ANNUAL: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default('CRUSH <noreply@crush.app>'),
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_EMAIL: z.string().default('mailto:support@crush.app'),
 })
 
 export type Env = z.infer<typeof envSchema>

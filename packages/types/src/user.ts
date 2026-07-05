@@ -1,4 +1,84 @@
-export type UserRole = 'user' | 'admin'
+export type UserRole = 'user' | 'moderator' | 'admin'
+
+export interface Photo {
+  id: string
+  url: string
+  thumbUrl: string
+  isPrimary: boolean
+  blurEnabled: boolean
+  isNsfw: boolean
+  nsfwScore: number | null
+  moderationStatus: string
+  order: number
+}
+
+export interface ProfilePrompt {
+  id: string
+  promptKey: string
+  answer: string
+  order: number
+}
+
+export interface UserProfile {
+  id: string
+  userId: string
+  displayName: string | null
+  bio: string | null
+  age: number | null
+  bodyType: string | null
+  interests: string[]
+  lookingFor: string[]
+  nsfwEnabled: boolean
+  activelyLooking: boolean
+  photos: Photo[]
+  prompts: ProfilePrompt[]
+  verified: boolean
+  trustScore: number
+}
+
+export interface GlobalMessage {
+  id: string
+  userId: string
+  displayName: string
+  photoUrl: string | null
+  body: string
+  sentAt: string
+  lat?: number
+  lng?: number
+}
+
+export interface GlobalChatHistory {
+  messages: GlobalMessage[]
+  hasMore: boolean
+}
+
+export interface ConversationSummary {
+  id: string
+  otherUser: {
+    id: string
+    displayName: string | null
+    photoUrl: string | null
+    verified: boolean
+    distanceMiles?: number | null
+  }
+  lastMessage: { body: string; sentAt: string; senderId: string } | null
+  unreadCount: number
+  archivedAt?: string | null
+  isUserArchived?: boolean
+}
+
+export interface MessageDto {
+  id: string
+  conversationId: string
+  senderId: string
+  body: string | null
+  mediaType: string
+  mediaUrl: string | null
+  sentAt: string
+  readAt: string | null
+  editedAt: string | null
+  deletedAt: string | null
+}
 
 export type VerificationStatus = 'pending' | 'approved' | 'rejected'
 

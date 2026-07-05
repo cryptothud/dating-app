@@ -18,9 +18,23 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? (exception.getResponse() as { message?: string }).message ?? exception.message
         : 'Internal server error'
 
-    // Never log PII — log path and status only
     if (status >= 500) {
-      this.logger.error(`${req.method} ${req.path} → ${status}`)
+      const detail = exception instanceof Error ? exception.message : String(exception)
+      this.logger.error(`${req.method} ${req.originalUrl} → ${status} — ${detail}`)
+      if (process.env.NODE_ENV !== 'production' && exception instanceof Error && exception.stack) {
+        this.logger.error(exception.stack)
+      }
+    }
+
+    // For non-500 HTTP exceptions, preserve the original response body so clients
+    // can read structured fields like validation errors, maintenance flags, etc.
+    if (exception instanceof HttpException && status < 500) {
+      const body = exception.getResponse()
+      const responseBody = typeof body === 'string'
+        ? { statusCode: status, message: body }
+        : { statusCode: status, ...(body as object) }
+      res.status(status).json(responseBody)
+      return
     }
 
     res.status(status).json({ statusCode: status, message })

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -9,6 +10,7 @@ datasource db {
 
 enum UserRole {
   user
+  moderator
   admin
 }
 
@@ -37,20 +39,36 @@ enum MessageMediaType {
   voice
 }
 
+enum ConversationType {
+  direct
+  group
+  event
+}
+
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  phone        String   @unique
-  passwordHash String   @map("password_hash")
-  verified     Boolean  @default(false)
-  isSeeded     Boolean  @default(false) @map("is_seeded")
-  trustScore   Int      @default(0) @map("trust_score")
-  role         UserRole @default(user)
-  createdAt    DateTime @default(now()) @map("created_at")
-  lastActive   DateTime @default(now()) @map("last_active")
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?   @unique
+  passwordHash String?   @map("password_hash")
+  dateOfBirth  DateTime? @map("date_of_birth")
+  verified     Boolean   @default(false)
+  suspended    Boolean   @default(false)
+  banned       Boolean   @default(false)
+  banReason    String?   @map("ban_reason")
+  warnCount    Int       @default(0) @map("warn_count")
+  isSeeded     Boolean   @default(false) @map("is_seeded")
+  trustScore       Int       @default(0) @map("trust_score")
+  role             UserRole  @default(user)
+  incognito        Boolean   @default(false)
+  boostedUntil     DateTime? @map("boosted_until")
+  profileHighlight Boolean   @default(false) @map("profile_highlight")
+  timeoutUntil     DateTime? @map("timeout_until")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  lastActive       DateTime  @default(now()) @map("last_active")
 
   profile                Profile?
   location               UserLocation?
+  oauthAccounts          OAuthAccount[]
   conversationParticipants ConversationParticipant[]
   sentMessages           Message[]               @relation("MessageSender")
   blocksGiven            Block[]                 @relation("Blocker")
@@ -67,8 +85,25 @@ model User {
   connectionsInitiated   Connection[]            @relation("ConnectionUserA")
   connectionsReceived    Connection[]            @relation("ConnectionUserB")
   safetyDates            SafetyDate[]
+  pushSubscriptions      PushSubscription[]
+  auditLogsTargeted      AuditLog[]
 
+  @@index([lastActive])
+  @@index([isSeeded, createdAt])
   @@map("users")
+}
+
+model OAuthAccount {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  provider   String   // "google" | "apple" | "facebook"
+  providerId String   @map("provider_id")
+  email      String?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([provider, providerId])
+  @@map("oauth_accounts")
 }
 
 model Profile {
@@ -81,6 +116,7 @@ model Profile {
   bodyType        String?  @map("body_type")
   ethnicity       String?
   lookingFor      String[] @map("looking_for")
+  interests       String[] @default([]) @map("interests")
   cruising        Boolean  @default(false)
   activelyLooking Boolean  @default(false) @map("actively_looking")
   activelyLookingExpiresAt DateTime? @map("actively_looking_expires_at")
@@ -108,17 +144,24 @@ model ProfilePrompt {
 }
 
 model Photo {
-  id          String   @id @default(cuid())
-  profileId   String   @map("profile_id")
-  url         String
-  thumbUrl    String   @map("thumb_url")
-  isPrimary   Boolean  @default(false) @map("is_primary")
-  blurEnabled Boolean  @default(false) @map("blur_enabled")
-  isNsfw      Boolean  @default(false) @map("is_nsfw")
-  phash       String?
-  csamScanned Boolean  @default(false) @map("csam_scanned")
-  order       Int      @default(0)
-  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  id              String   @id @default(cuid())
+  profileId       String   @map("profile_id")
+  url             String
+  thumbUrl        String   @map("thumb_url")
+  isPrimary       Boolean  @default(false) @map("is_primary")
+  blurEnabled     Boolean  @default(false) @map("blur_enabled")
+  isNsfw          Boolean  @default(false) @map("is_nsfw")
+  nsfwScore       Float?   @map("nsfw_score")
+  phash              String?
+  cloudinaryPublicId String?  @map("cloudinary_public_id")
+  csamScanned        Boolean  @default(false) @map("csam_scanned")
+  csamFlagged        Boolean  @default(false) @map("csam_flagged")
+  azureFlagged       Boolean  @default(false) @map("azure_flagged")
+  azureSexualSev     Int      @default(0)     @map("azure_sexual_sev")
+  googleAdultScore   String?  @map("google_adult_score")
+  moderationStatus   String   @default("pending") @map("moderation_status")
+  order              Int      @default(0)
+  uploadedAt         DateTime @default(now()) @map("uploaded_at")
 
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
@@ -128,10 +171,14 @@ model Photo {
 model Verification {
   id              String             @id @default(cuid())
   userId          String             @unique @map("user_id")
-  selfieUrl       String             @map("selfie_url")
+  selfieUrl       String?            @map("selfie_url")
   status          VerificationStatus @default(pending)
   reviewedAt      DateTime?          @map("reviewed_at")
   reviewedByAdmin String?            @map("reviewed_by_admin")
+  stripeSessionId String?            @map("stripe_session_id")
+  stripeStatus    String?            @map("stripe_status")
+  verifiedDob     DateTime?          @map("verified_dob")
+  verifiedName    String?            @map("verified_name")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -144,17 +191,24 @@ model UserLocation {
   latitude    Float
   longitude   Float
   fuzzRadius  Int      @default(150) @map("fuzz_radius")
+  travelMode  Boolean  @default(false) @map("travel_mode")
+  travelLat   Float?   @map("travel_lat")
+  travelLng   Float?   @map("travel_lng")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([latitude, longitude])
+  @@index([updatedAt])
   @@map("user_locations")
 }
 
 model Conversation {
-  id        String   @id @default(cuid())
-  expiresAt DateTime? @map("expires_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  id         String           @id @default(cuid())
+  type       ConversationType @default(direct)
+  expiresAt  DateTime?        @map("expires_at")
+  archivedAt DateTime?        @map("archived_at")
+  createdAt  DateTime         @default(now()) @map("created_at")
 
   participants ConversationParticipant[]
   messages     Message[]
@@ -163,9 +217,12 @@ model Conversation {
 }
 
 model ConversationParticipant {
-  conversationId String   @map("conversation_id")
-  userId         String   @map("user_id")
+  conversationId String    @map("conversation_id")
+  userId         String    @map("user_id")
   lastReadAt     DateTime? @map("last_read_at")
+  archivedAt     DateTime? @map("archived_at")
+  hiddenAt       DateTime? @map("hidden_at")
+  clearedAt      DateTime? @map("cleared_at")
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -183,11 +240,16 @@ model Message {
   mediaType    MessageMediaType @default(text) @map("media_type")
   mediaBlurred Boolean          @default(false) @map("media_blurred")
   readAt       DateTime?        @map("read_at")
+  editedAt     DateTime?        @map("edited_at")
+  deletedAt    DateTime?        @map("deleted_at")
+  deletedBy    String?          @map("deleted_by")
   sentAt       DateTime         @default(now()) @map("sent_at")
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("MessageSender", fields: [senderId], references: [id])
 
+  @@index([conversationId, sentAt])
+  @@index([senderId])
   @@map("messages")
 }
 
@@ -254,17 +316,33 @@ model Connection {
 model SafetyDate {
   id                    String    @id @default(cuid())
   userId                String    @map("user_id")
+  trackToken            String    @unique @map("track_token")
   trustedContactPhone   String?   @map("trusted_contact_phone")
   trustedContactEmail   String?   @map("trusted_contact_email")
   checkinAt             DateTime  @map("checkin_at")
   durationMinutes       Int       @map("duration_minutes")
   endedAt               DateTime? @map("ended_at")
   sosTriggered          Boolean   @default(false) @map("sos_triggered")
+  alertSent             Boolean   @default(false) @map("alert_sent")
   createdAt             DateTime  @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("safety_dates")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  endpoint  String
+  p256dhKey String   @map("p256dh_key")
+  authKey   String   @map("auth_key")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@map("push_subscriptions")
 }
 
 model Block {
@@ -276,6 +354,8 @@ model Block {
   blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
 
   @@id([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
   @@map("blocks")
 }
 
@@ -292,6 +372,7 @@ model Report {
   reporter User @relation("Reporter", fields: [reporterId], references: [id])
   reported User @relation("Reported", fields: [reportedId], references: [id])
 
+  @@index([status])
   @@map("reports")
 }
 
@@ -307,9 +388,23 @@ model SupportTicket {
   createdAt        DateTime     @default(now()) @map("created_at")
   updatedAt        DateTime     @updatedAt @map("updated_at")
 
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user    User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  replies SupportTicketReply[]
 
+  @@index([status])
   @@map("support_tickets")
+}
+
+model SupportTicketReply {
+  id        String   @id @default(cuid())
+  ticketId  String   @map("ticket_id")
+  adminId   String   @map("admin_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("support_ticket_replies")
 }
 
 model Subscription {
@@ -324,5 +419,31 @@ model Subscription {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([expiresAt, cancelledAt])
   @@map("subscriptions")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  adminId      String   @map("admin_id")
+  action       String
+  targetUserId String?  @map("target_user_id")
+  details      Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  targetUser User? @relation(fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@index([targetUserId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model FeatureFlag {
+  key         String   @id
+  enabled     Boolean  @default(false)
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_flags")
 }

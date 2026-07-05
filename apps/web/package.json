@@ -7,21 +7,28 @@
     "dev": "next dev --port 3000",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@dating-app/types": "workspace:*",
     "@dating-app/ui": "workspace:*",
+    "@hookform/resolvers": "^3.9.0",
     "framer-motion": "^11.3.2",
-    "next": "14.2.5",
+    "maplibre-gl": "^5.24.0",
+    "next": "14.2.35",
+    "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",
-    "zod": "^3.23.8",
-    "@hookform/resolvers": "^3.9.0"
+    "socket.io-client": "^4.7.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@dating-app/config": "workspace:*",
+    "@playwright/test": "^1.48.0",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Body,
   Res,
   Req,
@@ -10,11 +11,15 @@ import {
   HttpStatus,
   Ip,
 } from '@nestjs/common'
+import { Throttle, SkipThrottle } from '@nestjs/throttler'
 import { Response, Request } from 'express'
 import { AuthService } from './auth.service'
 import { SignupDto } from './dto/signup.dto'
 import { LoginDto } from './dto/login.dto'
 import { VerifyOtpDto } from './dto/verify-otp.dto'
+import { ForgotPasswordDto } from './dto/forgot-password.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
+import { ChangePasswordDto } from './dto/change-password.dto'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { RefreshAuthGuard } from './guards/refresh-auth.guard'
 
@@ -31,15 +36,18 @@ export class AuthController {
   constructor(private auth: AuthService) {}
 
   @Post('signup')
+  @Throttle({ short: { limit: 3, ttl: 60000 }, medium: { limit: 5, ttl: 300000 } })
   async signup(
     @Body() dto: SignupDto,
     @Res({ passthrough: true }) res: Response,
+    @Ip() ip: string,
   ): Promise<{ message: string }> {
-    return this.auth.signup(dto, res)
+    return this.auth.signup(dto, res, ip)
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ short: { limit: 5, ttl: 60000 }, medium: { limit: 15, ttl: 300000 } })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -50,6 +58,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(RefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @SkipThrottle()
   async logout(
     @Req() req: RefreshRequest,
     @Res({ passthrough: true }) res: Response,
@@ -83,9 +92,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async verifyOtp(
     @Req() req: AuthenticatedRequest,
+    @Res({ passthrough: true }) res: Response,
     @Body() dto: VerifyOtpDto,
   ): Promise<{ message: string }> {
-    return this.auth.verifyOtp(req.user.id, dto.phone, dto.code)
+    return this.auth.verifyOtp(req.user.id, dto.phone, dto.code, res)
   }
 
   @Get('me')
@@ -93,4 +103,36 @@ export class AuthController {
   async getMe(@Req() req: AuthenticatedRequest): Promise<object> {
     return this.auth.getMe(req.user.id)
   }
+
+  @Get('socket-token')
+  @UseGuards(JwtAuthGuard)
+  @SkipThrottle()
+  async getSocketToken(@Req() req: AuthenticatedRequest): Promise<{ token: string }> {
+    return this.auth.getSocketToken(req.user.id)
+  }
+
+  @Patch('password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    return this.auth.changePassword(req.user.id, dto.currentPassword, dto.newPassword)
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ short: { limit: 2, ttl: 60000 }, medium: { limit: 5, ttl: 3600000 } })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    return this.auth.forgotPassword(dto.email)
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    return this.auth.resetPassword(dto.token, dto.password)
+  }
+
 }

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "conversation_participants" ADD COLUMN IF NOT EXISTS "cleared_at" TIMESTAMP(3);

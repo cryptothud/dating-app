@@ -6,14 +6,20 @@ import { AuthService } from './auth.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { RefreshStrategy } from './strategies/refresh.strategy'
 import { TwilioModule } from '../twilio/twilio.module'
+import { EmailModule } from '../email/email.module'
 
 @Module({
   imports: [
     PassportModule,
-    JwtModule.register({}), // secrets provided per-call in AuthService
+    JwtModule.register({}),
     TwilioModule,
+    EmailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RefreshStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    RefreshStrategy,
+  ],
 })
 export class AuthModule {}

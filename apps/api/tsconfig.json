@@ -6,10 +6,11 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../..",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
+    "jsx": "react-jsx",
     "paths": {
       "@dating-app/db": ["../../packages/db/src/index.ts"],
       "@dating-app/types": ["../../packages/types/src/index.ts"]

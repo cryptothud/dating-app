@@ -31,6 +31,15 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     const invalidated = await this.redis.exists(`rt:invalidated:${payload.family}`)
     if (invalidated) throw new UnauthorizedException('Token reuse detected')
 
+    // Check if ALL sessions were invalidated after a password reset
+    const invalidatedBeforeRaw = await this.redis.get(`sessions:invalidated_before:${payload.sub}`)
+    if (invalidatedBeforeRaw) {
+      const tokenIssuedAt = (payload.iat ?? 0) * 1000
+      if (tokenIssuedAt < parseInt(invalidatedBeforeRaw)) {
+        throw new UnauthorizedException('Session expired — please log in again')
+      }
+    }
+
     return { id: payload.sub, family: payload.family }
   }
 }
