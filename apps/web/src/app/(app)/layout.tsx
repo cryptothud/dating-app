@@ -232,7 +232,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
   return (
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Solid header — outside the map */}
-      <header className="relative z-50 flex-shrink-0 flex items-center justify-between h-14 px-5 bg-background border-b border-border">
+      <header className="relative z-50 flex-shrink-0 flex items-center justify-between px-5 bg-background border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)', minHeight: 'calc(3.5rem + env(safe-area-inset-top))' }}>
         <Link href="/" className="font-display font-bold text-xl text-primary tracking-tight">CRUSH</Link>
         <div className="flex items-center gap-2">
           {!isLoading && !isAuthenticated && (

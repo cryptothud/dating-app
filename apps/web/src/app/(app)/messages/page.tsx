@@ -155,6 +155,14 @@ export default function MessagesPage(): React.JSX.Element {
 
   useEffect(() => { void load() }, [load])
 
+  // Re-fetch when the tab becomes visible so profile changes (name/PFP) are picked up
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') void load() }
+    document.addEventListener('visibilitychange', onVisible)
+    const interval = setInterval(() => void load(), 60_000)
+    return () => { document.removeEventListener('visibilitychange', onVisible); clearInterval(interval) }
+  }, [load])
+
   // Shadow ref so socket handlers can read current convs without stale closures
   const convsRef = useRef<ConversationSummary[]>([])
   useEffect(() => { convsRef.current = convs }, [convs])
