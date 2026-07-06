@@ -85,6 +85,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
   const socket = useSocket()
   const [totalUnread, setTotalUnread] = useState(0)
 
+  // iOS PWA: dvh doesn't settle until after first interaction — use window.innerHeight instead
+  useEffect(() => {
+    const update = () => document.documentElement.style.setProperty('--app-h', `${window.innerHeight}px`)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
   const loadUnread = useCallback(async () => {
     if (!isAuthenticated) return
     try {
@@ -230,7 +238,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
   const showGate = gateState === 'required' || gateState === 'anon-intent'
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background">
+    <div className="flex flex-col overflow-hidden bg-background" style={{ height: 'var(--app-h, 100dvh)' }}>
       {/* Solid header — outside the map */}
       <header className="relative z-50 flex-shrink-0 flex items-center justify-between px-5 bg-background border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)', minHeight: 'calc(3.5rem + env(safe-area-inset-top))' }}>
         <Link href="/" className="font-display font-bold text-xl text-primary tracking-tight">CRUSH</Link>
