@@ -67,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){if(!navigator.standalone)return;document.documentElement.style.setProperty('--pwa-h',screen.height+'px')})()` }} />
         {/* Preconnect to CARTO tile CDN — eliminates DNS + TLS handshake on first map load */}
         <link rel="preconnect" href="https://basemaps.cartocdn.com" />
         <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossOrigin="anonymous" />

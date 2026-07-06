@@ -87,6 +87,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
 
 
 
+  useEffect(() => {
+    const nav = window.navigator as Navigator & { standalone?: boolean }
+    if (!nav.standalone) return
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:fixed;opacity:0;pointer-events:none;height:env(safe-area-inset-bottom,0px)'
+    document.body.appendChild(probe)
+    const sab = parseFloat(getComputedStyle(probe).height) || 0
+    document.body.removeChild(probe)
+    if (sab === 0 && screen.height / screen.width > 1.9) {
+      document.documentElement.style.setProperty('--pwa-h', (screen.height - 34) + 'px')
+      document.documentElement.style.setProperty('--pwa-sab', '34px')
+    }
+  }, [])
+
   const loadUnread = useCallback(async () => {
     if (!isAuthenticated) return
     try {
@@ -231,7 +245,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
   const showGate = gateState === 'required' || gateState === 'anon-intent'
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
+    <div className="fixed top-0 left-0 right-0 flex flex-col overflow-hidden bg-background" style={{ height: 'var(--pwa-h, 100dvh)' }}>
       {/* Solid header — outside the map */}
       <header className="relative z-50 flex-shrink-0 flex items-center justify-between px-5 bg-background border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)', minHeight: 'calc(3.5rem + env(safe-area-inset-top))' }}>
         <Link href="/" className="font-display font-bold text-xl text-primary tracking-tight">CRUSH</Link>
@@ -382,7 +396,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
       {/* Solid bottom nav — outside the map */}
       <nav
         className="flex-shrink-0 flex items-center justify-around px-2 bg-background border-t border-border"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)', minHeight: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))' }}
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), var(--pwa-sab, 0px))', minHeight: 'calc(4.5rem + max(env(safe-area-inset-bottom, 0px), var(--pwa-sab, 0px)))' }}
       >
         {navItems.map(({ href, label, Icon }) => {
           const active = pathname === href || (href !== '/map' && pathname.startsWith(href + '/'))
