@@ -66,12 +66,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* iOS PWA: screen.height is the true physical screen height in CSS px — it's
-            never affected by the URL-bar viewport bug. With viewportFit=cover the shell
-            extends from behind the status bar to the bottom, so screen.height is exactly
-            right. visualViewport.height and 100dvh both report the wrong value until first
-            user touch; screen.height does not. */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){if(!navigator.standalone)return;document.documentElement.style.setProperty('--pwa-h',window.screen.height+'px')})()` }} />
         {/* Preconnect to CARTO tile CDN — eliminates DNS + TLS handshake on first map load */}
         <link rel="preconnect" href="https://basemaps.cartocdn.com" />
         <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossOrigin="anonymous" />
