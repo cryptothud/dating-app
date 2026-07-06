@@ -48,6 +48,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'CRUSH' },
+  icons: { apple: '/apple-touch-icon.png' },
   formatDetection: { telephone: false },
 }
 
