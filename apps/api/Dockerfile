@@ -21,9 +21,9 @@ RUN pnpm install --frozen-lockfile
 # Copy full source
 COPY . .
 
-# Generate Prisma client and compile
-RUN pnpm --filter @dating-app/db exec prisma generate
-RUN pnpm turbo build --filter=@dating-app/api
+# Turbo builds @dating-app/db (prisma generate + tsc) and @dating-app/types (tsc)
+# before @dating-app/api because of dependsOn: ["^build"] in turbo.json
+RUN npx turbo build --filter=@dating-app/api
 
 # Create non-root user
 RUN groupadd --system --gid 1001 nodejs && \

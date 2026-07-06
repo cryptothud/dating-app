@@ -4,8 +4,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
-      "@dating-app/db": ["../../packages/db/src/index.d.ts"],
-      "@dating-app/types": ["../../packages/types/src/index.d.ts"]
+      "@dating-app/db": ["../../packages/db/dist/index.d.ts"],
+      "@dating-app/types": ["../../packages/types/dist/index.d.ts"]
     }
   },
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
