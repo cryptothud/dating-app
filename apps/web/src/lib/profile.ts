@@ -5,7 +5,7 @@ export const profileApi = {
   getMe: () => api.get<UserProfile>('/profile/me'),
   getUser: (userId: string) => api.get<UserProfile>(`/profile/${userId}`),
 
-  update: (data: { displayName?: string; bio?: string; nsfwEnabled?: boolean; lookingFor?: string[]; bodyType?: string; interests?: string[]; age?: number }) =>
+  update: (data: { displayName?: string; bio?: string; nsfwEnabled?: boolean; lookingFor?: string[]; bodyType?: string; sexuality?: string; interests?: string[]; age?: number }) =>
     api.patch<UserProfile>('/profile', data),
 
   getViewers: () => api.get<{ id: string; displayName: string | null; photoUrl: string | null; viewedAt: string }[]>('/profile/me/viewers'),
