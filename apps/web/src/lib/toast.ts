@@ -9,8 +9,6 @@ export interface ToastMeta {
 
 export interface ToastOptions {
   duration?: number
-  /** Show in production too. Without this, toasts only render when NODE_ENV !== 'production'. */
-  force?: boolean
   onClick?: () => void
   meta?: ToastMeta
 }
@@ -34,13 +32,8 @@ function emit(): void {
   listeners.forEach((l) => l(toasts))
 }
 
-function isDev(): boolean {
-  return process.env.NODE_ENV !== 'production'
-}
-
 function push(message: string, variant: ToastVariant, opts: ToastOptions = {}): void {
   if (typeof window === 'undefined') return
-  if (!isDev() && !opts.force) return
   const item: ToastItem = {
     id: nextId++,
     message,

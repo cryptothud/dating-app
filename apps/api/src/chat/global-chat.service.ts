@@ -31,7 +31,7 @@ export class GlobalChatService {
       this.prisma.user.findUnique({
         where: { id: userId },
         include: {
-          profile: { include: { photos: { where: { isPrimary: true }, take: 1 } } },
+          profile: { include: { photos: { orderBy: [{ isPrimary: 'desc' }, { order: 'asc' }], take: 1 } } },
         },
       }),
       this.prisma.userLocation.findUnique({ where: { userId } }),

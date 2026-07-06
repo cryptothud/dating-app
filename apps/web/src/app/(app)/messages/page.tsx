@@ -367,9 +367,8 @@ export default function MessagesPage(): React.JSX.Element {
                   <button
                     onClick={(e) => { e.stopPropagation(); setActiveMenu(menuOpen ? null : conv.id) }}
                     className={[
-                      'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all',
-                      'opacity-0 group-hover:opacity-100',
-                      menuOpen ? 'opacity-100 bg-muted' : 'hover:bg-muted',
+                      'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors',
+                      menuOpen ? 'bg-muted' : 'hover:bg-muted',
                     ].join(' ')}
                     aria-label="Conversation options"
                   >
