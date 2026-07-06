@@ -26,6 +26,7 @@ export interface UserProfile {
   bio: string | null
   age: number | null
   bodyType: string | null
+  sexuality: string | null
   interests: string[]
   lookingFor: string[]
   nsfwEnabled: boolean

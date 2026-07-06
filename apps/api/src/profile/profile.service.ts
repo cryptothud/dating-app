@@ -22,6 +22,7 @@ export interface ProfileResponse {
   bio: string | null
   age: number | null
   bodyType: string | null
+  sexuality: string | null
   interests: string[]
   lookingFor: string[]
   nsfwEnabled: boolean
@@ -40,6 +41,7 @@ export interface PublicProfileResponse {
   bio: string | null
   age: number | null
   bodyType: string | null
+  sexuality: string | null
   interests: string[]
   lookingFor: string[]
   activelyLooking: boolean
@@ -235,6 +237,7 @@ export class ProfileService {
       bio: profile.bio,
       age,
       bodyType: profile.bodyType ?? null,
+      sexuality: profile.sexuality ?? null,
       interests: profile.interests ?? [],
       lookingFor: profile.lookingFor,
       nsfwEnabled: profile.nsfwEnabled,
@@ -265,6 +268,7 @@ export class ProfileService {
       bio: profile.bio,
       age: profile.age,
       bodyType: profile.bodyType ?? null,
+      sexuality: profile.sexuality ?? null,
       interests: profile.interests ?? [],
       lookingFor: profile.lookingFor,
       activelyLooking: profile.activelyLooking,

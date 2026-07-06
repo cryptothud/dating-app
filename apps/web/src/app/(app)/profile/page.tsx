@@ -39,6 +39,7 @@ export default function ProfilePage(): React.JSX.Element {
   const [age, setAge] = useState('')
   const [lookingFor, setLookingFor] = useState<string[]>([])
   const [bodyType, setBodyType] = useState('')
+  const [sexuality, setSexuality] = useState('')
   const [interests, setInterests] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -65,6 +66,7 @@ export default function ProfilePage(): React.JSX.Element {
         setAge(p.age != null ? String(p.age) : '')
         setLookingFor(p.lookingFor ?? [])
         setBodyType(p.bodyType ?? '')
+        setSexuality(p.sexuality ?? '')
         setInterests(p.interests ?? [])
       })
       .catch((e) => setError(e instanceof ApiRequestError ? e.message : 'Failed to load profile'))
@@ -80,6 +82,7 @@ export default function ProfilePage(): React.JSX.Element {
         bio: bio.trim() || undefined,
         lookingFor: lookingFor.length > 0 ? lookingFor : undefined,
         bodyType: bodyType || undefined,
+        sexuality: sexuality || undefined,
         interests: interests.length > 0 ? interests : undefined,
         // Only send age when there's no DOB-derived age (legacy accounts)
         age: profile?.age == null && !isNaN(ageNum) && ageNum >= 18 ? ageNum : undefined,
@@ -105,6 +108,19 @@ export default function ProfilePage(): React.JSX.Element {
     { value: 'muscular', label: 'Muscular' },
     { value: 'curvy', label: 'Curvy' },
     { value: 'full', label: 'Full' },
+  ]
+
+  const SEXUALITY_OPTIONS = [
+    { value: 'straight', label: 'Straight' },
+    { value: 'gay', label: 'Gay' },
+    { value: 'lesbian', label: 'Lesbian' },
+    { value: 'bisexual', label: 'Bisexual' },
+    { value: 'pansexual', label: 'Pansexual' },
+    { value: 'queer', label: 'Queer' },
+    { value: 'curious', label: 'Curious' },
+    { value: 'trans', label: 'Trans' },
+    { value: 'asexual', label: 'Asexual' },
+    { value: 'other', label: 'Other' },
   ]
 
   const INTERESTS_OPTIONS = [
@@ -305,6 +321,27 @@ export default function ProfilePage(): React.JSX.Element {
                     className={[
                       'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
                       bodyType === opt.value
+                        ? 'bg-primary border-primary text-white'
+                        : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
+                    ].join(' ')}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">My sexuality</label>
+              <div className="flex flex-wrap gap-2">
+                {SEXUALITY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setSexuality((prev) => prev === opt.value ? '' : opt.value)}
+                    className={[
+                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      sexuality === opt.value
                         ? 'bg-primary border-primary text-white'
                         : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
                     ].join(' ')}

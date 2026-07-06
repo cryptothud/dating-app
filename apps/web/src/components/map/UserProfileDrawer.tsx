@@ -219,13 +219,25 @@ export function UserProfileDrawer({ userId, displayName, lastActiveAt, distanceM
               </div>
             )}
 
-            {/* Body type */}
-            {profile?.bodyType && (
-              <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">My body type</p>
-                <span className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary capitalize">
-                  {profile.bodyType}
-                </span>
+            {/* Body type + sexuality */}
+            {(profile?.bodyType || profile?.sexuality) && (
+              <div className="flex flex-wrap gap-2">
+                {profile?.bodyType && (
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">My body type</p>
+                    <span className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary capitalize">
+                      {profile.bodyType}
+                    </span>
+                  </div>
+                )}
+                {profile?.sexuality && (
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Sexuality</p>
+                    <span className="px-2.5 py-1 rounded-full bg-muted border border-border text-xs font-medium text-foreground/80 capitalize">
+                      {profile.sexuality}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
 

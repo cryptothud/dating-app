@@ -114,6 +114,7 @@ model Profile {
   age             Int?
   height          Int?
   bodyType        String?  @map("body_type")
+  sexuality       String?
   ethnicity       String?
   lookingFor      String[] @map("looking_for")
   interests       String[] @default([]) @map("interests")

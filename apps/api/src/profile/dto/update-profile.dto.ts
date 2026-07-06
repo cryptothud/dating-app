@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 
 const VALID_LOOKING_FOR = ['casual', 'dating', 'friendship', 'hookup', 'relationship'] as const
 const VALID_BODY_TYPES = ['slim', 'athletic', 'average', 'muscular', 'curvy', 'full'] as const
+const VALID_SEXUALITY = ['straight', 'gay', 'lesbian', 'bisexual', 'pansexual', 'queer', 'curious', 'trans', 'asexual', 'other'] as const
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -29,6 +30,11 @@ export class UpdateProfileDto {
   @IsString()
   @IsIn(VALID_BODY_TYPES)
   bodyType?: string
+
+  @IsOptional()
+  @IsString()
+  @IsIn(VALID_SEXUALITY)
+  sexuality?: string
 
   @IsOptional()
   @IsArray()

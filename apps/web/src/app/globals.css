@@ -92,6 +92,7 @@
   }
 }
 
+
 @layer components {
   .input {
     @apply w-full h-11 px-3 rounded-lg text-sm bg-input border border-border
