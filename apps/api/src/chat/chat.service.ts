@@ -52,7 +52,7 @@ export class ChatService implements OnModuleInit {
               user: {
                 include: {
                   profile: {
-                    include: { photos: { orderBy: [{ isPrimary: 'desc' }, { order: 'asc' }], take: 1 } },
+                    include: { photos: { orderBy: [{ isPrimary: 'desc' as const }, { order: 'asc' as const }], take: 1 } },
                   },
                   location: true,
                 },
@@ -562,7 +562,7 @@ export class ChatService implements OnModuleInit {
         include: {
           user: {
             include: {
-              profile: { include: { photos: { orderBy: [{ isPrimary: 'desc' }, { order: 'asc' }], take: 1 } } },
+              profile: { include: { photos: { orderBy: [{ isPrimary: 'desc' as const }, { order: 'asc' as const }], take: 1 } } },
             },
           },
         },
