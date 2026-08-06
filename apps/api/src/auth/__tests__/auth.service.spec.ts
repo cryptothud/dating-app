@@ -61,6 +61,14 @@ function makeRes() {
   return { cookie: vi.fn(), clearCookie: vi.fn() } as unknown as import('express').Response
 }
 
+// res.cookie is overloaded; vi.mocked resolves to the 2-arg signature, which hides
+// the options argument. Read call args through this tuple to reach it.
+type CookieCall = [name: string, val: string, options: Record<string, unknown>]
+
+function cookieCalls(res: import('express').Response): CookieCall[] {
+  return vi.mocked(res.cookie).mock.calls as unknown as CookieCall[]
+}
+
 function buildService(overrides: {
   prisma?: ReturnType<typeof makePrisma>
   redis?: ReturnType<typeof makeRedis>
@@ -262,8 +270,7 @@ describe('AuthService cookie security', () => {
     const res = makeRes()
     await service.login({ email: 'u@test.com', password: 'password' }, res)
 
-    const calls = vi.mocked(res.cookie).mock.calls
-    const refreshCall = calls.find((c) => c[0] === 'refresh_token')
+    const refreshCall = cookieCalls(res).find((c) => c[0] === 'refresh_token')
     expect(refreshCall).toBeDefined()
     expect(refreshCall?.[2]).toMatchObject({ path: '/api/auth', httpOnly: true })
   })
@@ -278,9 +285,8 @@ describe('AuthService cookie security', () => {
     const res = makeRes()
     await service.login({ email: 'u@test.com', password: 'password' }, res)
 
-    const calls = vi.mocked(res.cookie).mock.calls
-    const accessCall = calls.find((c) => c[0] === 'access_token')
+    const accessCall = cookieCalls(res).find((c) => c[0] === 'access_token')
     expect(accessCall?.[2]).toMatchObject({ httpOnly: true })
-    expect((accessCall?.[2] as Record<string, unknown>)?.['path']).toBeUndefined()
+    expect(accessCall?.[2]?.['path']).toBeUndefined()
   })
 })

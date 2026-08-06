@@ -12,6 +12,9 @@ dist
 .env.local
 .env.*.local
 
+# Local Claude Code settings (can contain machine-specific paths and credentials)
+.claude/settings.local.json
+
 # Logs
 *.log
 npm-debug.log*

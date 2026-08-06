@@ -85,8 +85,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
   const socket = useSocket()
   const [totalUnread, setTotalUnread] = useState(0)
 
-
-
+  // iOS PWA: the inline script sets --pwa-h = screen.height.
+  // On devices where env(safe-area-inset-bottom) isn't computed (= 0) in PWA mode,
+  // the shell overflows into the home-indicator area. Detect this after mount and correct.
   useEffect(() => {
     const nav = window.navigator as Navigator & { standalone?: boolean }
     if (!nav.standalone) return
@@ -95,11 +96,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
     document.body.appendChild(probe)
     const sab = parseFloat(getComputedStyle(probe).height) || 0
     document.body.removeChild(probe)
+    // If env(sab) is 0 on a Face-ID device (screen ratio > 1.9), iOS isn't giving us the
+    // safe-area inset. Subtract the standard 34px home-indicator height from the shell.
     if (sab === 0 && screen.height / screen.width > 1.9) {
       document.documentElement.style.setProperty('--pwa-h', (screen.height - 34) + 'px')
+      // Also tell the nav to reserve 34px for the home indicator via a CSS var
       document.documentElement.style.setProperty('--pwa-sab', '34px')
     }
   }, [])
+
+
 
   const loadUnread = useCallback(async () => {
     if (!isAuthenticated) return
