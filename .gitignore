@@ -49,3 +49,11 @@ coverage
 *.db
 
 .vercel
+
+# AI assistant scaffolding and internal planning notes — local tooling, not project docs
+.claude/
+CLAUDE.md
+AGENTS.md
+PROMPTS.md
+PLAN.md
+TODO.md
