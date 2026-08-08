@@ -141,23 +141,31 @@ jobs:
         run: pnpm --filter @dating-app/db db:generate && pnpm --filter @dating-app/db db:migrate:deploy
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dating_app_e2e
-      - name: Start API server
-        run: pnpm --filter @dating-app/api start &
+      # `start` serves build output: node dist/main for the API, next start for the web app.
+      # NEXT_PUBLIC_* is inlined at build time, so the API URL has to be set here.
+      - name: Build apps
+        run: pnpm turbo build --filter=@dating-app/api --filter=@dating-app/web
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
+
+      # Both servers are started and awaited in one step: a process backgrounded in its own
+      # step does not outlive that step, so waiting from a later step always timed out.
+      - name: Start servers
+        run: |
+          NODE_ENV=test PORT=4000 pnpm --filter @dating-app/api start > /tmp/api.log 2>&1 &
+          PORT=3000 pnpm --filter @dating-app/web start > /tmp/web.log 2>&1 &
+          npx wait-on http://localhost:4000/api/health http://localhost:3000 --timeout 120000
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dating_app_e2e
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: e2e-secret-at-least-32-characters-long
           JWT_REFRESH_SECRET: e2e-refresh-secret-32-characters-long
-          NODE_ENV: test
-          PORT: 4000
           WEB_URL: http://localhost:3000
-      - name: Start web server
-        run: pnpm --filter @dating-app/web start &
-        env:
           NEXT_PUBLIC_API_URL: http://localhost:4000/api
-          PORT: 3000
-      - name: Wait for servers
-        run: npx wait-on http://localhost:4000/api/health http://localhost:3000 --timeout 30000
+
+      - name: Server logs
+        if: failure()
+        run: tail -n 60 /tmp/api.log /tmp/web.log || true
       - name: Run E2E tests
         run: pnpm --filter @dating-app/web test:e2e
         env:

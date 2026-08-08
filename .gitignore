@@ -12,8 +12,8 @@ dist
 .env.local
 .env.*.local
 
-# Local Claude Code settings (can contain machine-specific paths and credentials)
-.claude/settings.local.json
+# Local editor/tooling settings (can contain machine-specific paths and credentials)
+*.local.json
 
 # Logs
 *.log
@@ -50,9 +50,7 @@ coverage
 
 .vercel
 
-# AI assistant scaffolding and internal planning notes — local tooling, not project docs
-.claude/
-CLAUDE.md
+# Local scratch and planning notes — not project docs
 AGENTS.md
 PROMPTS.md
 PLAN.md
