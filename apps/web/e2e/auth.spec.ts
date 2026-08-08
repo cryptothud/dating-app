@@ -12,7 +12,7 @@ test.describe('Homepage / login', () => {
     await page.goto('/')
     await page.getByLabel(/email/i).fill('nobody@example.invalid')
     await page.getByLabel(/^password$/i).fill('wrongpassword')
-    await page.getByRole('button', { name: /sign in|log in/i }).click()
+    await page.getByRole('button', { name: /^login$/i }).click()
     await expect(page.getByText(/invalid credentials|incorrect/i)).toBeVisible({ timeout: 5_000 })
   })
 

@@ -50,6 +50,6 @@ export async function loginAs(page: Page, email: string, password: string): Prom
   await page.goto('/')
   await page.getByLabel(/email/i).fill(email)
   await page.getByLabel(/^password$/i).fill(password)
-  await page.getByRole('button', { name: /sign in|log in/i }).click()
+  await page.getByRole('button', { name: /^login$/i }).click()
   await page.waitForURL('**/map', { timeout: 10_000 })
 }
