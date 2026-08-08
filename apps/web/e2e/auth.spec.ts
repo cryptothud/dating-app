@@ -5,13 +5,13 @@ test.describe('Homepage / login', () => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: /crush/i })).toBeVisible()
     await expect(page.getByLabel(/email/i)).toBeVisible()
-    await expect(page.getByLabel(/password/i)).toBeVisible()
+    await expect(page.getByLabel(/^password$/i)).toBeVisible()
   })
 
   test('shows error for invalid credentials', async ({ page }) => {
     await page.goto('/')
     await page.getByLabel(/email/i).fill('nobody@example.invalid')
-    await page.getByLabel(/password/i).fill('wrongpassword')
+    await page.getByLabel(/^password$/i).fill('wrongpassword')
     await page.getByRole('button', { name: /sign in|log in/i }).click()
     await expect(page.getByText(/invalid credentials|incorrect/i)).toBeVisible({ timeout: 5_000 })
   })
@@ -41,31 +41,45 @@ test.describe('Homepage / login', () => {
 })
 
 test.describe('Signup flow', () => {
-  test('signup page renders form fields', async ({ page }) => {
+  test('signup asks for a date of birth before account details', async ({ page }) => {
     await page.goto('/signup')
+    await expect(page.getByTestId('year-picker')).toBeVisible()
+    await expect(page.getByLabel(/birth month/i)).toBeVisible()
+    await expect(page.getByLabel(/birth day/i)).toBeVisible()
+    // Account fields belong to the second step.
+    await expect(page.getByLabel(/email/i)).toBeHidden()
+  })
+
+  test('account fields appear once an adult date of birth is given', async ({ page }) => {
+    await page.goto('/signup')
+    // The wheel defaults to an adult year, so month and day are all that is missing.
+    await page.getByLabel(/birth month/i).selectOption('6')
+    await page.getByLabel(/birth day/i).selectOption('15')
+    await page.getByRole('button', { name: /continue/i }).click()
+
     await expect(page.getByLabel(/email/i)).toBeVisible()
     await expect(page.getByLabel(/phone/i)).toBeVisible()
-    await expect(page.getByLabel(/^password/i)).toBeVisible()
+    await expect(page.getByLabel(/^password$/i)).toBeVisible()
   })
 
   test('shows error when under 18', async ({ page }) => {
     await page.goto('/signup')
-
-    await page.getByLabel(/email/i).fill('teen@example.invalid')
-    await page.getByLabel(/phone/i).fill('+15550001234')
-    await page.getByLabel(/^password/i).fill('TestPass1!')
 
     // Date of birth is a scroll-snap year wheel plus month and day selects, not a date
     // input. Years run newest-first, so scrolling to the top selects the current year --
     // an age of zero. Scrolling the container drives the component's own snap handler.
     await page.getByTestId('year-picker').evaluate((el) => {
       el.scrollTop = 0
+      // The picker snaps on scrollend where supported and falls back to scroll, so fire
+      // both rather than depending on which listener this browser registered.
       el.dispatchEvent(new Event('scroll'))
+      el.dispatchEvent(new Event('scrollend'))
     })
     await page.getByLabel(/birth month/i).selectOption('6')
     await page.getByLabel(/birth day/i).selectOption('15')
 
     await expect(page.getByText(/must be 18 or older/i)).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByRole('button', { name: /continue/i })).toBeDisabled()
   })
 
   test('forgot password page is accessible', async ({ page }) => {

@@ -33,13 +33,15 @@ export async function dismissAgeGate(page: Page): Promise<void> {
 export async function signupAndVerify(page: Page, user = TEST_USER): Promise<void> {
   await page.goto('/signup')
 
-  await page.getByLabel(/email/i).fill(user.email)
-  await page.getByLabel(/phone/i).fill(user.phone)
-  await page.getByLabel(/^password/i).fill(user.password)
-
-  // Date of birth is three controls, not one date input.
+  // Step one: date of birth. The year wheel already defaults to an adult year.
   await page.getByLabel(/birth month/i).selectOption('6')
   await page.getByLabel(/birth day/i).selectOption('15')
+  await page.getByRole('button', { name: /continue/i }).click()
+
+  // Step two: account details.
+  await page.getByLabel(/email/i).fill(user.email)
+  await page.getByLabel(/phone/i).fill(user.phone)
+  await page.getByLabel(/^password$/i).fill(user.password)
 
   await page.getByRole('button', { name: /create account|sign up/i }).click()
 }
@@ -47,7 +49,7 @@ export async function signupAndVerify(page: Page, user = TEST_USER): Promise<voi
 export async function loginAs(page: Page, email: string, password: string): Promise<void> {
   await page.goto('/')
   await page.getByLabel(/email/i).fill(email)
-  await page.getByLabel(/password/i).fill(password)
+  await page.getByLabel(/^password$/i).fill(password)
   await page.getByRole('button', { name: /sign in|log in/i }).click()
   await page.waitForURL('**/map', { timeout: 10_000 })
 }
