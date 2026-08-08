@@ -126,6 +126,7 @@ export function YearPicker({
         />
         <div
           ref={scrollRef}
+          data-testid="year-picker"
           className="h-full select-none overflow-x-hidden overflow-y-scroll"
           style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', cursor: 'grab' }}
         >

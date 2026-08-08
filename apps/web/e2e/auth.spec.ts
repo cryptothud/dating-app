@@ -55,14 +55,17 @@ test.describe('Signup flow', () => {
     await page.getByLabel(/phone/i).fill('+15550001234')
     await page.getByLabel(/^password/i).fill('TestPass1!')
 
-    const today = new Date().toISOString().split('T')[0]!
-    const dobField = page.getByLabel(/date of birth|birthday/i)
-    if (await dobField.isVisible()) {
-      await dobField.fill(today) // today = 0 years old
-    }
+    // Date of birth is a scroll-snap year wheel plus month and day selects, not a date
+    // input. Years run newest-first, so scrolling to the top selects the current year --
+    // an age of zero. Scrolling the container drives the component's own snap handler.
+    await page.getByTestId('year-picker').evaluate((el) => {
+      el.scrollTop = 0
+      el.dispatchEvent(new Event('scroll'))
+    })
+    await page.getByLabel(/birth month/i).selectOption('6')
+    await page.getByLabel(/birth day/i).selectOption('15')
 
-    await page.getByRole('button', { name: /create account|sign up/i }).click()
-    await expect(page.getByText(/18|must be/i)).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByText(/must be 18 or older/i)).toBeVisible({ timeout: 5_000 })
   })
 
   test('forgot password page is accessible', async ({ page }) => {

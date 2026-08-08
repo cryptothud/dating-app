@@ -61,8 +61,11 @@ export default function ForgotPasswordPage(): React.JSX.Element {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-foreground mb-1.5 block text-xs font-semibold">Email</label>
+          <label htmlFor="email" className="text-foreground mb-1.5 block text-xs font-semibold">
+            Email
+          </label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

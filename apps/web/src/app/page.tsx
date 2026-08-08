@@ -90,6 +90,7 @@ export default function HomePage(): React.JSX.Element {
                 {...register('email')}
                 type="email"
                 autoComplete="email"
+                aria-label="Email"
                 placeholder="Email"
                 className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
               />
@@ -102,6 +103,7 @@ export default function HomePage(): React.JSX.Element {
               <PasswordInput
                 {...register('password')}
                 autoComplete="current-password"
+                aria-label="Password"
                 placeholder="Password"
                 className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
               />

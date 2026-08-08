@@ -1,76 +1,85 @@
 import { test, expect } from '@playwright/test'
-import { dismissAgeGate } from './helpers'
+import { dismissAgeGate, enterAnonymously } from './helpers'
+
+test.describe('Map page — age gate', () => {
+  test('anonymous visitors are asked to verify their age', async ({ page }) => {
+    await enterAnonymously(page)
+    await expect(page.getByRole('heading', { name: /age verification/i })).toBeVisible({
+      timeout: 8_000,
+    })
+  })
+
+  test('age gate offers continue and go-back actions', async ({ page }) => {
+    await enterAnonymously(page)
+    await expect(page.getByRole('button', { name: /continue/i })).toBeVisible({ timeout: 8_000 })
+    await expect(page.getByRole('button', { name: /go back/i })).toBeVisible({ timeout: 8_000 })
+  })
+
+  test('continue stays disabled until a date of birth is entered', async ({ page }) => {
+    await enterAnonymously(page)
+    await expect(page.getByRole('button', { name: /continue/i })).toBeDisabled()
+  })
+
+  test('visiting the map directly returns an unverified visitor to the landing page', async ({
+    page,
+  }) => {
+    await page.goto('/map')
+    await page.waitForURL('**/', { timeout: 8_000 })
+    expect(page.url()).toMatch(/localhost:3000\/$/)
+  })
+})
 
 test.describe('Map page — anonymous', () => {
-  test('shows age gate for anonymous users', async ({ page }) => {
-    await page.goto('/map')
-    // Age gate should appear before the map is visible
-    await expect(page.getByText(/18|age|verify/i)).toBeVisible({ timeout: 8_000 })
-  })
-
-  test('age gate has confirm and go-back actions', async ({ page }) => {
-    await page.goto('/map')
-    await expect(page.getByRole('button', { name: /i am 18|confirm|yes/i })).toBeVisible({
-      timeout: 8_000,
-    })
-    await expect(page.getByRole('button', { name: /go back|cancel|no/i })).toBeVisible({
-      timeout: 8_000,
-    })
-  })
-
-  test('map renders after age gate is dismissed', async ({ page }) => {
-    await page.goto('/map')
+  test.beforeEach(async ({ page }) => {
     await dismissAgeGate(page)
-    await page.reload()
-    // MapLibre renders a canvas element
+  })
+
+  test('map renders once the age gate is cleared', async ({ page }) => {
+    // MapLibre draws into a canvas
     await expect(page.locator('canvas')).toBeVisible({ timeout: 10_000 })
   })
 
   test('chat FAB is visible on the map', async ({ page }) => {
-    await page.goto('/map')
-    await dismissAgeGate(page)
-    await page.reload()
-    await expect(page.getByRole('button', { name: /chat/i })).toBeVisible({ timeout: 8_000 })
+    await expect(page.getByRole('button', { name: /chat/i }).first()).toBeVisible({
+      timeout: 8_000,
+    })
   })
 
-  test('chat panel opens when FAB is clicked', async ({ page }) => {
-    await page.goto('/map')
-    await dismissAgeGate(page)
-    await page.reload()
-    await page.getByRole('button', { name: /chat/i }).click()
-    // Chat panel should slide up — look for the send button or input
-    await expect(page.getByPlaceholder(/message|say something/i)).toBeVisible({ timeout: 5_000 })
+  test('chat panel prompts anonymous users to sign up rather than posting', async ({ page }) => {
+    await page.getByRole('button', { name: /chat/i }).first().click()
+    // Reading global chat is open to everyone; posting requires an account.
+    await expect(page.getByRole('button', { name: /sign up to chat/i })).toBeVisible({
+      timeout: 5_000,
+    })
+    await expect(page.getByPlaceholder(/post a message/i)).toBeHidden()
   })
 
   test('Join link in nav for anonymous users', async ({ page }) => {
-    await page.goto('/map')
-    await dismissAgeGate(page)
-    await page.reload()
-    await expect(page.getByRole('link', { name: /join/i })).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByRole('link', { name: /join/i }).first()).toBeVisible({ timeout: 5_000 })
   })
 })
 
 test.describe('Map page — navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await dismissAgeGate(page)
+  })
+
   test('header shows CRUSH wordmark', async ({ page }) => {
-    await page.goto('/map')
     await expect(page.getByText('CRUSH').first()).toBeVisible()
   })
 
   test('hamburger menu opens', async ({ page }) => {
-    await page.goto('/map')
-    await page.getByRole('button', { name: /open menu|menu/i }).click()
-    await expect(page.getByRole('link', { name: /terms/i })).toBeVisible({ timeout: 3_000 })
+    await page.getByRole('button', { name: /open menu/i }).click()
+    await expect(page.getByRole('link', { name: /terms/i }).first()).toBeVisible({ timeout: 3_000 })
   })
 
   test('bottom nav links are present', async ({ page }) => {
-    await page.goto('/map')
-    await dismissAgeGate(page)
-    await page.reload()
-    await expect(page.getByRole('link', { name: /map/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /map/i }).first()).toBeVisible()
   })
 
   test('dark/light mode toggle exists', async ({ page }) => {
-    await page.goto('/map')
-    await expect(page.getByRole('button', { name: /theme|dark|light|toggle/i })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: /theme|dark|light|toggle/i }).first(),
+    ).toBeVisible()
   })
 })

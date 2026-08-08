@@ -138,6 +138,7 @@ export default function SignupPage(): React.JSX.Element {
 
             <div className="flex gap-2">
               <select
+                aria-label="Birth month"
                 value={birthMonth || ''}
                 onChange={(e) => {
                   setBirthMonth(Number(e.target.value))
@@ -153,6 +154,7 @@ export default function SignupPage(): React.JSX.Element {
                 ))}
               </select>
               <select
+                aria-label="Birth day"
                 value={birthDay || ''}
                 onChange={(e) => setBirthDay(Number(e.target.value))}
                 disabled={!birthMonth}
@@ -228,6 +230,7 @@ export default function SignupPage(): React.JSX.Element {
                   {...register('email')}
                   type="email"
                   autoComplete="email"
+                  aria-label="Email"
                   placeholder="Email"
                   className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
@@ -241,6 +244,7 @@ export default function SignupPage(): React.JSX.Element {
                   {...register('phone')}
                   type="tel"
                   autoComplete="tel"
+                  aria-label="Phone number"
                   placeholder="Phone number"
                   onChange={(e) => {
                     const formatted = formatPhone(e.target.value)
@@ -261,6 +265,7 @@ export default function SignupPage(): React.JSX.Element {
                 <PasswordInput
                   {...register('password')}
                   autoComplete="new-password"
+                  aria-label="Password"
                   placeholder="Password"
                   className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
