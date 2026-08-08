@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { adminApi, type AuditEntry } from '@/lib/admin'
 
@@ -12,10 +12,10 @@ export default function AuditPage() {
   const [filter, setFilter] = useState('')
   const limit = 50
 
-  async function load(off: number) {
+  const load = useCallback(async (off: number, action: string): Promise<void> => {
     setLoading(true)
     try {
-      const res = await adminApi.getAuditLog({ limit, offset: off, action: filter || undefined })
+      const res = await adminApi.getAuditLog({ limit, offset: off, action: action || undefined })
       setLogs(res.logs)
       setTotal(res.total)
     } catch {
@@ -23,16 +23,17 @@ export default function AuditPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  useEffect(() => {
-    void load(0)
   }, [])
+
+  // Initial page only. Filtering is driven by the form below.
+  useEffect(() => {
+    void load(0, '')
+  }, [load])
 
   function handleFilter(e: React.FormEvent) {
     e.preventDefault()
     setOffset(0)
-    void load(0)
+    void load(0, filter)
   }
 
   function actionColor(action: string) {
@@ -140,7 +141,7 @@ export default function AuditPage() {
               onClick={() => {
                 const o = Math.max(0, offset - limit)
                 setOffset(o)
-                void load(o)
+                void load(o, filter)
               }}
               disabled={offset === 0}
               className="rounded-lg bg-white/5 px-3 py-1.5 text-sm text-white/60 transition-colors hover:bg-white/10 disabled:opacity-30"
@@ -151,7 +152,7 @@ export default function AuditPage() {
               onClick={() => {
                 const o = offset + limit
                 setOffset(o)
-                void load(o)
+                void load(o, filter)
               }}
               disabled={offset + limit >= total}
               className="rounded-lg bg-white/5 px-3 py-1.5 text-sm text-white/60 transition-colors hover:bg-white/10 disabled:opacity-30"

@@ -130,7 +130,9 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
       if (currentWidgetId !== undefined && window.turnstile?.remove) {
         try {
           window.turnstile.remove(currentWidgetId)
-        } catch {}
+        } catch {
+          // The widget may already be torn down by the time cleanup runs.
+        }
       }
     }
   }, [step, SITEKEY])

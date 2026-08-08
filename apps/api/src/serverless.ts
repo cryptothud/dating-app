@@ -37,9 +37,11 @@ async function createHandler(): Promise<(req: IncomingMessage, res: ServerRespon
   )
 
   app.setGlobalPrefix('api')
-  app.getHttpAdapter().get('/api/health', (_req: unknown, res: { json: (o: object) => void }): void => {
-    res.json({ status: 'ok' })
-  })
+  app
+    .getHttpAdapter()
+    .get('/api/health', (_req: unknown, res: { json: (o: object) => void }): void => {
+      res.json({ status: 'ok' })
+    })
 
   await app.init()
   return app.getHttpAdapter().getInstance() as (req: IncomingMessage, res: ServerResponse) => void

@@ -76,7 +76,13 @@ export function SafetyDateStartedEmail({
   )
 }
 
-export function SafetyDateSosEmail({ name, trackUrl }: { name: string; trackUrl: string }): React.JSX.Element {
+export function SafetyDateSosEmail({
+  name,
+  trackUrl,
+}: {
+  name: string
+  trackUrl: string
+}): React.JSX.Element {
   return (
     <Layout preview={`🚨 SOS ALERT from ${name}`}>
       <Text style={{ ...heading, color: '#dc2626' }}>🚨 SOS Alert</Text>

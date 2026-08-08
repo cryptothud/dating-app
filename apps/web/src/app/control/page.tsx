@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { adminApi, type AdminStats } from '@/lib/admin'
+import Link from 'next/link'
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -70,7 +71,7 @@ export default function DashboardPage() {
         <div className="border-white/8 rounded-2xl border bg-[#0d0a16] p-5">
           <h2 className="mb-3 text-sm font-semibold text-white">Quick Actions</h2>
           <div className="space-y-2">
-            <a
+            <Link
               href="/control/moderation"
               className="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
             >
@@ -78,8 +79,8 @@ export default function DashboardPage() {
               <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs text-red-400">
                 {stats.openReports}
               </span>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/control/support"
               className="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
             >
@@ -87,8 +88,8 @@ export default function DashboardPage() {
               <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
                 {stats.openTickets}
               </span>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/control/system"
               className="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-white/5"
             >
@@ -101,7 +102,7 @@ export default function DashboardPage() {
               >
                 <path d="M9 18l6-6-6-6" />
               </svg>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

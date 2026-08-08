@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { chatApi, formatMessageTime } from '@/lib/chat'
 import { useSocket } from '@/hooks/use-socket'
 import type { ConversationSummary, MessageDto } from '@dating-app/types'
+import Image from 'next/image'
 
 const PINNED_KEY = 'crush_pinned_convs'
 
@@ -19,7 +20,10 @@ function getPinned(): Set<string> {
 function savePinned(set: Set<string>): void {
   try {
     localStorage.setItem(PINNED_KEY, JSON.stringify([...set]))
-  } catch {}
+  } catch {
+    // Private mode and quota limits both throw here. Pinning is a convenience, so a
+    // failed write should not interrupt the user.
+  }
 }
 
 function Avatar({
@@ -34,10 +38,13 @@ function Avatar({
   const initials = (displayName ?? '?').slice(0, 2).toUpperCase()
   if (photoUrl) {
     return (
-      <img
+      <Image
         src={photoUrl}
         alt={displayName ?? 'User'}
-        className={`w-${size} h-${size} shrink-0 rounded-full object-cover`}
+        width={size * 4}
+        height={size * 4}
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size * 4, height: size * 4 }}
       />
     )
   }
@@ -60,8 +67,6 @@ function VerifiedIcon(): React.JSX.Element {
     </svg>
   )
 }
-
-type ConvAction = { type: 'pin' } | { type: 'archive'; label: string } | { type: 'delete' }
 
 function ConvActionMenu({
   convId,

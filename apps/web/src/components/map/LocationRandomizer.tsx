@@ -37,17 +37,20 @@ export function LocationRandomizer(): React.JSX.Element {
     setSaved(false)
 
     if (saveDebounce.current) clearTimeout(saveDebounce.current)
-    saveDebounce.current = setTimeout(async () => {
-      setSaving(true)
-      try {
-        await api.patch('/location/fuzz-radius', { fuzzRadius: val })
-        setSaved(true)
-        setTimeout(() => setSaved(false), 2000)
-      } catch {
-        /* non-fatal */
-      } finally {
-        setSaving(false)
+    saveDebounce.current = setTimeout(() => {
+      const save = async (): Promise<void> => {
+        setSaving(true)
+        try {
+          await api.patch('/location/fuzz-radius', { fuzzRadius: val })
+          setSaved(true)
+          setTimeout(() => setSaved(false), 2000)
+        } catch {
+          /* non-fatal */
+        } finally {
+          setSaving(false)
+        }
       }
+      void save()
     }, 600)
   }, [])
 

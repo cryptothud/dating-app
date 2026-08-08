@@ -4,7 +4,9 @@ import type { Observable } from 'rxjs'
 
 @Injectable()
 export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
-  override canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  override canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     return super.canActivate(context)
   }
 

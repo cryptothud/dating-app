@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import type { Photo } from '@dating-app/types'
+import Image from 'next/image'
 
 interface Props {
   photos: Photo[]
@@ -107,7 +108,6 @@ export function PhotoGrid({
       <div className="grid max-w-xs grid-cols-3 gap-2">
         {slots.map((photo, i) => {
           const isUploadSlot = i === photos.length && photos.length < SLOTS
-          const isEmpty = !photo && !isUploadSlot
 
           if (photo) {
             const isDragging = draggingId === photo.id
@@ -128,7 +128,13 @@ export function PhotoGrid({
               >
                 {/* Image — overflow-hidden scoped to avoid clipping the dropdown */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
-                  <img src={photo.url} alt="" className="h-full w-full object-cover" />
+                  <Image
+                    src={photo.url}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 33vw, 180px"
+                    className="object-cover"
+                  />
                 </div>
 
                 {photo.isPrimary && (

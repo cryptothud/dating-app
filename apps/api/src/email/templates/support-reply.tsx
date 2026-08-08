@@ -31,7 +31,13 @@ const box = {
   margin: '16px 0 24px',
 }
 
-export function SupportReplyEmail({ subject, replyBody }: { subject: string; replyBody: string }): React.JSX.Element {
+export function SupportReplyEmail({
+  subject,
+  replyBody,
+}: {
+  subject: string
+  replyBody: string
+}): React.JSX.Element {
   return (
     <Layout preview={`Re: ${subject}`}>
       <Text style={heading}>Re: {subject}</Text>

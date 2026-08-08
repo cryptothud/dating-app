@@ -40,7 +40,9 @@ function readLastPos(): [number, number] | null {
 function writeLastPos(lat: number, lng: number): void {
   try {
     localStorage.setItem(LAST_POS_KEY, JSON.stringify({ lat, lng }))
-  } catch {}
+  } catch {
+    // Caching the last position is an optimisation; the map recentres from GPS anyway.
+  }
 }
 
 const COLOR_ONLINE = '#9333ea'
@@ -488,11 +490,11 @@ function featureToUser(feature: maplibregl.MapGeoJSONFeature): MapUser | null {
     activelyLooking: Boolean(p['activelyLooking']),
     isVerified: Boolean(p['isVerified']),
     isSeeded: Boolean(p['isSeeded']),
-    displayName: p['displayName'] ?? undefined,
-    age: p['age'] ?? undefined,
-    bodyType: p['bodyType'] ?? undefined,
+    displayName: (p['displayName'] as string | null) ?? undefined,
+    age: (p['age'] as number | null) ?? undefined,
+    bodyType: (p['bodyType'] as string | null) ?? undefined,
     lookingFor: p['lookingFor'] ? (JSON.parse(p['lookingFor'] as string) as string[]) : [],
-    primaryPhotoUrl: p['primaryPhotoUrl'] ?? undefined,
+    primaryPhotoUrl: (p['primaryPhotoUrl'] as string | null) ?? undefined,
     lastActiveAt: p['lastActiveAt'] as string,
   }
 }
@@ -646,7 +648,7 @@ export function MapView(): React.JSX.Element {
       /* noop */
     })
 
-    map.once('load', () => {
+    void map.once('load', () => {
       setupLayers(map)
       mapRef.current = map
       setMapReady(true)
@@ -731,7 +733,7 @@ export function MapView(): React.JSX.Element {
     if (appliedStyleRef.current === target) return
     appliedStyleRef.current = target
     map.setStyle(target)
-    map.once('styledata', () => {
+    void map.once('styledata', () => {
       loadedPfpRef.current.clear()
       pendingPfpRef.current.clear()
       setupLayers(map)
@@ -757,58 +759,60 @@ export function MapView(): React.JSX.Element {
     if (!mapReady) return
 
     if (isAuthenticated && navigator.geolocation) {
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        async ({ coords }) => {
-          const { latitude, longitude } = coords
-          const map = mapRef.current
-          if (!map) return
+      const handleFix = async ({ coords }: GeolocationPosition): Promise<void> => {
+        const { latitude, longitude } = coords
+        const map = mapRef.current
+        if (!map) return
 
-          writeLastPos(latitude, longitude)
+        writeLastPos(latitude, longitude)
 
-          // First fix: fly to location only if map didn't already start at a cached position
-          if (!hasInitialCenteredRef.current) {
-            hasInitialCenteredRef.current = true
-            setHasGps(true)
-            if (!startedAtCachedPosRef.current) {
-              map.flyTo({ center: [longitude, latitude], zoom: DEFAULT_ZOOM, duration: 1200 })
-            }
+        // First fix: fly to location only if map didn't already start at a cached position
+        if (!hasInitialCenteredRef.current) {
+          hasInitialCenteredRef.current = true
+          setHasGps(true)
+          if (!startedAtCachedPosRef.current) {
+            map.flyTo({ center: [longitude, latitude], zoom: DEFAULT_ZOOM, duration: 1200 })
           }
+        }
 
-          // "You" dot: use a Marker (DOM element) — survives theme changes, no GeoJSON source needed
-          if (!myMarkerRef.current) {
-            const el = document.createElement('div')
-            el.className = 'crush-you-dot'
-            el.title = 'You — click to edit profile'
-            el.addEventListener('click', () => {
-              window.location.href = '/profile'
-            })
-            myDotElRef.current = el
-            if (activelyLookingRef.current) el.classList.add('crush-you-dot--active')
-            myMarkerRef.current = new maplibregl.Marker({ element: el, anchor: 'center' })
-              .setLngLat([longitude, latitude])
-              .addTo(map)
-          } else {
-            myMarkerRef.current.setLngLat([longitude, latitude])
-          }
-
-          // Fuzz zone circle — shows the blur radius so users know their exact GPS isn't shown
-          myGpsRef.current = { lat: latitude, lng: longitude }
-          const fuzzSrc = map.getSource<maplibregl.GeoJSONSource>('my-fuzz-zone')
-          fuzzSrc?.setData({
-            type: 'FeatureCollection',
-            features: [createCircle(longitude, latitude, fuzzRadiusRef.current)],
+        // "You" dot: use a Marker (DOM element) — survives theme changes, no GeoJSON source needed
+        if (!myMarkerRef.current) {
+          const el = document.createElement('div')
+          el.className = 'crush-you-dot'
+          el.title = 'You — click to edit profile'
+          el.addEventListener('click', () => {
+            window.location.href = '/profile'
           })
+          myDotElRef.current = el
+          if (activelyLookingRef.current) el.classList.add('crush-you-dot--active')
+          myMarkerRef.current = new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([longitude, latitude])
+            .addTo(map)
+        } else {
+          myMarkerRef.current.setLngLat([longitude, latitude])
+        }
 
-          const now = Date.now()
-          if (now - lastLocationUpdateRef.current >= 60_000) {
-            lastLocationUpdateRef.current = now
-            try {
-              await locationApi.update(latitude, longitude)
-            } catch {
-              /* refresh handled in api.ts */
-            }
+        // Fuzz zone circle — shows the blur radius so users know their exact GPS isn't shown
+        myGpsRef.current = { lat: latitude, lng: longitude }
+        const fuzzSrc = map.getSource<maplibregl.GeoJSONSource>('my-fuzz-zone')
+        fuzzSrc?.setData({
+          type: 'FeatureCollection',
+          features: [createCircle(longitude, latitude, fuzzRadiusRef.current)],
+        })
+
+        const now = Date.now()
+        if (now - lastLocationUpdateRef.current >= 60_000) {
+          lastLocationUpdateRef.current = now
+          try {
+            await locationApi.update(latitude, longitude)
+          } catch {
+            /* refresh handled in api.ts */
           }
-        },
+        }
+      }
+
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) => void handleFix(pos),
         (err) => {
           if (err.code === err.PERMISSION_DENIED) setLocationDenied(true)
         },
@@ -816,14 +820,17 @@ export function MapView(): React.JSX.Element {
       )
     }
 
-    fetchUsers()
-    mapRef.current?.on('moveend', fetchUsers)
-    pollRef.current = setInterval(fetchUsers, POLL_INTERVAL_MS)
+    // One stable reference: 'off' removes by identity, so on/off must share it.
+    const refreshUsers = (): void => void fetchUsers()
+
+    refreshUsers()
+    mapRef.current?.on('moveend', refreshUsers)
+    pollRef.current = setInterval(refreshUsers, POLL_INTERVAL_MS)
 
     return () => {
       if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current)
       if (pollRef.current) clearInterval(pollRef.current)
-      mapRef.current?.off('moveend', fetchUsers)
+      mapRef.current?.off('moveend', refreshUsers)
     }
   }, [mapReady, isAuthenticated, fetchUsers])
 

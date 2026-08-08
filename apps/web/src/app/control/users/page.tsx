@@ -47,8 +47,9 @@ export default function UsersPage() {
     }
   }, [])
 
+  // Initial page only. Searching is driven by the form below, not by keystrokes.
   useEffect(() => {
-    void search(query, 0)
+    void search('', 0)
   }, [search])
 
   function handleSearch(e: React.FormEvent) {

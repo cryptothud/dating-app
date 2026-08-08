@@ -277,7 +277,12 @@ export class AdminService {
     await this.audit.log(adminId, 'user.unban', userId)
   }
 
-  async timeoutUser(adminId: string, userId: string, durationMinutes: number, reason?: string): Promise<void> {
+  async timeoutUser(
+    adminId: string,
+    userId: string,
+    durationMinutes: number,
+    reason?: string,
+  ): Promise<void> {
     await this.requireCanActOn(adminId, userId)
     await this.requireUser(userId)
     const timeoutUntil = new Date(Date.now() + durationMinutes * 60_000)
@@ -427,7 +432,12 @@ export class AdminService {
     await this.audit.log(adminId, 'system.cache_flush', undefined, { pattern, count: keys.length })
   }
 
-  async updateFlag(adminId: string, key: string, enabled: boolean, description?: string): Promise<void> {
+  async updateFlag(
+    adminId: string,
+    key: string,
+    enabled: boolean,
+    description?: string,
+  ): Promise<void> {
     await this.prisma.featureFlag.upsert({
       where: { key },
       create: { key, enabled, description },
@@ -446,7 +456,9 @@ export class AdminService {
     for (let i = 0; i < subs.length; i += PUSH_BATCH_SIZE) {
       const batch = subs.slice(i, i + PUSH_BATCH_SIZE)
       await Promise.allSettled(
-        batch.map(({ userId }): Promise<void> => this.push.sendToUser(userId, { title, body, url })),
+        batch.map(
+          ({ userId }): Promise<void> => this.push.sendToUser(userId, { title, body, url }),
+        ),
       )
     }
 
@@ -470,7 +482,7 @@ export class AdminService {
 
   // ── Helpers ───────────────────────────────────────────────────────
 
-  private async requireUser(userId: string): Promise<{ id: string; email: string; }> {
+  private async requireUser(userId: string): Promise<{ id: string; email: string }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, email: true },

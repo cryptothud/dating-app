@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { adminApi } from '@/lib/admin'
@@ -18,7 +18,7 @@ export default function TicketPage() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
 
-  async function load() {
+  const load = useCallback(async (): Promise<void> => {
     try {
       setTicket(await adminApi.getTicket(id))
     } catch {
@@ -26,11 +26,11 @@ export default function TicketPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
 
   useEffect(() => {
     void load()
-  }, [id])
+  }, [load])
 
   async function sendReply() {
     if (!reply.trim()) return

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { profileApi, promptLabel } from '@/lib/profile'
 import { BlockReportSheet } from '@/components/ui/block-report-sheet'
 import type { UserProfile } from '@dating-app/types'
+import Image from 'next/image'
 
 function formatLastActive(iso: string): string {
   const mins = (Date.now() - new Date(iso).getTime()) / 60000
@@ -180,11 +181,13 @@ export function UserProfileDrawer({
                     onClick={() => setLightboxIndex(i)}
                     className="bg-muted group relative h-[120px] w-[120px] shrink-0 cursor-zoom-in overflow-hidden rounded-xl"
                   >
-                    <img
+                    <Image
                       src={photo.url}
                       alt=""
+                      fill
+                      sizes="120px"
                       className={[
-                        'h-full w-full object-cover transition-all duration-200 group-hover:scale-105 group-hover:opacity-90',
+                        'object-cover transition-all duration-200 group-hover:scale-105 group-hover:opacity-90',
                         photo.blurEnabled ? 'blur-sm' : '',
                       ].join(' ')}
                     />

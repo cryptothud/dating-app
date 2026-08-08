@@ -25,6 +25,11 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       'no-console': 'error',
       'no-debugger': 'error',
+      // Flags every computed member access, so `arr[i]` in a counted loop reports the same
+      // as an attacker-controlled key. Every occurrence in this repo was the former. Index
+      // safety here comes from noUncheckedIndexedAccess and validated DTOs, which check the
+      // cases that actually matter; the rest of the security plugin stays on.
+      'security/detect-object-injection': 'off',
     },
   },
   // Config and script files are plain JS and have no tsconfig to type-check against.

@@ -105,7 +105,7 @@ export default function ProfileViewersPage() {
             <div>
               <p className="text-foreground font-semibold">Premium+ Feature</p>
               <p className="text-muted-foreground mt-1 text-sm">
-                See who's been viewing your profile with a Premium+ subscription.
+                See who&apos;s been viewing your profile with a Premium+ subscription.
               </p>
             </div>
             <Link
@@ -149,7 +149,7 @@ export default function ProfileViewersPage() {
             <div>
               <p className="text-foreground font-semibold">No viewers yet</p>
               <p className="text-muted-foreground mt-1 text-sm">
-                When someone views your profile, they'll appear here.
+                When someone views your profile, they&apos;ll appear here.
               </p>
             </div>
           </div>

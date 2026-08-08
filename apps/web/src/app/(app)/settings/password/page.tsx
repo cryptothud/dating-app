@@ -146,7 +146,9 @@ export default function ChangePasswordPage(): React.JSX.Element {
                 autoComplete="new-password"
                 required
               />
-              {mismatch && <p className="mt-1 text-[11px] text-red-400">Passwords don't match</p>}
+              {mismatch && (
+                <p className="mt-1 text-[11px] text-red-400">Passwords don&apos;t match</p>
+              )}
             </div>
 
             {error && (

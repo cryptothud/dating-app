@@ -76,7 +76,7 @@ export class GlobalChatService {
     body: string,
     senderName: string,
     durationMinutes: number,
-  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string }> {
     const pinnedUntil = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString()
     const pinned = { messageId, body, senderName, pinnedUntil }
     await this.redis.set('global_chat:pinned', JSON.stringify(pinned), durationMinutes * 60)
@@ -112,7 +112,12 @@ export class GlobalChatService {
     await this.redis.del('global_chat:pinned')
   }
 
-  async getPinnedGlobalMessage(): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
+  async getPinnedGlobalMessage(): Promise<{
+    messageId: string
+    body: string
+    senderName: string
+    pinnedUntil: string
+  } | null> {
     const raw = await this.redis.get('global_chat:pinned')
     if (!raw) return null
     const pinned = JSON.parse(raw) as {

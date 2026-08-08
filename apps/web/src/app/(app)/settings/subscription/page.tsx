@@ -160,7 +160,7 @@ function SubscriptionContent() {
             <div className="bg-card border-destructive/30 space-y-3 rounded-2xl border p-5">
               <p className="text-foreground text-sm font-medium">Cancel your subscription?</p>
               <p className="text-muted-foreground text-sm">
-                You'll keep access until {expiresFormatted ?? 'your billing date'}. No further
+                You&apos;ll keep access until {expiresFormatted ?? 'your billing date'}. No further
                 charges.
               </p>
               <div className="flex gap-2">

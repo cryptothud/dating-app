@@ -16,6 +16,11 @@ export default function VerifyPhonePage(): React.JSX.Element {
   const [resendCooldown, setResendCooldown] = useState(30)
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
 
+  // The WebOTP request below is one-shot and must not be torn down and re-armed on every
+  // render, so the effect runs once. Reading the handler through a ref keeps that effect
+  // free of a submitCode dependency while still calling the current one.
+  const submitCodeRef = useRef<(code: string) => Promise<void>>(undefined)
+
   useEffect(() => {
     void authApi.sendOtp().catch(() => null)
     inputRefs.current[0]?.focus()
@@ -32,7 +37,7 @@ export default function VerifyPhonePage(): React.JSX.Element {
           const next = Array(CODE_LENGTH).fill('')
           for (let i = 0; i < code.length; i++) next[i] = code[i] ?? ''
           setDigits(next)
-          if (code.length === CODE_LENGTH) void submitCode(code)
+          if (code.length === CODE_LENGTH) void submitCodeRef.current?.(code)
         }
       })
       .catch(() => null)
@@ -85,6 +90,8 @@ export default function VerifyPhonePage(): React.JSX.Element {
       setIsSubmitting(false)
     }
   }
+
+  submitCodeRef.current = submitCode
 
   async function resend(): Promise<void> {
     setError(null)

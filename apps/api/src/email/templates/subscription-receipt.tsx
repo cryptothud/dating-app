@@ -49,7 +49,11 @@ interface Props {
   periodEnd: string
 }
 
-export function SubscriptionReceiptEmail({ planName, amount, periodEnd }: Props): React.JSX.Element {
+export function SubscriptionReceiptEmail({
+  planName,
+  amount,
+  periodEnd,
+}: Props): React.JSX.Element {
   return (
     <Layout preview={`Your CRUSH ${planName} receipt — ${amount}`}>
       <Text style={heading}>Payment confirmed</Text>

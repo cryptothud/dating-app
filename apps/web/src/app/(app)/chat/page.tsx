@@ -6,14 +6,17 @@ import { chatApi, formatMessageTime, formatMessageDate } from '@/lib/chat'
 import { useSocket } from '@/hooks/use-socket'
 import { useAuth } from '@/hooks/use-auth'
 import type { GlobalMessage } from '@dating-app/types'
+import Image from 'next/image'
 
 function Avatar({ msg }: { msg: GlobalMessage }): React.JSX.Element {
   const initials = msg.displayName.slice(0, 2).toUpperCase()
   if (msg.photoUrl) {
     return (
-      <img
+      <Image
         src={msg.photoUrl}
         alt={msg.displayName}
+        width={32}
+        height={32}
         className="h-8 w-8 shrink-0 rounded-full object-cover"
       />
     )

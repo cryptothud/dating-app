@@ -24,6 +24,13 @@ export default tseslint.config(
     },
     rules: {
       '@next/next/no-html-link-for-pages': 'error',
+      // An async handler on onClick/onSubmit is standard React: the DOM discards the
+      // returned promise by design. Void-return checks still apply everywhere else, where
+      // a dropped promise is a real bug.
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
+      ],
     },
   }
 )

@@ -281,7 +281,11 @@ export class LocationService {
         ROUND(ul.longitude::numeric / ${cellSize}::numeric)
       ORDER BY count DESC
     `
-    return rows.map((r): { lat: number; lng: number; count: number; } => ({ lat: Number(r.lat), lng: Number(r.lng), count: Number(r.count) }))
+    return rows.map((r): { lat: number; lng: number; count: number } => ({
+      lat: Number(r.lat),
+      lng: Number(r.lng),
+      count: Number(r.count),
+    }))
   }
 
   async getMyLocation(
@@ -389,7 +393,8 @@ export class LocationService {
   private viewportKey(q: MapQueryDto): string {
     const zoom = q.zoom ?? 14
     return (
-      [q.swLat, q.swLng, q.neLat, q.neLng].map((n): number => Math.round(n * 100)).join(':') + `:z${zoom}`
+      [q.swLat, q.swLng, q.neLat, q.neLng].map((n): number => Math.round(n * 100)).join(':') +
+      `:z${zoom}`
     )
   }
 

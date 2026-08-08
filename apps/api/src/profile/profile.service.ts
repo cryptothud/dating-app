@@ -233,16 +233,25 @@ export class ProfileService {
     const userMap = new Map(users.map((u) => [u.id, u]))
 
     return raw
-      .map((r): { id: string; displayName: string | null; photoUrl: string | null; viewedAt: string; } | null => {
-        const u = userMap.get(r.member)
-        if (!u) return null
-        return {
-          id: u.id,
-          displayName: u.profile?.displayName ?? null,
-          photoUrl: u.profile?.photos[0]?.url ?? null,
-          viewedAt: new Date(r.score).toISOString(),
-        }
-      })
+      .map(
+        (
+          r,
+        ): {
+          id: string
+          displayName: string | null
+          photoUrl: string | null
+          viewedAt: string
+        } | null => {
+          const u = userMap.get(r.member)
+          if (!u) return null
+          return {
+            id: u.id,
+            displayName: u.profile?.displayName ?? null,
+            photoUrl: u.profile?.photos[0]?.url ?? null,
+            viewedAt: new Date(r.score).toISOString(),
+          }
+        },
+      )
       .filter((v): v is NonNullable<typeof v> => v !== null)
   }
 
@@ -280,12 +289,14 @@ export class ProfileService {
         moderationStatus: p.moderationStatus,
         order: p.order,
       })),
-      prompts: profile.prompts.map((p): { id: string; promptKey: string; answer: string; order: number; } => ({
-        id: p.id,
-        promptKey: p.promptKey,
-        answer: p.answer,
-        order: p.order,
-      })),
+      prompts: profile.prompts.map(
+        (p): { id: string; promptKey: string; answer: string; order: number } => ({
+          id: p.id,
+          promptKey: p.promptKey,
+          answer: p.answer,
+          order: p.order,
+        }),
+      ),
       verified: user.verified,
       trustScore: user.trustScore,
     }
@@ -326,12 +337,14 @@ export class ProfileService {
           order: p.order,
         }
       }),
-      prompts: profile.prompts.map((p): { id: string; promptKey: string; answer: string; order: number; } => ({
-        id: p.id,
-        promptKey: p.promptKey,
-        answer: p.answer,
-        order: p.order,
-      })),
+      prompts: profile.prompts.map(
+        (p): { id: string; promptKey: string; answer: string; order: number } => ({
+          id: p.id,
+          promptKey: p.promptKey,
+          answer: p.answer,
+          order: p.order,
+        }),
+      ),
       verified: user.verified,
     }
   }

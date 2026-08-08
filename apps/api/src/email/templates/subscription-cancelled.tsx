@@ -34,7 +34,10 @@ interface Props {
   reactivateUrl: string
 }
 
-export function SubscriptionCancelledEmail({ accessUntil, reactivateUrl }: Props): React.JSX.Element {
+export function SubscriptionCancelledEmail({
+  accessUntil,
+  reactivateUrl,
+}: Props): React.JSX.Element {
   return (
     <Layout preview="Your CRUSH Premium subscription has been cancelled">
       <Text style={heading}>Subscription cancelled</Text>

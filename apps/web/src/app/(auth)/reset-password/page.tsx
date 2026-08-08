@@ -28,6 +28,9 @@ function ResetPasswordForm(): React.JSX.Element {
       setError('Password must be at least 8 characters')
       return
     }
+    // Both sides are values the user just typed into this form; there is no stored
+    // secret here for a timing comparison to leak.
+    // eslint-disable-next-line security/detect-possible-timing-attacks
     if (password !== confirm) {
       setError('Passwords do not match')
       return

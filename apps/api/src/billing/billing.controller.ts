@@ -26,12 +26,12 @@ export class BillingController {
   createCheckout(
     @Request() req: { user: { id: string; email: string } },
     @Body() dto: CheckoutDto,
-  ): Promise<{ url: string; }> {
+  ): Promise<{ url: string }> {
     return this.billing.createCheckoutSession(req.user.id, req.user.email, dto.tier, dto.interval)
   }
 
   @Post('portal')
-  createPortal(@Request() req: { user: { id: string } }): Promise<{ url: string; }> {
+  createPortal(@Request() req: { user: { id: string } }): Promise<{ url: string }> {
     return this.billing.createPortalSession(req.user.id)
   }
 

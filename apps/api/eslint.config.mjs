@@ -20,9 +20,8 @@ export default [
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      // Both fire on ordinary test-double construction rather than on real defects.
+      // Fires on ordinary test-double construction rather than on real defects.
       '@typescript-eslint/unbound-method': 'off',
-      'security/detect-object-injection': 'off',
     },
   },
   {

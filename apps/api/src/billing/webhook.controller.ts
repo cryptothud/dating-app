@@ -11,7 +11,7 @@ export class WebhookController {
   async handleWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') sig: string,
-  ): Promise<{ received: boolean; }> {
+  ): Promise<{ received: boolean }> {
     if (!sig) throw new BadRequestException('Missing stripe-signature header')
     if (!req.rawBody) throw new BadRequestException('Missing raw body')
     await this.billing.handleWebhook(req.rawBody, sig)

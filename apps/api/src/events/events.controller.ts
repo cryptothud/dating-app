@@ -23,13 +23,19 @@ export class EventsController {
 
   @Get('map')
   @UseGuards(OptionalJwtAuthGuard)
-  getMapEvents(@Query() query: MapEventsQueryDto, @CurrentUser() user: AuthUser | null): Promise<EventSummary[]> {
+  getMapEvents(
+    @Query() query: MapEventsQueryDto,
+    @CurrentUser() user: AuthUser | null,
+  ): Promise<EventSummary[]> {
     return this.events.getMapEvents(query, user?.id)
   }
 
   @Get(':id')
   @UseGuards(OptionalJwtAuthGuard)
-  getEvent(@Param('id') id: string, @CurrentUser() user: AuthUser | null): Promise<EventSummary & { isCreator: boolean; }> {
+  getEvent(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUser | null,
+  ): Promise<EventSummary & { isCreator: boolean }> {
     return this.events.getEvent(id, user?.id)
   }
 
@@ -41,7 +47,10 @@ export class EventsController {
 
   @Post(':id/rsvp')
   @UseGuards(JwtAuthGuard)
-  rsvp(@Param('id') id: string, @CurrentUser() user: AuthUser): Promise<{ conversationId: string; }> {
+  rsvp(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUser,
+  ): Promise<{ conversationId: string }> {
     return this.events.rsvp(id, user.id)
   }
 

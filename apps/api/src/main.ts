@@ -30,7 +30,9 @@ async function bootstrap(): Promise<void> {
   // CORS — locked to explicit origins in all environments.
   // Add more dev origins to the array if you need LAN device access.
   app.enableCors({
-    origin: isProd ? config.get('WEB_URL', { infer: true }) : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: isProd
+      ? config.get('WEB_URL', { infer: true })
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   })
@@ -49,9 +51,11 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('api')
 
   // Health check for Railway (registered before global prefix takes effect)
-  app.getHttpAdapter().get('/api/health', (_req: unknown, res: { json: (o: object) => void }): void => {
-    res.json({ status: 'ok' })
-  })
+  app
+    .getHttpAdapter()
+    .get('/api/health', (_req: unknown, res: { json: (o: object) => void }): void => {
+      res.json({ status: 'ok' })
+    })
 
   const port = config.get('PORT', { infer: true })
   await app.listen(port)

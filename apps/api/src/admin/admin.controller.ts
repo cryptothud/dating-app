@@ -59,13 +59,16 @@ export class AdminPublicController {
   constructor(private admin: AdminService) {}
 
   @Get('status')
-  async getStatus(): Promise<{ maintenance: boolean; }> {
+  async getStatus(): Promise<{ maintenance: boolean }> {
     return this.admin.getMaintenanceStatus()
   }
 
   @Post('auth/login')
   @HttpCode(HttpStatus.OK)
-  async adminLogin(@Body() dto: AdminLoginDto, @Res({ passthrough: true }) res: Response): Promise<{ message: string; }> {
+  async adminLogin(
+    @Body() dto: AdminLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ message: string }> {
     return this.admin.adminLogin(dto.email, dto.password, res)
   }
 }
@@ -112,13 +115,21 @@ export class AdminController {
 
   @Post('users/:id/warn')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async warn(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: ReasonDto): Promise<void> {
+  async warn(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: ReasonDto,
+  ): Promise<void> {
     await this.admin.warnUser(req.user.id, id, dto.reason)
   }
 
   @Post('users/:id/suspend')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async suspend(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: ReasonDto): Promise<void> {
+  async suspend(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: ReasonDto,
+  ): Promise<void> {
     await this.admin.suspendUser(req.user.id, id, dto.reason)
   }
 
@@ -130,7 +141,11 @@ export class AdminController {
 
   @Post('users/:id/ban')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async ban(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: ReasonDto): Promise<void> {
+  async ban(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: ReasonDto,
+  ): Promise<void> {
     await this.admin.banUser(req.user.id, id, dto.reason)
   }
 
@@ -155,7 +170,11 @@ export class AdminController {
   @Post('users/:id/timeout')
   @UseGuards(ModeratorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async timeout(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: TimeoutDto): Promise<void> {
+  async timeout(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: TimeoutDto,
+  ): Promise<void> {
     await this.admin.timeoutUser(req.user.id, id, dto.durationMinutes, dto.reason)
   }
 
@@ -168,7 +187,11 @@ export class AdminController {
 
   @Post('users/:id/set-role')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async setRole(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: SetRoleDto): Promise<void> {
+  async setRole(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: SetRoleDto,
+  ): Promise<void> {
     await this.admin.setUserRole(req.user.id, id, dto.role)
   }
 
@@ -181,7 +204,11 @@ export class AdminController {
 
   @Post('reports/:id/resolve')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async resolveReport(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: ReasonDto): Promise<void> {
+  async resolveReport(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: ReasonDto,
+  ): Promise<void> {
     await this.admin.resolveReport(req.user.id, id, dto.reason)
   }
 

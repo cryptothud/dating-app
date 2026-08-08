@@ -90,7 +90,9 @@ export class ChatService implements OnModuleInit {
       this.prisma.userLocation.findUnique({ where: { userId } }),
     ])
 
-    const unreadMap = new Map(rawUnread.map((r): [string, number] => [r.conversation_id, Number(r.count)]))
+    const unreadMap = new Map(
+      rawUnread.map((r): [string, number] => [r.conversation_id, Number(r.count)]),
+    )
 
     return convs
       .map((conv) => {
@@ -135,7 +137,7 @@ export class ChatService implements OnModuleInit {
       })
   }
 
-  async findOrCreateDm(userId: string, otherUserId: string): Promise<{ id: string; }> {
+  async findOrCreateDm(userId: string, otherUserId: string): Promise<{ id: string }> {
     if (userId === otherUserId) throw new ForbiddenException('Cannot DM yourself')
 
     const block = await this.prisma.block.findFirst({
@@ -207,7 +209,11 @@ export class ChatService implements OnModuleInit {
     return { allowed: true }
   }
 
-  async getMessages(userId: string, conversationId: string, cursor?: string): Promise<MessageDto[]> {
+  async getMessages(
+    userId: string,
+    conversationId: string,
+    cursor?: string,
+  ): Promise<MessageDto[]> {
     await this.assertParticipant(userId, conversationId)
 
     const participant = await this.prisma.conversationParticipant.findUnique({
@@ -303,7 +309,10 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async deleteMessage(moderatorId: string, messageId: string): Promise<{ id: string; conversationId: string; deletedAt: string; }> {
+  async deleteMessage(
+    moderatorId: string,
+    messageId: string,
+  ): Promise<{ id: string; conversationId: string; deletedAt: string }> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     const updated = await this.prisma.message.update({
@@ -317,7 +326,11 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async editMessage(moderatorId: string, messageId: string, newBody: string): Promise<EditedMessage> {
+  async editMessage(
+    moderatorId: string,
+    messageId: string,
+    newBody: string,
+  ): Promise<EditedMessage> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     if (msg.deletedAt) throw new BadRequestException('Cannot edit a deleted message')
@@ -568,7 +581,11 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async pinMessage(conversationId: string, messageId: string, durationMinutes: number): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
+  async pinMessage(
+    conversationId: string,
+    messageId: string,
+    durationMinutes: number,
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string }> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     if (msg.conversationId !== conversationId)
@@ -586,7 +603,9 @@ export class ChatService implements OnModuleInit {
     return pinned
   }
 
-  async getPinnedMessage(conversationId: string): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
+  async getPinnedMessage(
+    conversationId: string,
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string } | null> {
     const raw = await this.redis.get(`pinned:conv:${conversationId}`)
     if (!raw) return null
     const pinned = JSON.parse(raw) as {
@@ -645,7 +664,6 @@ export class ChatService implements OnModuleInit {
       messages: { orderBy: { sentAt: 'desc' as const }, take: 1 },
     }
 
-     
     const whereParticipant = (
       extra: Prisma.ConversationParticipantWhereInput,
     ): Prisma.ConversationParticipantListRelationFilter => ({

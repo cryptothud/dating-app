@@ -70,13 +70,16 @@ export class ChatController {
 
   @Post('conversations/:id/revive')
   @UseGuards(JwtAuthGuard)
-  reviveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<{ revived: boolean; }> {
+  reviveConversation(
+    @CurrentUser() user: AuthUser,
+    @Param('id') conversationId: string,
+  ): Promise<{ revived: boolean }> {
     return this.chat.reviveConversation(user.id, conversationId)
   }
 
   @Post('conversations/dm')
   @UseGuards(JwtAuthGuard)
-  startDm(@CurrentUser() user: AuthUser, @Body() dto: CreateDmDto): Promise<{ id: string; }> {
+  startDm(@CurrentUser() user: AuthUser, @Body() dto: CreateDmDto): Promise<{ id: string }> {
     return this.chat.findOrCreateDm(user.id, dto.otherUserId)
   }
 
@@ -167,21 +170,30 @@ export class ChatController {
   @Post('conversations/:id/archive')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  archiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
+  archiveConversation(
+    @CurrentUser() user: AuthUser,
+    @Param('id') conversationId: string,
+  ): Promise<void> {
     return this.chat.archiveConversation(user.id, conversationId)
   }
 
   @Delete('conversations/:id/archive')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  unarchiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
+  unarchiveConversation(
+    @CurrentUser() user: AuthUser,
+    @Param('id') conversationId: string,
+  ): Promise<void> {
     return this.chat.unarchiveConversation(user.id, conversationId)
   }
 
   @Delete('conversations/:id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  hideConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
+  hideConversation(
+    @CurrentUser() user: AuthUser,
+    @Param('id') conversationId: string,
+  ): Promise<void> {
     return this.chat.hideConversation(user.id, conversationId)
   }
 
@@ -189,7 +201,9 @@ export class ChatController {
 
   @Get('conversations/:id/pinned')
   @UseGuards(JwtAuthGuard)
-  getPinnedConvMessage(@Param('id') conversationId: string): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
+  getPinnedConvMessage(
+    @Param('id') conversationId: string,
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string } | null> {
     return this.chat.getPinnedMessage(conversationId)
   }
 
@@ -199,7 +213,7 @@ export class ChatController {
     @Param('id') conversationId: string,
     @Param('messageId') messageId: string,
     @Body('durationMinutes') durationMinutes: number,
-  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string }> {
     const pinned = await this.chat.pinMessage(conversationId, messageId, durationMinutes)
     this.gateway.broadcastToRoom(conversationId, 'conversation_pinned', {
       conversationId,
@@ -209,7 +223,12 @@ export class ChatController {
   }
 
   @Get('global/pinned')
-  async getPinnedGlobalMessage(): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
+  async getPinnedGlobalMessage(): Promise<{
+    messageId: string
+    body: string
+    senderName: string
+    pinnedUntil: string
+  } | null> {
     return this.globalChat.getPinnedGlobalMessage()
   }
 
@@ -236,7 +255,7 @@ export class ChatController {
     @Body('durationMinutes') durationMinutes: number,
     @Body('body') body: string,
     @Body('senderName') senderName: string,
-  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string }> {
     const pinned = await this.globalChat.pinGlobalMessage(
       messageId,
       body,
@@ -279,7 +298,10 @@ export class ChatController {
 
   @Delete('messages/:id')
   @UseGuards(ModeratorGuard)
-  async deleteMessage(@CurrentUser() user: AuthUser, @Param('id') messageId: string): Promise<{ id: string; conversationId: string; deletedAt: string; }> {
+  async deleteMessage(
+    @CurrentUser() user: AuthUser,
+    @Param('id') messageId: string,
+  ): Promise<{ id: string; conversationId: string; deletedAt: string }> {
     const result = await this.chat.deleteMessage(user.id, messageId)
     this.gateway.broadcastToRoom(result.conversationId, 'message_deleted', {
       messageId: result.id,

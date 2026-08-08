@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { LocationRandomizer } from '@/components/map/LocationRandomizer'
 import { useSubscription } from '@/hooks/use-subscription'
 import { useAuth } from '@/hooks/use-auth'
@@ -58,7 +57,6 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
 export default function SettingsPage() {
   const { user, isAuthenticated } = useAuth()
   const { isPremium, isPremiumPlus } = useSubscription(isAuthenticated)
-  const router = useRouter()
 
   const [incognito, setIncognito] = useState(false)
   const [travelMode, setTravelMode] = useState(false)
@@ -215,8 +213,8 @@ export default function SettingsPage() {
             </div>
             {geoPermission === 'denied' && (
               <p className="text-muted-foreground text-xs">
-                To re-enable: click the lock icon in your browser's address bar → Site settings →
-                Location → Allow.
+                To re-enable: click the lock icon in your browser&apos;s address bar → Site settings
+                → Location → Allow.
               </p>
             )}
           </div>

@@ -77,7 +77,7 @@ export default function BlockedUsersPage(): React.JSX.Element {
             </div>
             <p className="text-foreground text-sm font-medium">No blocked users</p>
             <p className="text-muted-foreground text-xs">
-              People you block won't appear on the map or be able to message you.
+              People you block won&apos;t appear on the map or be able to message you.
             </p>
           </div>
         ) : (

@@ -159,7 +159,9 @@ export class ModerationService {
       })
 
       if (!res.ok) {
-        this.logger.error(`PhotoDNA HTTP ${res.status}: ${await res.text().catch((): string => '')}`)
+        this.logger.error(
+          `PhotoDNA HTTP ${res.status}: ${await res.text().catch((): string => '')}`,
+        )
         return null
       }
 

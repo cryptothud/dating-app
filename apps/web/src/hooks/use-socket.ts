@@ -40,7 +40,11 @@ export function useSocket(): Socket {
     // then connect. The gateway reads this token instead of the httpOnly cookie,
     // which isn't sent to Railway since cookies are scoped to the Vercel domain.
     fetch('/api/auth/socket-token', { credentials: 'include' })
-      .then((r) => (r.ok ? (r.json() as Promise<{ token: string }>) : Promise.reject()))
+      .then((r) =>
+        r.ok
+          ? (r.json() as Promise<{ token: string }>)
+          : Promise.reject(new Error('socket token request failed')),
+      )
       .then(({ token }) => {
         socket.auth = { token }
       })

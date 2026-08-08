@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { subscribeToasts, toast, type ToastItem, type ToastVariant } from '@/lib/toast'
+import Image from 'next/image'
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
   error: 'border-red-500/40 text-red-700 dark:text-red-400',
@@ -100,9 +101,11 @@ function DmToastCard({ item }: { item: ToastItem }): React.JSX.Element {
       <div className="flex items-center gap-3 px-3 py-2.5">
         <div className="relative shrink-0">
           {meta?.avatarUrl ? (
-            <img
+            <Image
               src={meta.avatarUrl}
               alt={meta.senderName}
+              width={40}
+              height={40}
               className="ring-primary/20 h-10 w-10 rounded-full object-cover ring-2"
             />
           ) : (

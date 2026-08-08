@@ -227,9 +227,12 @@ function MessageBubble({
           )}
         >
           <button onClick={() => setLightboxOpen(true)} className="focus:outline-none">
-            <img
+            <Image
               src={msg.mediaUrl}
               alt="Image"
+              width={0}
+              height={0}
+              sizes="288px"
               className={[
                 'max-h-72 w-auto cursor-zoom-in rounded-2xl object-cover transition-opacity hover:opacity-90',
                 isMine ? 'rounded-br-sm' : 'rounded-bl-sm',
@@ -823,9 +826,11 @@ export default function DmThreadPage() {
                       )
                     ) : isLastInRun ? (
                       otherUser?.photoUrl ? (
-                        <img
+                        <Image
                           src={otherUser.photoUrl}
                           alt=""
+                          width={24}
+                          height={24}
                           className="mb-4 h-6 w-6 shrink-0 rounded-full object-cover"
                         />
                       ) : (
@@ -856,9 +861,11 @@ export default function DmThreadPage() {
         {otherUserTyping && (
           <div className="mt-1 flex items-end gap-1.5">
             {otherUser?.photoUrl ? (
-              <img
+              <Image
                 src={otherUser.photoUrl}
                 alt=""
+                width={24}
+                height={24}
                 className="mb-0.5 h-6 w-6 shrink-0 rounded-full object-cover"
               />
             ) : (
@@ -899,6 +906,9 @@ export default function DmThreadPage() {
         {/* Image preview — shown before sending */}
         {imagePreview && !recording && (
           <div className="relative mb-2 inline-block">
+            {/* eslint-disable-next-line @next/next/no-img-element -- a blob: URL from
+                createObjectURL cannot go through the image optimizer, and the preview is
+                revoked as soon as the upload completes. */}
             <img
               src={imagePreview.previewUrl}
               alt="Preview"

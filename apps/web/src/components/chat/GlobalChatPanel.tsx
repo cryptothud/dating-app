@@ -10,6 +10,7 @@ import { useSocket } from '@/hooks/use-socket'
 import { toast } from '@/lib/toast'
 import { UserProfileDrawer } from '@/components/map/UserProfileDrawer'
 import type { GlobalMessage } from '@dating-app/types'
+import Image from 'next/image'
 
 interface Props {
   onClose: () => void
@@ -73,9 +74,11 @@ function Avatar({ msg, onClick }: { msg: GlobalMessage; onClick?: () => void }):
     (onClick ? ' cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all' : '')
   if (msg.photoUrl) {
     return (
-      <img
+      <Image
         src={msg.photoUrl}
         alt={msg.displayName}
+        width={32}
+        height={32}
         className={`${cls} object-cover`}
         onClick={onClick}
       />
