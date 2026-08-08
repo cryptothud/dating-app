@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
 
 const PUBLIC_ROUTES = [
   '/login',
@@ -48,7 +49,7 @@ export function middleware(req: NextRequest): NextResponse {
 
   // Unverified authenticated users always go to verify-phone (except legal static pages)
   if (isAuthenticated && pathname !== '/verify-phone') {
-    const payload = decodeJwtPayload(accessToken!)
+    const payload = decodeJwtPayload(accessToken)
     if (payload && payload['verified'] === false) {
       const ALLOW_UNVERIFIED = [
         '/about',

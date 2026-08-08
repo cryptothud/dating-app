@@ -46,7 +46,7 @@ export class BillingService {
 
   private getPriceId(tier: string, interval: string): string {
     const key = `STRIPE_PRICE_${tier.toUpperCase()}_${interval.toUpperCase()}` as keyof Env
-    const priceId = this.config.get(key as never, { infer: true }) as string | undefined
+    const priceId = this.config.get(key as never, { infer: true })
     if (!priceId) throw new BadRequestException(`No price configured for ${tier}/${interval}`)
     return priceId
   }
@@ -164,19 +164,19 @@ export class BillingService {
 
     switch (event.type) {
       case 'checkout.session.completed':
-        await this.onCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+        await this.onCheckoutCompleted(event.data.object)
         break
       case 'customer.subscription.updated':
-        await this.onSubscriptionUpdated(event.data.object as Stripe.Subscription)
+        await this.onSubscriptionUpdated(event.data.object)
         break
       case 'customer.subscription.deleted':
-        await this.onSubscriptionDeleted(event.data.object as Stripe.Subscription)
+        await this.onSubscriptionDeleted(event.data.object)
         break
       case 'invoice.payment_succeeded':
-        await this.onInvoicePaid(event.data.object as Stripe.Invoice)
+        await this.onInvoicePaid(event.data.object)
         break
       case 'invoice.payment_failed':
-        await this.onInvoiceFailed(event.data.object as Stripe.Invoice)
+        await this.onInvoiceFailed(event.data.object)
         break
     }
   }
@@ -263,7 +263,7 @@ export class BillingService {
 
     const amount = `$${((inv.amount_paid ?? 0) / 100).toFixed(2)}`
     const planName = TIER_NAMES[sub.tier] ?? sub.tier
-    const tierKey = sub.tier.replace('+', '_plus').toLowerCase() as keyof typeof TIER_AMOUNTS
+    const tierKey = sub.tier.replace('+', '_plus').toLowerCase()
     const amountDisplay = TIER_AMOUNTS[tierKey]?.['monthly'] ?? amount
 
     void this.email.sendSubscriptionReceipt(

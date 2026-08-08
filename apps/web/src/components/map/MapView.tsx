@@ -567,9 +567,9 @@ export function MapView(): React.JSX.Element {
     }
     try {
       const useServerClusters = zoom < CLUSTER_ZOOM_THRESHOLD
-      const userSrc = map.getSource('users') as maplibregl.GeoJSONSource | undefined
-      const clusterSrc = map.getSource('server-clusters') as maplibregl.GeoJSONSource | undefined
-      const eventSrc = map.getSource('events') as maplibregl.GeoJSONSource | undefined
+      const userSrc = map.getSource<maplibregl.GeoJSONSource>('users')
+      const clusterSrc = map.getSource<maplibregl.GeoJSONSource>('server-clusters')
+      const eventSrc = map.getSource<maplibregl.GeoJSONSource>('events')
 
       const individualLayers = [
         'clusters',
@@ -657,7 +657,8 @@ export function MapView(): React.JSX.Element {
       const feature = features[0]
       if (!feature) return
       const clusterId = feature.properties?.['cluster_id'] as number
-      const src = map.getSource('users') as maplibregl.GeoJSONSource
+      const src = map.getSource<maplibregl.GeoJSONSource>('users')
+      if (!src) return
       void src.getClusterExpansionZoom(clusterId).then((zoom) => {
         const coords = (feature.geometry as Point).coordinates as [number, number]
         map.easeTo({ center: coords, zoom })
@@ -674,14 +675,14 @@ export function MapView(): React.JSX.Element {
     map.on('click', 'unclustered-point', (e) => {
       const feature = e.features?.[0]
       if (!feature) return
-      const u = featureToUser(feature as unknown as maplibregl.MapGeoJSONFeature)
+      const u = featureToUser(feature)
       if (u) setSelectedUser(u)
     })
 
     map.on('click', 'unclustered-pfp', (e) => {
       const feature = e.features?.[0]
       if (!feature) return
-      const u = featureToUser(feature as unknown as maplibregl.MapGeoJSONFeature)
+      const u = featureToUser(feature)
       if (u) setSelectedUser(u)
     })
 
@@ -736,7 +737,7 @@ export function MapView(): React.JSX.Element {
       setupLayers(map)
       const gps = myGpsRef.current
       if (gps) {
-        const fuzzSrc = map.getSource('my-fuzz-zone') as maplibregl.GeoJSONSource | undefined
+        const fuzzSrc = map.getSource<maplibregl.GeoJSONSource>('my-fuzz-zone')
         fuzzSrc?.setData({
           type: 'FeatureCollection',
           features: [createCircle(gps.lng, gps.lat, fuzzRadiusRef.current)],
@@ -792,7 +793,7 @@ export function MapView(): React.JSX.Element {
 
           // Fuzz zone circle — shows the blur radius so users know their exact GPS isn't shown
           myGpsRef.current = { lat: latitude, lng: longitude }
-          const fuzzSrc = map.getSource('my-fuzz-zone') as maplibregl.GeoJSONSource | undefined
+          const fuzzSrc = map.getSource<maplibregl.GeoJSONSource>('my-fuzz-zone')
           fuzzSrc?.setData({
             type: 'FeatureCollection',
             features: [createCircle(longitude, latitude, fuzzRadiusRef.current)],
@@ -1002,11 +1003,11 @@ export function MapView(): React.JSX.Element {
                   ? (() => {
                       const R = 6371
                       const toRad = (d: number) => (d * Math.PI) / 180
-                      const dLat = toRad(selectedUser.lat - myGpsRef.current!.lat)
-                      const dLng = toRad(selectedUser.lng - myGpsRef.current!.lng)
+                      const dLat = toRad(selectedUser.lat - myGpsRef.current.lat)
+                      const dLng = toRad(selectedUser.lng - myGpsRef.current.lng)
                       const a =
                         Math.sin(dLat / 2) ** 2 +
-                        Math.cos(toRad(myGpsRef.current!.lat)) *
+                        Math.cos(toRad(myGpsRef.current.lat)) *
                           Math.cos(toRad(selectedUser.lat)) *
                           Math.sin(dLng / 2) ** 2
                       return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) / 1.60934

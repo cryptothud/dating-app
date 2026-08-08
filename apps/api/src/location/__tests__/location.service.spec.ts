@@ -115,7 +115,7 @@ describe('LocationService.updateLocation', () => {
       travelMode: false,
       travelLat: null,
       travelLng: null,
-    } as never)
+    })
     const { service } = buildService({ prisma, redis })
 
     await expect(
@@ -131,7 +131,7 @@ describe('LocationService.updateLocation', () => {
       travelMode: true,
       travelLat: 40.7128,
       travelLng: -74.006,
-    } as never)
+    })
     const { service } = buildService({ prisma, redis })
 
     await service.updateLocation('user-1', { latitude: 33.44, longitude: -112.07 })

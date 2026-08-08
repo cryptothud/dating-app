@@ -25,7 +25,7 @@ export class PremiumService {
     const sub = await this.prisma.subscription.findUnique({ where: { userId } })
     const isPremium = !!sub && sub.expiresAt > new Date()
     const isPremiumPlus = isPremium && sub.tier === 'premium_plus'
-    const status: PremiumStatus = { isPremium, isPremiumPlus, tier: isPremium ? sub!.tier : null }
+    const status: PremiumStatus = { isPremium, isPremiumPlus, tier: isPremium ? sub.tier : null }
 
     await this.redis.set(cacheKey, JSON.stringify(status), CACHE_TTL)
     return status

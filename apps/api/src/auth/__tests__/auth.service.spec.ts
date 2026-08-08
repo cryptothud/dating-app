@@ -126,7 +126,7 @@ describe('AuthService.signup', () => {
 
   it('throws ConflictException when email already exists', async () => {
     const prisma = makePrisma()
-    prisma.user.findFirst.mockResolvedValue({ id: 'existing' } as never)
+    prisma.user.findFirst.mockResolvedValue({ id: 'existing' })
     const { service } = buildService({ prisma })
 
     const dob = new Date()
@@ -143,7 +143,7 @@ describe('AuthService.signup', () => {
   it('creates user and sends OTP when valid', async () => {
     const prisma = makePrisma()
     prisma.user.findFirst.mockResolvedValue(null)
-    prisma.user.create.mockResolvedValue({ id: 'new-user', email: 'new@test.com' } as never)
+    prisma.user.create.mockResolvedValue({ id: 'new-user', email: 'new@test.com' })
     const twilio = makeTwilio()
     const { service } = buildService({ prisma, twilio })
 
@@ -189,7 +189,7 @@ describe('AuthService.login', () => {
   it('increments Redis counter on wrong password', async () => {
     const hash = await bcrypt.hash('correct', 10)
     const prisma = makePrisma()
-    prisma.user.findUnique.mockResolvedValue({ id: '1', passwordHash: hash } as never)
+    prisma.user.findUnique.mockResolvedValue({ id: '1', passwordHash: hash })
     const redis = makeRedis()
     const { service } = buildService({ prisma, redis })
 
@@ -210,8 +210,8 @@ describe('AuthService.login', () => {
       email: 'u@test.com',
       passwordHash: hash,
       verified: true,
-    } as never)
-    prisma.user.update.mockResolvedValue({} as never)
+    })
+    prisma.user.update.mockResolvedValue({})
     const redis = makeRedis()
     const { service } = buildService({ prisma, redis })
 
@@ -233,7 +233,7 @@ describe('AuthService.forgotPassword', () => {
       id: '1',
       email: 'real@test.com',
       passwordHash: 'hash',
-    } as never)
+    })
     const { service: s2 } = buildService({ prisma })
     const withUser = await s2.forgotPassword('real@test.com')
 
@@ -256,7 +256,7 @@ describe('AuthService.resetPassword', () => {
     const redis = makeRedis()
     redis.get.mockResolvedValue('user-id-123')
     const prisma = makePrisma()
-    prisma.user.update.mockResolvedValue({} as never)
+    prisma.user.update.mockResolvedValue({})
     const { service } = buildService({ prisma, redis })
 
     await service.resetPassword('valid-token', 'NewPass1!')
@@ -279,7 +279,7 @@ describe('AuthService.changePassword', () => {
   it('throws UnauthorizedException when current password is wrong', async () => {
     const hash = await bcrypt.hash('actual-password', 10)
     const prisma = makePrisma()
-    prisma.user.findUniqueOrThrow.mockResolvedValue({ id: '1', passwordHash: hash } as never)
+    prisma.user.findUniqueOrThrow.mockResolvedValue({ id: '1', passwordHash: hash })
     const { service } = buildService({ prisma })
 
     await expect(service.changePassword('1', 'wrong-password', 'NewPass1!')).rejects.toThrow(
@@ -290,8 +290,8 @@ describe('AuthService.changePassword', () => {
   it('hashes and saves new password when current is correct', async () => {
     const hash = await bcrypt.hash('current-password', 10)
     const prisma = makePrisma()
-    prisma.user.findUniqueOrThrow.mockResolvedValue({ id: '1', passwordHash: hash } as never)
-    prisma.user.update.mockResolvedValue({} as never)
+    prisma.user.findUniqueOrThrow.mockResolvedValue({ id: '1', passwordHash: hash })
+    prisma.user.update.mockResolvedValue({})
     const { service } = buildService({ prisma })
 
     await service.changePassword('1', 'current-password', 'NewPass1!')
@@ -312,8 +312,8 @@ describe('AuthService cookie security', () => {
       email: 'u@test.com',
       passwordHash: hash,
       verified: true,
-    } as never)
-    prisma.user.update.mockResolvedValue({} as never)
+    })
+    prisma.user.update.mockResolvedValue({})
     const { service } = buildService({ prisma })
 
     const res = makeRes()
@@ -332,8 +332,8 @@ describe('AuthService cookie security', () => {
       email: 'u@test.com',
       passwordHash: hash,
       verified: true,
-    } as never)
-    prisma.user.update.mockResolvedValue({} as never)
+    })
+    prisma.user.update.mockResolvedValue({})
     const { service } = buildService({ prisma })
 
     const res = makeRes()

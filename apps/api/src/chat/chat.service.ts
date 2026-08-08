@@ -632,7 +632,7 @@ export class ChatService implements OnModuleInit {
       messages: { orderBy: { sentAt: 'desc' as const }, take: 1 },
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const whereParticipant = (extra: Record<string, unknown>) => ({
       some: { userId, ...extra } as any,
     })

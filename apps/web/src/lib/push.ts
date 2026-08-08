@@ -11,7 +11,7 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const raw = atob(base64)
   const arr = new Uint8Array(raw.length)
   for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i)
-  return arr.buffer as ArrayBuffer
+  return arr.buffer
 }
 
 export async function subscribeToPush(): Promise<boolean> {

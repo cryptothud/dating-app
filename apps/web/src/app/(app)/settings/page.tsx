@@ -79,7 +79,7 @@ export default function SettingsPage() {
     navigator.permissions
       .query({ name: 'geolocation' })
       .then((result) => {
-        setGeoPermission(result.state as GeoPermission)
+        setGeoPermission(result.state)
         result.addEventListener('change', () => setGeoPermission(result.state as GeoPermission))
       })
       .catch(() => {})

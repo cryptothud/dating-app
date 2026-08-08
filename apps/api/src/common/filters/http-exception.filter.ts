@@ -40,7 +40,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const responseBody =
         typeof body === 'string'
           ? { statusCode: status, message: body }
-          : { statusCode: status, ...(body as object) }
+          : { statusCode: status, ...(body) }
       res.status(status).json(responseBody)
       return
     }

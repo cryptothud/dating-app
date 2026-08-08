@@ -85,7 +85,7 @@ export function UserProfileDrawer({
 
         <div
           className="min-h-0 flex-1 overflow-y-scroll"
-          style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {/* Header row: name + actions */}
           <div className="flex items-start justify-between px-4 pb-1 pt-2">

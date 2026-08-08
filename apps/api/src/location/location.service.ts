@@ -40,8 +40,8 @@ export class LocationService {
     const existing = await this.prisma.userLocation.findUnique({ where: { userId } })
     const useTravelCoords =
       existing?.travelMode && existing.travelLat !== null && existing.travelLng !== null
-    const lat = useTravelCoords ? existing!.travelLat! : dto.latitude
-    const lng = useTravelCoords ? existing!.travelLng! : dto.longitude
+    const lat = useTravelCoords ? existing.travelLat! : dto.latitude
+    const lng = useTravelCoords ? existing.travelLng! : dto.longitude
 
     await this.prisma.userLocation.upsert({
       where: { userId },

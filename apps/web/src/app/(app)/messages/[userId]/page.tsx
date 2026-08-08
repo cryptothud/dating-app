@@ -723,7 +723,7 @@ export default function DmThreadPage() {
               <div className="flex items-center gap-1.5">
                 {otherUser.lastActiveAt ? (
                   (() => {
-                    const diffMs = Date.now() - new Date(otherUser.lastActiveAt!).getTime()
+                    const diffMs = Date.now() - new Date(otherUser.lastActiveAt).getTime()
                     const isNow = diffMs < 5 * 60 * 1000
                     const mins = Math.floor(diffMs / 60000)
                     const label = isNow
@@ -967,7 +967,7 @@ export default function DmThreadPage() {
               placeholder="Message…"
               rows={1}
               className="bg-muted dark:bg-white/8 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring flex-1 resize-none rounded-2xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-1"
-              style={{ fieldSizing: 'content' } as React.CSSProperties}
+              style={{ fieldSizing: 'content' }}
             />
             <button
               onClick={() => (isMutual ? imageInputRef.current?.click() : undefined)}
