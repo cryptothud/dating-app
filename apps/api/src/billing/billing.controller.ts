@@ -25,17 +25,17 @@ export class BillingController {
   createCheckout(
     @Request() req: { user: { id: string; email: string } },
     @Body() dto: CheckoutDto,
-  ) {
+  ): Promise<{ url: string; }> {
     return this.billing.createCheckoutSession(req.user.id, req.user.email, dto.tier, dto.interval)
   }
 
   @Post('portal')
-  createPortal(@Request() req: { user: { id: string } }) {
+  createPortal(@Request() req: { user: { id: string } }): Promise<{ url: string; }> {
     return this.billing.createPortalSession(req.user.id)
   }
 
   @Delete('cancel')
-  cancelSubscription(@Request() req: { user: { id: string } }) {
+  cancelSubscription(@Request() req: { user: { id: string } }): Promise<void> {
     return this.billing.cancelSubscription(req.user.id)
   }
 }

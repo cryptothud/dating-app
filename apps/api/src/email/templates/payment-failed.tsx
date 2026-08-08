@@ -41,7 +41,7 @@ interface Props {
   updateUrl: string
 }
 
-export function PaymentFailedEmail({ planName, updateUrl }: Props) {
+export function PaymentFailedEmail({ planName, updateUrl }: Props): React.JSX.Element {
   return (
     <Layout preview="Action needed: your CRUSH payment failed">
       <Text style={heading}>Payment failed</Text>

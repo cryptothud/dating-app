@@ -21,6 +21,7 @@ import { ModeratorGuard } from '../admin/moderator.guard'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
 import { ChatService } from './chat.service'
 import { GlobalChatService } from './global-chat.service'
+import type { GlobalChatHistory } from '@dating-app/types'
 import { ChatGateway } from './chat.gateway'
 import { AdminService } from '../admin/admin.service'
 import { CreateDmDto } from './dto/create-dm.dto'
@@ -44,7 +45,7 @@ export class ChatController {
   @Get('global')
   @UseGuards(JwtAuthGuard)
   @Throttle({ default: { limit: 30, ttl: 60000 } })
-  getGlobalMessages(@Query('before') before?: string) {
+  getGlobalMessages(@Query('before') before?: string): Promise<GlobalChatHistory> {
     const cursor = before !== undefined ? parseInt(before, 10) : undefined
     return this.globalChat.getHistory(cursor)
   }
@@ -63,13 +64,13 @@ export class ChatController {
 
   @Post('conversations/:id/revive')
   @UseGuards(JwtAuthGuard)
-  reviveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string) {
+  reviveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<{ revived: boolean; }> {
     return this.chat.reviveConversation(user.id, conversationId)
   }
 
   @Post('conversations/dm')
   @UseGuards(JwtAuthGuard)
-  startDm(@CurrentUser() user: AuthUser, @Body() dto: CreateDmDto) {
+  startDm(@CurrentUser() user: AuthUser, @Body() dto: CreateDmDto): Promise<{ id: string; }> {
     return this.chat.findOrCreateDm(user.id, dto.otherUserId)
   }
 
@@ -157,21 +158,21 @@ export class ChatController {
   @Post('conversations/:id/archive')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  archiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string) {
+  archiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
     return this.chat.archiveConversation(user.id, conversationId)
   }
 
   @Delete('conversations/:id/archive')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  unarchiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string) {
+  unarchiveConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
     return this.chat.unarchiveConversation(user.id, conversationId)
   }
 
   @Delete('conversations/:id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  hideConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string) {
+  hideConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string): Promise<void> {
     return this.chat.hideConversation(user.id, conversationId)
   }
 
@@ -179,7 +180,7 @@ export class ChatController {
 
   @Get('conversations/:id/pinned')
   @UseGuards(JwtAuthGuard)
-  getPinnedConvMessage(@Param('id') conversationId: string) {
+  getPinnedConvMessage(@Param('id') conversationId: string): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
     return this.chat.getPinnedMessage(conversationId)
   }
 
@@ -189,7 +190,7 @@ export class ChatController {
     @Param('id') conversationId: string,
     @Param('messageId') messageId: string,
     @Body('durationMinutes') durationMinutes: number,
-  ) {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
     const pinned = await this.chat.pinMessage(conversationId, messageId, durationMinutes)
     this.gateway.broadcastToRoom(conversationId, 'conversation_pinned', {
       conversationId,
@@ -199,14 +200,14 @@ export class ChatController {
   }
 
   @Get('global/pinned')
-  async getPinnedGlobalMessage() {
+  async getPinnedGlobalMessage(): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
     return this.globalChat.getPinnedGlobalMessage()
   }
 
   @Delete('mod/global/pin')
   @UseGuards(ModeratorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async unpinGlobalMessage() {
+  async unpinGlobalMessage(): Promise<void> {
     await this.globalChat.unpinGlobalMessage()
     this.gateway.broadcastToRoom('global', 'global_unpinned', {})
   }
@@ -214,7 +215,7 @@ export class ChatController {
   @Delete('mod/global/:messageId')
   @UseGuards(ModeratorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteGlobalMessage(@Param('messageId') messageId: string) {
+  async deleteGlobalMessage(@Param('messageId') messageId: string): Promise<void> {
     await this.globalChat.deleteGlobalMessage(messageId)
     this.gateway.broadcastToRoom('global', 'global_message_deleted', { messageId })
   }
@@ -226,7 +227,7 @@ export class ChatController {
     @Body('durationMinutes') durationMinutes: number,
     @Body('body') body: string,
     @Body('senderName') senderName: string,
-  ) {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
     const pinned = await this.globalChat.pinGlobalMessage(
       messageId,
       body,
@@ -248,7 +249,7 @@ export class ChatController {
     @CurrentUser() user: AuthUser,
     @Param('userId') userId: string,
     @Body() dto: TimeoutDto,
-  ) {
+  ): Promise<void> {
     await this.adminService.timeoutUser(user.id, userId, dto.durationMinutes, dto.reason)
   }
 
@@ -259,7 +260,7 @@ export class ChatController {
     @CurrentUser() user: AuthUser,
     @Param('userId') userId: string,
     @Body('reason') reason: string | undefined,
-  ) {
+  ): Promise<void> {
     await this.adminService.banUser(user.id, userId, reason ?? 'Banned by moderator')
     await this.globalChat.deleteUserMessages(userId)
     this.gateway.broadcastToRoom('global', 'global_user_banned', { userId })
@@ -269,7 +270,7 @@ export class ChatController {
 
   @Delete('messages/:id')
   @UseGuards(ModeratorGuard)
-  async deleteMessage(@CurrentUser() user: AuthUser, @Param('id') messageId: string) {
+  async deleteMessage(@CurrentUser() user: AuthUser, @Param('id') messageId: string): Promise<{ id: string; conversationId: string; deletedAt: string; }> {
     const result = await this.chat.deleteMessage(user.id, messageId)
     this.gateway.broadcastToRoom(result.conversationId, 'message_deleted', {
       messageId: result.id,

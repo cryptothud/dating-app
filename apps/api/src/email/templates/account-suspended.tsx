@@ -35,7 +35,7 @@ interface Props {
   appealEmail: string
 }
 
-export function AccountSuspendedEmail({ reason, appealEmail }: Props) {
+export function AccountSuspendedEmail({ reason, appealEmail }: Props): React.JSX.Element {
   return (
     <Layout preview="Your CRUSH account has been suspended">
       <Text style={heading}>Your account has been suspended</Text>

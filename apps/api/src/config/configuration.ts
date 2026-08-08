@@ -16,7 +16,7 @@ const envSchema = z.object({
   WEB_URL: z.string().url().default('http://localhost:3000'),
   ALLOW_NSFW_CONTENT: z
     .string()
-    .transform((v) => v === 'true')
+    .transform((v): boolean => v === 'true')
     .default('true'),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),

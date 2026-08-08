@@ -23,7 +23,7 @@ export class SeenInWildService implements OnModuleInit, OnModuleDestroy {
   constructor(private prisma: PrismaService) {}
 
   onModuleInit(): void {
-    this.timer = setInterval(() => {
+    this.timer = setInterval((): void => {
       void this.detectOverlaps()
     }, DETECT_INTERVAL_MS)
   }

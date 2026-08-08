@@ -56,7 +56,7 @@ export function SafetyDateStartedEmail({
   name: string
   trackUrl: string
   checkinTime: string
-}) {
+}): React.JSX.Element {
   return (
     <Layout preview={`${name} shared their location with you for safety`}>
       <Text style={heading}>{name} is on a date</Text>
@@ -76,7 +76,7 @@ export function SafetyDateStartedEmail({
   )
 }
 
-export function SafetyDateSosEmail({ name, trackUrl }: { name: string; trackUrl: string }) {
+export function SafetyDateSosEmail({ name, trackUrl }: { name: string; trackUrl: string }): React.JSX.Element {
   return (
     <Layout preview={`🚨 SOS ALERT from ${name}`}>
       <Text style={{ ...heading, color: '#dc2626' }}>🚨 SOS Alert</Text>
@@ -101,7 +101,7 @@ export function SafetyDateMissedCheckinEmail({
 }: {
   name: string
   trackUrl: string
-}) {
+}): React.JSX.Element {
   return (
     <Layout preview={`⚠️ ${name} missed their safety check-in`}>
       <Text style={{ ...heading, color: '#d97706' }}>⚠️ Missed Check-In</Text>

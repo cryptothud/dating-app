@@ -96,14 +96,14 @@ export class EditMessageDto {
 
 export class PaginationDto {
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(0)
   @Max(100)
   limit?: number
 
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(0)
   offset?: number

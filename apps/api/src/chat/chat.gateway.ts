@@ -45,8 +45,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   ) {}
 
   onModuleInit(): void {
-    this.warnBus.on('warn', (userId: string, reason: string) => {
-      void (async () => {
+    this.warnBus.on('warn', (userId: string, reason: string): void => {
+      void (async (): Promise<void> => {
         const sockets = await this.server.to(`user:${userId}`).fetchSockets()
         if (sockets.length > 0) {
           // User is connected — deliver immediately and clear pending key so handleConnection won't re-deliver

@@ -41,7 +41,7 @@ interface Props {
   mapUrl: string
 }
 
-export function WelcomeEmail({ displayName, mapUrl }: Props) {
+export function WelcomeEmail({ displayName, mapUrl }: Props): React.JSX.Element {
   const name = displayName ?? 'there'
   return (
     <Layout preview="Welcome to CRUSH — you're in.">

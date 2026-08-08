@@ -22,10 +22,10 @@ import type { Env } from '../config/configuration'
 
 const BCRYPT_ROUNDS = 12
 const PW_RESET_TTL = 900 // 15 min
-const pwResetKey = (token: string) => `pw:reset:${token}`
-const OTP_RATE_LIMIT_KEY = (phone: string) => `otp:rl:${phone}`
-const OTP_IP_RATE_LIMIT_KEY = (ip: string) => `otp:ip:${ip}`
-const LOGIN_ATTEMPT_KEY = (email: string) => `login:attempts:${email}`
+const pwResetKey = (token: string): string => `pw:reset:${token}`
+const OTP_RATE_LIMIT_KEY = (phone: string): string => `otp:rl:${phone}`
+const OTP_IP_RATE_LIMIT_KEY = (ip: string): string => `otp:ip:${ip}`
+const LOGIN_ATTEMPT_KEY = (email: string): string => `login:attempts:${email}`
 const MAX_LOGIN_ATTEMPTS = 5
 const LOGIN_LOCKOUT_SECONDS = 900 // 15 min
 const IS_DEV = process.env['NODE_ENV'] !== 'production'

@@ -25,13 +25,13 @@ export class CreateEventDto {
   @IsNumber()
   @Min(-90)
   @Max(90)
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   latitude!: number
 
   @IsNumber()
   @Min(-180)
   @Max(180)
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   longitude!: number
 
   @IsOptional()
@@ -46,6 +46,6 @@ export class CreateEventDto {
   @IsInt()
   @Min(2)
   @Max(500)
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   maxAttendees?: number
 }

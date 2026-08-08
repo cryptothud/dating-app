@@ -63,7 +63,7 @@ export class PushService implements OnModuleInit {
     if (!this.enabled) return
     const subs = await this.prisma.pushSubscription.findMany({ where: { userId } })
     await Promise.allSettled(
-      subs.map(async (sub) => {
+      subs.map(async (sub): Promise<void> => {
         try {
           await webpush.sendNotification(
             { endpoint: sub.endpoint, keys: { p256dh: sub.p256dhKey, auth: sub.authKey } },

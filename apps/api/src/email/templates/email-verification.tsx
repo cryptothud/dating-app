@@ -40,7 +40,7 @@ interface Props {
   verifyUrl: string
 }
 
-export function EmailVerificationEmail({ verifyUrl }: Props) {
+export function EmailVerificationEmail({ verifyUrl }: Props): React.JSX.Element {
   return (
     <Layout preview="Verify your email address for CRUSH">
       <Text style={heading}>Verify your email</Text>

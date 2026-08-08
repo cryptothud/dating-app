@@ -82,14 +82,14 @@ export class ModerationService {
     })
 
     if (!res.ok) {
-      const body = await res.text().catch(() => '')
+      const body = await res.text().catch((): string => '')
       this.logger.error(`Azure Content Safety HTTP ${res.status}: ${body}`)
       return null
     }
 
     const data = (await res.json()) as AzureResponse
-    const find = (name: string) =>
-      data.categoriesAnalysis.find((c) => c.category === name)?.severity ?? 0
+    const find = (name: string): number =>
+      data.categoriesAnalysis.find((c): boolean => c.category === name)?.severity ?? 0
     const sexualSeverity = find('Sexual')
     const violenceSeverity = find('Violence')
 
@@ -122,7 +122,7 @@ export class ModerationService {
     })
 
     if (!res.ok) {
-      const body = await res.text().catch(() => '')
+      const body = await res.text().catch((): string => '')
       this.logger.error(`Google Vision HTTP ${res.status}: ${body}`)
       return null
     }
@@ -158,7 +158,7 @@ export class ModerationService {
       })
 
       if (!res.ok) {
-        this.logger.error(`PhotoDNA HTTP ${res.status}: ${await res.text().catch(() => '')}`)
+        this.logger.error(`PhotoDNA HTTP ${res.status}: ${await res.text().catch((): string => '')}`)
         return null
       }
 

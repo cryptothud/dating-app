@@ -113,7 +113,7 @@ export class ProfileService {
       const key = `profile_views:${targetUserId}`
       void this.redis
         .zadd(key, Date.now(), requestingUserId)
-        .then(() => this.redis.zremrangebyrank(key, 0, -(PROFILE_VIEWS_MAX + 1)))
+        .then((): Promise<number> => this.redis.zremrangebyrank(key, 0, -(PROFILE_VIEWS_MAX + 1)))
     }
 
     return this.toPublicResponse(user, profile, viewerNsfwEnabled)
@@ -214,10 +214,10 @@ export class ProfileService {
     const key = `profile_views:${userId}`
     const all = await this.redis.zrevrangeWithScores(key, 0, 99)
     const cutoff = Date.now() - 30 * 24 * 3600 * 1000
-    const raw = all.filter((r) => r.score >= cutoff)
+    const raw = all.filter((r): boolean => r.score >= cutoff)
     if (raw.length === 0) return []
 
-    const viewerIds = raw.map((r) => r.member)
+    const viewerIds = raw.map((r): string => r.member)
     const users = await this.prisma.user.findMany({
       where: { id: { in: viewerIds } },
       select: {
@@ -234,7 +234,7 @@ export class ProfileService {
     const userMap = new Map(users.map((u) => [u.id, u]))
 
     return raw
-      .map((r) => {
+      .map((r): { id: string; displayName: string | null; photoUrl: string | null; viewedAt: string; } | null => {
         const u = userMap.get(r.member)
         if (!u) return null
         return {
@@ -281,7 +281,7 @@ export class ProfileService {
         moderationStatus: p.moderationStatus,
         order: p.order,
       })),
-      prompts: profile.prompts.map((p) => ({
+      prompts: profile.prompts.map((p): { id: string; promptKey: string; answer: string; order: number; } => ({
         id: p.id,
         promptKey: p.promptKey,
         answer: p.answer,
@@ -327,7 +327,7 @@ export class ProfileService {
           order: p.order,
         }
       }),
-      prompts: profile.prompts.map((p) => ({
+      prompts: profile.prompts.map((p): { id: string; promptKey: string; answer: string; order: number; } => ({
         id: p.id,
         promptKey: p.promptKey,
         answer: p.answer,

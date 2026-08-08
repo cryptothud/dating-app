@@ -12,39 +12,39 @@ import {
 import { Type, Transform } from 'class-transformer'
 
 export class MapQueryDto {
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsNumber()
   @Min(-90)
   @Max(90)
   swLat!: number
 
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsNumber()
   @Min(-180)
   @Max(180)
   swLng!: number
 
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsNumber()
   @Min(-90)
   @Max(90)
   neLat!: number
 
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsNumber()
   @Min(-180)
   @Max(180)
   neLng!: number
 
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(18)
   @Max(100)
   ageMin?: number
 
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(18)
   @Max(100)
@@ -60,7 +60,7 @@ export class MapQueryDto {
   lookingFor?: string[]
 
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => value === 'true' || value === true)
+  @Transform(({ value }: { value: unknown }): boolean => value === 'true' || value === true)
   @IsBoolean()
   activelyOnly?: boolean
 
@@ -77,7 +77,7 @@ export class MapQueryDto {
   interests?: string[]
 
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(0)
   @Max(22)

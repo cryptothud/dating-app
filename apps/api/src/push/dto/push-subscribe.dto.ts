@@ -8,5 +8,5 @@ class PushKeysDto {
 
 export class PushSubscribeDto {
   @IsUrl() endpoint!: string
-  @IsObject() @ValidateNested() @Type(() => PushKeysDto) keys!: PushKeysDto
+  @IsObject() @ValidateNested() @Type((): typeof PushKeysDto => PushKeysDto) keys!: PushKeysDto
 }

@@ -40,7 +40,7 @@ interface Props {
   resetUrl: string
 }
 
-export function PasswordResetEmail({ resetUrl }: Props) {
+export function PasswordResetEmail({ resetUrl }: Props): React.JSX.Element {
   return (
     <Layout preview="Reset your CRUSH password — link expires in 15 minutes">
       <Text style={heading}>Reset your password</Text>

@@ -14,7 +14,7 @@ import { CloudinaryService } from '../moderation/cloudinary.service'
 import { ModerationService } from '../moderation/moderation.service'
 
 const MSG_WAITING_TTL = 86400 // 24 hr dedup
-const msgWaitingKey = (recipientId: string) => `email:msg_waiting:${recipientId}`
+const msgWaitingKey = (recipientId: string): string => `email:msg_waiting:${recipientId}`
 const ARCHIVE_AFTER_MS = 30 * 24 * 60 * 60 * 1000
 
 @Injectable()
@@ -29,13 +29,13 @@ export class ChatService implements OnModuleInit {
     private config: ConfigService,
   ) {}
 
-  onModuleInit() {
+  onModuleInit(): void {
     void this.archiveStaleConversations()
-    setInterval(() => void this.archiveStaleConversations(), 24 * 60 * 60 * 1000)
+    setInterval((): undefined => void this.archiveStaleConversations(), 24 * 60 * 60 * 1000)
   }
 
   private haversineMi(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const toRad = (d: number) => (d * Math.PI) / 180
+    const toRad = (d: number): number => (d * Math.PI) / 180
     const R = 3958.8
     const dLat = toRad(lat2 - lat1)
     const dLng = toRad(lng2 - lng1)
@@ -83,12 +83,12 @@ export class ChatService implements OnModuleInit {
       this.prisma.userLocation.findUnique({ where: { userId } }),
     ])
 
-    const unreadMap = new Map(rawUnread.map((r) => [r.conversation_id, Number(r.count)]))
+    const unreadMap = new Map(rawUnread.map((r): [string, number] => [r.conversation_id, Number(r.count)]))
 
     return convs
       .map((conv) => {
-        const mine = conv.participants.find((p) => p.userId === userId)
-        const other = conv.participants.find((p) => p.userId !== userId)
+        const mine = conv.participants.find((p): boolean => p.userId === userId)
+        const other = conv.participants.find((p): boolean => p.userId !== userId)
         if (!mine || !other) return null
 
         const last = conv.messages[0] ?? null
@@ -121,14 +121,14 @@ export class ChatService implements OnModuleInit {
         }
       })
       .filter((c): c is NonNullable<typeof c> => c !== null)
-      .sort((a, b) => {
+      .sort((a, b): number => {
         const aT = a.lastMessage?.sentAt ?? ''
         const bT = b.lastMessage?.sentAt ?? ''
         return bT.localeCompare(aT)
       })
   }
 
-  async findOrCreateDm(userId: string, otherUserId: string) {
+  async findOrCreateDm(userId: string, otherUserId: string): Promise<{ id: string; }> {
     if (userId === otherUserId) throw new ForbiddenException('Cannot DM yourself')
 
     const block = await this.prisma.block.findFirst({
@@ -294,7 +294,7 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async deleteMessage(moderatorId: string, messageId: string) {
+  async deleteMessage(moderatorId: string, messageId: string): Promise<{ id: string; conversationId: string; deletedAt: string; }> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     const updated = await this.prisma.message.update({
@@ -516,7 +516,7 @@ export class ChatService implements OnModuleInit {
       where: { conversationId, userId: { not: senderId } },
       select: { user: { select: { banned: true } } },
     })
-    return participants.some((p) => p.user.banned)
+    return participants.some((p): boolean => p.user.banned)
   }
 
   async getOtherParticipantIds(senderId: string, conversationId: string): Promise<string[]> {
@@ -524,7 +524,7 @@ export class ChatService implements OnModuleInit {
       where: { conversationId, userId: { not: senderId } },
       select: { userId: true },
     })
-    return participants.map((p) => p.userId)
+    return participants.map((p): string => p.userId)
   }
 
   async getDisplayName(userId: string): Promise<string> {
@@ -555,7 +555,7 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async pinMessage(conversationId: string, messageId: string, durationMinutes: number) {
+  async pinMessage(conversationId: string, messageId: string, durationMinutes: number): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     if (msg.conversationId !== conversationId)
@@ -573,7 +573,7 @@ export class ChatService implements OnModuleInit {
     return pinned
   }
 
-  async getPinnedMessage(conversationId: string) {
+  async getPinnedMessage(conversationId: string): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
     const raw = await this.redis.get(`pinned:conv:${conversationId}`)
     if (!raw) return null
     const pinned = JSON.parse(raw) as {
@@ -602,8 +602,8 @@ export class ChatService implements OnModuleInit {
       },
     })
 
-    const toArchive = stale.filter((conv) =>
-      conv.participants.every((p) => {
+    const toArchive = stale.filter((conv): boolean =>
+      conv.participants.every((p): boolean => {
         const sub = p.user.subscription
         return !sub || sub.expiresAt <= new Date() || sub.tier !== 'premium_plus'
       }),
@@ -611,7 +611,7 @@ export class ChatService implements OnModuleInit {
 
     if (toArchive.length === 0) return
     await this.prisma.conversation.updateMany({
-      where: { id: { in: toArchive.map((c) => c.id) } },
+      where: { id: { in: toArchive.map((c): string => c.id) } },
       data: { archivedAt: new Date() },
     })
   }
@@ -661,8 +661,8 @@ export class ChatService implements OnModuleInit {
       archivedAt: string,
       isUserArchived: boolean,
     ) => {
-      const mine = conv.participants.find((p) => p.userId === userId)
-      const other = conv.participants.find((p) => p.userId !== userId)
+      const mine = conv.participants.find((p): boolean => p.userId === userId)
+      const other = conv.participants.find((p): boolean => p.userId !== userId)
       if (!mine || !other) return null
       const last = conv.messages[0] ?? null
       return {
@@ -686,12 +686,12 @@ export class ChatService implements OnModuleInit {
       ...systemArchived.map((c) => mapConv(c, c.archivedAt!.toISOString(), false)),
       ...userArchived.map((c) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mine = c.participants.find((p) => p.userId === userId) as any
+        const mine = c.participants.find((p): boolean => p.userId === userId) as any
         return mapConv(c, (mine.archivedAt as Date).toISOString(), true)
       }),
     ]
       .filter((c): c is NonNullable<typeof c> => c !== null)
-      .sort((a, b) => b.archivedAt.localeCompare(a.archivedAt))
+      .sort((a, b): number => b.archivedAt.localeCompare(a.archivedAt))
   }
 
   async archiveConversation(userId: string, conversationId: string): Promise<void> {

@@ -27,7 +27,7 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
   onModuleInit(): void {
     // Check for missed check-ins every 2 minutes
     this.checkinInterval = setInterval(
-      () => {
+      (): void => {
         void this.checkMissedCheckins()
       },
       2 * 60 * 1000,

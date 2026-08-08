@@ -14,7 +14,7 @@ import { Request } from 'express'
 import { IsNumber, IsOptional, IsBoolean, Min, Max } from 'class-validator'
 import { SkipThrottle } from '@nestjs/throttler'
 import { LocationService } from './location.service'
-import { PremiumService } from '../billing/premium.service'
+import { PremiumService, type PremiumStatus } from '../billing/premium.service'
 import { UpdateLocationDto } from './dto/update-location.dto'
 import { MapQueryDto } from './dto/map-query.dto'
 import { ActivelyLookingDto } from './dto/actively-looking.dto'
@@ -147,7 +147,7 @@ export class LocationController {
 
   @Get('premium-status')
   @UseGuards(JwtAuthGuard)
-  async getPremiumStatus(@CurrentUser() user: AuthUser) {
+  async getPremiumStatus(@CurrentUser() user: AuthUser): Promise<PremiumStatus> {
     return this.premium.getStatus(user.id)
   }
 }

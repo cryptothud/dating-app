@@ -13,4 +13,13 @@ export default [
       },
     },
   },
+  {
+    // Test helpers are not a module boundary, and annotating them just pins vitest's
+    // internal mock types into signatures that inference already covers.
+    files: ['**/__tests__/**', '**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+    },
+  },
 ]

@@ -22,7 +22,7 @@ export class ProfileController {
   }
 
   @Get('me/viewers')
-  async getViewers(@CurrentUser() user: AuthUser) {
+  async getViewers(@CurrentUser() user: AuthUser): Promise<{ id: string; displayName: string | null; photoUrl: string | null; viewedAt: string; }[]> {
     await this.premium.requirePremiumPlus(user.id)
     return this.profile.getProfileViewers(user.id)
   }
@@ -54,6 +54,6 @@ export class ProfileController {
     @CurrentUser() user: AuthUser,
     @Param('id') promptId: string,
   ): Promise<{ ok: true }> {
-    return this.profile.deletePrompt(user.id, promptId).then(() => ({ ok: true as const }))
+    return this.profile.deletePrompt(user.id, promptId).then((): { ok: true; } => ({ ok: true as const }))
   }
 }

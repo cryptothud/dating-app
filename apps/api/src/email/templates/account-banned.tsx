@@ -34,7 +34,7 @@ interface Props {
   reason: string
 }
 
-export function AccountBannedEmail({ reason }: Props) {
+export function AccountBannedEmail({ reason }: Props): React.JSX.Element {
   return (
     <Layout preview="Your CRUSH account has been permanently banned">
       <Text style={heading}>Your account has been permanently banned</Text>

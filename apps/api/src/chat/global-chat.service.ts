@@ -21,7 +21,7 @@ export class GlobalChatService {
     const hasMore = raw.length > PAGE_SIZE
     const messages = raw
       .slice(0, PAGE_SIZE)
-      .map((s) => JSON.parse(s) as GlobalMessage)
+      .map((s): GlobalMessage => JSON.parse(s) as GlobalMessage)
       .reverse()
     return { messages, hasMore }
   }
@@ -76,7 +76,7 @@ export class GlobalChatService {
     body: string,
     senderName: string,
     durationMinutes: number,
-  ) {
+  ): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; }> {
     const pinnedUntil = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString()
     const pinned = { messageId, body, senderName, pinnedUntil }
     await this.redis.set('global_chat:pinned', JSON.stringify(pinned), durationMinutes * 60)
@@ -86,7 +86,7 @@ export class GlobalChatService {
   async deleteGlobalMessage(messageId: string): Promise<void> {
     // Scan all members, find the one with matching id, remove it
     const all = await this.redis.zrangebyscore(REDIS_KEY, '-inf', '+inf')
-    const member = all.find((s) => {
+    const member = all.find((s): boolean => {
       try {
         return (JSON.parse(s) as { id: string }).id === messageId
       } catch {
@@ -98,7 +98,7 @@ export class GlobalChatService {
 
   async deleteUserMessages(userId: string): Promise<void> {
     const all = await this.redis.zrangebyscore(REDIS_KEY, '-inf', '+inf')
-    const toRemove = all.filter((s) => {
+    const toRemove = all.filter((s): boolean => {
       try {
         return (JSON.parse(s) as { userId: string }).userId === userId
       } catch {
@@ -112,7 +112,7 @@ export class GlobalChatService {
     await this.redis.del('global_chat:pinned')
   }
 
-  async getPinnedGlobalMessage() {
+  async getPinnedGlobalMessage(): Promise<{ messageId: string; body: string; senderName: string; pinnedUntil: string; } | null> {
     const raw = await this.redis.get('global_chat:pinned')
     if (!raw) return null
     const pinned = JSON.parse(raw) as {

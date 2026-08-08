@@ -53,7 +53,7 @@ interface LayoutProps {
   children: ReactNode
 }
 
-export function Layout({ preview, children }: LayoutProps) {
+export function Layout({ preview, children }: LayoutProps): React.JSX.Element {
   return (
     <Html lang="en">
       <Head />

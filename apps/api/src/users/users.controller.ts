@@ -16,7 +16,7 @@ import { IsBoolean } from 'class-validator'
 import { Request } from 'express'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { UsersService } from './users.service'
-import { PremiumService } from '../billing/premium.service'
+import { PremiumService, type PremiumStatus } from '../billing/premium.service'
 import { ReportDto } from './dto/report.dto'
 
 interface AuthRequest extends Request {
@@ -77,7 +77,7 @@ export class UsersController {
   }
 
   @Get('me/premium')
-  async getPremiumStatus(@Req() req: AuthRequest) {
+  async getPremiumStatus(@Req() req: AuthRequest): Promise<PremiumStatus> {
     return this.premium.getStatus(req.user.id)
   }
 }

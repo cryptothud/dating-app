@@ -59,8 +59,8 @@ export class CloudinaryService {
     const mimePrefix = resourceType === 'video' ? 'video/webm' : 'image/jpeg'
     const dataUri = `data:${mimePrefix};base64,${buffer.toString('base64')}`
 
-    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
-      cloudinary.uploader.upload(dataUri, { folder, resource_type: resourceType }, (err, res) => {
+    const result = await new Promise<UploadApiResponse>((resolve, reject): void => {
+      cloudinary.uploader.upload(dataUri, { folder, resource_type: resourceType }, (err, res): void => {
         if (err || !res) reject(err ?? new Error('Upload failed'))
         else resolve(res)
       })

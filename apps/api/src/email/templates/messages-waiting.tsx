@@ -41,7 +41,7 @@ interface Props {
   conversationUrl: string
 }
 
-export function MessagesWaitingEmail({ senderName, conversationUrl }: Props) {
+export function MessagesWaitingEmail({ senderName, conversationUrl }: Props): React.JSX.Element {
   return (
     <Layout preview={`${senderName} sent you a message on CRUSH`}>
       <Text style={heading}>You have a message waiting</Text>

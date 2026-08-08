@@ -37,7 +37,7 @@ export class UsersService {
       include: { blocked: { select: { id: true, profile: { select: { displayName: true } } } } },
       orderBy: { createdAt: 'desc' },
     })
-    return blocks.map((b) => ({
+    return blocks.map((b): { id: string; displayName: string | null; } => ({
       id: b.blocked.id,
       displayName: b.blocked.profile?.displayName ?? null,
     }))

@@ -67,7 +67,7 @@ export class UpdateProfileDto {
 
   // Accepted only when the account has no dateOfBirth — derives age for legacy accounts
   @IsOptional()
-  @Type(() => Number)
+  @Type((): NumberConstructor => Number)
   @IsInt()
   @Min(18)
   @Max(100)

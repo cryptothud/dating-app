@@ -61,7 +61,7 @@ export class EventsService {
       expiresAt: e.expiresAt.toISOString(),
       maxAttendees: e.maxAttendees,
       rsvpCount: e.rsvps.length,
-      hasRsvped: userId ? e.rsvps.some((r) => r.userId === userId) : false,
+      hasRsvped: userId ? e.rsvps.some((r): boolean => r.userId === userId) : false,
       conversationId: null, // conversation looked up separately on detail fetch
     }))
   }
@@ -73,7 +73,7 @@ export class EventsService {
     })
     if (!event) throw new NotFoundException('Event not found')
 
-    const hasRsvped = userId ? event.rsvps.some((r) => r.userId === userId) : false
+    const hasRsvped = userId ? event.rsvps.some((r): boolean => r.userId === userId) : false
 
     // If the user has RSVPed, surface the group conversation ID
     let conversationId: string | null = null
@@ -158,7 +158,7 @@ export class EventsService {
       throw new BadRequestException('Event is full')
     }
 
-    const existing = event.rsvps.find((r) => r.userId === userId)
+    const existing = event.rsvps.find((r): boolean => r.userId === userId)
     if (existing) {
       // Already RSVPed — just return their conversation
       const participant = await this.prisma.conversationParticipant.findFirst({

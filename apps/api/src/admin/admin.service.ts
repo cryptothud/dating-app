@@ -248,7 +248,7 @@ export class AdminService {
     return user
   }
 
-  async warnUser(adminId: string, userId: string, reason: string) {
+  async warnUser(adminId: string, userId: string, reason: string): Promise<void> {
     const user = await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { warnCount: { increment: 1 } } })
     await this.redis.set(
@@ -261,7 +261,7 @@ export class AdminService {
     await this.audit.log(adminId, 'user.warn', userId, { reason })
   }
 
-  async suspendUser(adminId: string, userId: string, reason: string) {
+  async suspendUser(adminId: string, userId: string, reason: string): Promise<void> {
     const user = await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { suspended: true } })
     void this.email.sendAccountSuspended(user.email, reason)
@@ -269,13 +269,13 @@ export class AdminService {
     await this.invalidateSessions(userId)
   }
 
-  async unsuspendUser(adminId: string, userId: string) {
+  async unsuspendUser(adminId: string, userId: string): Promise<void> {
     await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { suspended: false } })
     await this.audit.log(adminId, 'user.unsuspend', userId)
   }
 
-  async banUser(adminId: string, userId: string, reason: string) {
+  async banUser(adminId: string, userId: string, reason: string): Promise<void> {
     await this.requireCanActOn(adminId, userId)
     const user = await this.requireUser(userId)
     await this.prisma.user.update({
@@ -288,7 +288,7 @@ export class AdminService {
     this.invalidateStatsCache()
   }
 
-  async unbanUser(adminId: string, userId: string) {
+  async unbanUser(adminId: string, userId: string): Promise<void> {
     await this.requireUser(userId)
     await this.prisma.user.update({
       where: { id: userId },
@@ -297,7 +297,7 @@ export class AdminService {
     await this.audit.log(adminId, 'user.unban', userId)
   }
 
-  async timeoutUser(adminId: string, userId: string, durationMinutes: number, reason?: string) {
+  async timeoutUser(adminId: string, userId: string, durationMinutes: number, reason?: string): Promise<void> {
     await this.requireCanActOn(adminId, userId)
     await this.requireUser(userId)
     const timeoutUntil = new Date(Date.now() + durationMinutes * 60_000)
@@ -309,7 +309,7 @@ export class AdminService {
     })
   }
 
-  async clearTimeout(adminId: string, userId: string) {
+  async clearTimeout(adminId: string, userId: string): Promise<void> {
     await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { timeoutUntil: null } })
     await this.audit.log(adminId, 'user.timeout_cleared', userId)
@@ -328,20 +328,20 @@ export class AdminService {
     })
   }
 
-  async setUserRole(adminId: string, userId: string, role: string) {
+  async setUserRole(adminId: string, userId: string, role: string): Promise<void> {
     const user = await this.requireUser(userId)
     if (user.id === adminId) throw new BadRequestException('Cannot change your own role')
     await this.prisma.user.update({ where: { id: userId }, data: { role: role as never } })
     await this.audit.log(adminId, 'user.role_change', userId, { role })
   }
 
-  async verifyUser(adminId: string, userId: string) {
+  async verifyUser(adminId: string, userId: string): Promise<void> {
     await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { verified: true } })
     await this.audit.log(adminId, 'user.verify', userId)
   }
 
-  async forceLogout(adminId: string, userId: string) {
+  async forceLogout(adminId: string, userId: string): Promise<void> {
     await this.requireUser(userId)
     await this.invalidateSessions(userId)
     await this.audit.log(adminId, 'user.force_logout', userId)
@@ -377,7 +377,7 @@ export class AdminService {
     return { total, reports }
   }
 
-  async resolveReport(adminId: string, reportId: string, resolution: string) {
+  async resolveReport(adminId: string, reportId: string, resolution: string): Promise<void> {
     const report = await this.prisma.report.findUnique({ where: { id: reportId } })
     if (!report) throw new NotFoundException('Report not found')
     await this.prisma.report.update({
@@ -435,7 +435,7 @@ export class AdminService {
     return ticket
   }
 
-  async replyToTicket(adminId: string, ticketId: string, body: string) {
+  async replyToTicket(adminId: string, ticketId: string, body: string): Promise<void> {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id: ticketId } })
     if (!ticket) throw new NotFoundException('Ticket not found')
 
@@ -448,7 +448,7 @@ export class AdminService {
     await this.audit.log(adminId, 'ticket.reply', ticket.userId ?? undefined, { ticketId })
   }
 
-  async updateTicketStatus(adminId: string, ticketId: string, status: string) {
+  async updateTicketStatus(adminId: string, ticketId: string, status: string): Promise<void> {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id: ticketId } })
     if (!ticket) throw new NotFoundException('Ticket not found')
     await this.prisma.supportTicket.update({
@@ -469,7 +469,7 @@ export class AdminService {
     return { maintenanceMode: maintenance === '1', flags }
   }
 
-  async setMaintenanceMode(adminId: string, enabled: boolean) {
+  async setMaintenanceMode(adminId: string, enabled: boolean): Promise<void> {
     if (enabled) {
       await this.redis.set(MAINTENANCE_KEY, '1')
       await this.audit.log(adminId, 'system.maintenance_on')
@@ -479,14 +479,14 @@ export class AdminService {
     }
   }
 
-  async flushCache(adminId: string, pattern: string) {
+  async flushCache(adminId: string, pattern: string): Promise<void> {
     if (!pattern) throw new BadRequestException('Pattern required')
     const keys = await this.redis.keys(pattern)
     if (keys.length > 0) await this.redis.delMany(keys)
     await this.audit.log(adminId, 'system.cache_flush', undefined, { pattern, count: keys.length })
   }
 
-  async updateFlag(adminId: string, key: string, enabled: boolean, description?: string) {
+  async updateFlag(adminId: string, key: string, enabled: boolean, description?: string): Promise<void> {
     await this.prisma.featureFlag.upsert({
       where: { key },
       create: { key, enabled, description },
@@ -495,7 +495,7 @@ export class AdminService {
     await this.audit.log(adminId, 'flag.update', undefined, { key, enabled })
   }
 
-  async broadcastPush(adminId: string, title: string, body: string, url?: string) {
+  async broadcastPush(adminId: string, title: string, body: string, url?: string): Promise<void> {
     const subs = await this.prisma.pushSubscription.findMany({
       select: { userId: true },
       distinct: ['userId'],
@@ -505,7 +505,7 @@ export class AdminService {
     for (let i = 0; i < subs.length; i += PUSH_BATCH_SIZE) {
       const batch = subs.slice(i, i + PUSH_BATCH_SIZE)
       await Promise.allSettled(
-        batch.map(({ userId }) => this.push.sendToUser(userId, { title, body, url })),
+        batch.map(({ userId }): Promise<void> => this.push.sendToUser(userId, { title, body, url })),
       )
     }
 
@@ -529,7 +529,7 @@ export class AdminService {
 
   // ── Helpers ───────────────────────────────────────────────────────
 
-  private async requireUser(userId: string) {
+  private async requireUser(userId: string): Promise<{ id: string; email: string; }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, email: true },
@@ -545,7 +545,7 @@ export class AdminService {
       this.prisma.user.findUnique({ where: { id: targetId }, select: { role: true } }),
     ])
     if (!actor || !target) throw new NotFoundException('User not found')
-    const rank = (r: string) => (r === 'admin' ? 2 : r === 'moderator' ? 1 : 0)
+    const rank = (r: string): 0 | 1 | 2 => (r === 'admin' ? 2 : r === 'moderator' ? 1 : 0)
     if (rank(actor.role) <= rank(target.role)) {
       throw new ForbiddenException(
         'You cannot perform this action on a user with equal or higher role',
@@ -553,7 +553,7 @@ export class AdminService {
     }
   }
 
-  private async invalidateSessions(userId: string) {
+  private async invalidateSessions(userId: string): Promise<void> {
     await this.redis.set(
       `sessions:invalidated_before:${userId}`,
       Date.now().toString(),
@@ -561,7 +561,7 @@ export class AdminService {
     )
   }
 
-  private invalidateStatsCache() {
+  private invalidateStatsCache(): void {
     void this.redis.del(STATS_CACHE_KEY)
   }
 }

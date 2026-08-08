@@ -29,7 +29,7 @@ interface Props {
   recoveryDeadline: string
 }
 
-export function AccountDeletedEmail({ recoveryDeadline }: Props) {
+export function AccountDeletedEmail({ recoveryDeadline }: Props): React.JSX.Element {
   return (
     <Layout preview="Your CRUSH account has been deleted">
       <Text style={heading}>Account deleted</Text>

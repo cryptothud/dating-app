@@ -49,7 +49,7 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('api')
 
   // Health check for Railway (registered before global prefix takes effect)
-  app.getHttpAdapter().get('/api/health', (_req: unknown, res: { json: (o: object) => void }) => {
+  app.getHttpAdapter().get('/api/health', (_req: unknown, res: { json: (o: object) => void }): void => {
     res.json({ status: 'ok' })
   })
 
