@@ -5,6 +5,13 @@ import {
   BadRequestException,
   OnModuleInit,
 } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import type {
+  ConversationDetail,
+  ConversationSummary,
+  EditedMessage,
+  MessageDto,
+} from '@dating-app/types'
 import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
 import { EmailService } from '../email/email.service'
@@ -45,14 +52,13 @@ export class ChatService implements OnModuleInit {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   }
 
-  async getConversations(userId: string) {
+  async getConversations(userId: string): Promise<ConversationSummary[]> {
     const [convs, rawUnread, myLoc] = await Promise.all([
       this.prisma.conversation.findMany({
         where: {
           type: 'direct',
           archivedAt: null,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          participants: { some: { userId, archivedAt: null, hiddenAt: null } as any },
+          participants: { some: { userId, archivedAt: null, hiddenAt: null } },
         },
         include: {
           participants: {
@@ -154,9 +160,8 @@ export class ChatService implements OnModuleInit {
     if (existing) {
       // If the user previously deleted this conversation, unhide it and set clearedAt so old messages stay hidden
       await this.prisma.conversationParticipant.updateMany({
-        where: { conversationId: existing.id, userId, hiddenAt: { not: null } as never },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: { hiddenAt: null, clearedAt: new Date() } as any,
+        where: { conversationId: existing.id, userId, hiddenAt: { not: null } },
+        data: { hiddenAt: null, clearedAt: new Date() },
       })
       return { id: existing.id }
     }
@@ -201,14 +206,13 @@ export class ChatService implements OnModuleInit {
     return { allowed: true }
   }
 
-  async getMessages(userId: string, conversationId: string, cursor?: string) {
+  async getMessages(userId: string, conversationId: string, cursor?: string): Promise<MessageDto[]> {
     await this.assertParticipant(userId, conversationId)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const participant = (await (this.prisma.conversationParticipant as any).findUnique({
+    const participant = await this.prisma.conversationParticipant.findUnique({
       where: { conversationId_userId: { conversationId, userId } },
       select: { clearedAt: true },
-    })) as { clearedAt: Date | null } | null
+    })
 
     const msgs = await this.prisma.message.findMany({
       where: {
@@ -234,7 +238,12 @@ export class ChatService implements OnModuleInit {
     }))
   }
 
-  async createMessage(userId: string, conversationId: string, body: string, mediaType?: string) {
+  async createMessage(
+    userId: string,
+    conversationId: string,
+    body: string,
+    mediaType?: string,
+  ): Promise<MessageDto> {
     await this.assertParticipant(userId, conversationId)
 
     const conv = await this.prisma.conversation.findUnique({
@@ -266,9 +275,8 @@ export class ChatService implements OnModuleInit {
     // When someone sends a message, unhide the conversation for recipients who deleted it
     // and set clearedAt so they only see messages from this point forward (clean slate)
     await this.prisma.conversationParticipant.updateMany({
-      where: { conversationId, userId: { not: userId }, hiddenAt: { not: null } as never },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { hiddenAt: null, clearedAt: new Date() } as any,
+      where: { conversationId, userId: { not: userId }, hiddenAt: { not: null } },
+      data: { hiddenAt: null, clearedAt: new Date() },
     })
 
     const msg = await this.prisma.message.create({
@@ -308,7 +316,7 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async editMessage(moderatorId: string, messageId: string, newBody: string) {
+  async editMessage(moderatorId: string, messageId: string, newBody: string): Promise<EditedMessage> {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
     if (msg.deletedAt) throw new BadRequestException('Cannot edit a deleted message')
@@ -334,7 +342,7 @@ export class ChatService implements OnModuleInit {
     return now
   }
 
-  async getConversation(userId: string, conversationId: string) {
+  async getConversation(userId: string, conversationId: string): Promise<ConversationDetail> {
     await this.assertParticipant(userId, conversationId)
     const [conv, myLoc] = await Promise.all([
       this.prisma.conversation.findUnique({
@@ -393,7 +401,11 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async createVoiceMessage(userId: string, conversationId: string, buffer: Buffer) {
+  async createVoiceMessage(
+    userId: string,
+    conversationId: string,
+    buffer: Buffer,
+  ): Promise<MessageDto> {
     await this.assertParticipant(userId, conversationId)
     await this.premium.requirePremium(userId)
 
@@ -429,7 +441,7 @@ export class ChatService implements OnModuleInit {
     buffer: Buffer,
     mimetype: string,
     body?: string,
-  ) {
+  ): Promise<MessageDto> {
     await this.assertParticipant(userId, conversationId)
 
     const otherMsg = await this.prisma.message.findFirst({
@@ -616,7 +628,7 @@ export class ChatService implements OnModuleInit {
     })
   }
 
-  async getArchivedConversations(userId: string) {
+  async getArchivedConversations(userId: string): Promise<ConversationSummary[]> {
     const include = {
       participants: {
         include: {
@@ -633,8 +645,10 @@ export class ChatService implements OnModuleInit {
     }
 
      
-    const whereParticipant = (extra: Record<string, unknown>) => ({
-      some: { userId, ...extra } as any,
+    const whereParticipant = (
+      extra: Prisma.ConversationParticipantWhereInput,
+    ): Prisma.ConversationParticipantListRelationFilter => ({
+      some: { userId, ...extra },
     })
 
     const [systemArchived, userArchived] = await Promise.all([
@@ -685,9 +699,9 @@ export class ChatService implements OnModuleInit {
     return [
       ...systemArchived.map((c) => mapConv(c, c.archivedAt!.toISOString(), false)),
       ...userArchived.map((c) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mine = c.participants.find((p): boolean => p.userId === userId) as any
-        return mapConv(c, (mine.archivedAt as Date).toISOString(), true)
+        const mine = c.participants.find((p): boolean => p.userId === userId)
+        if (!mine?.archivedAt) return null
+        return mapConv(c, mine.archivedAt.toISOString(), true)
       }),
     ]
       .filter((c): c is NonNullable<typeof c> => c !== null)
@@ -698,8 +712,7 @@ export class ChatService implements OnModuleInit {
     await this.assertParticipant(userId, conversationId)
     await this.prisma.conversationParticipant.update({
       where: { conversationId_userId: { conversationId, userId } },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { archivedAt: new Date() } as any,
+      data: { archivedAt: new Date() },
     })
   }
 
@@ -707,8 +720,7 @@ export class ChatService implements OnModuleInit {
     await this.assertParticipant(userId, conversationId)
     await this.prisma.conversationParticipant.update({
       where: { conversationId_userId: { conversationId, userId } },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { archivedAt: null } as any,
+      data: { archivedAt: null },
     })
   }
 
@@ -716,8 +728,7 @@ export class ChatService implements OnModuleInit {
     await this.assertParticipant(userId, conversationId)
     await this.prisma.conversationParticipant.update({
       where: { conversationId_userId: { conversationId, userId } },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { hiddenAt: new Date() } as any,
+      data: { hiddenAt: new Date() },
     })
   }
 

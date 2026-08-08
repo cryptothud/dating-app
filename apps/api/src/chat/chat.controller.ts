@@ -21,7 +21,13 @@ import { ModeratorGuard } from '../admin/moderator.guard'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
 import { ChatService } from './chat.service'
 import { GlobalChatService } from './global-chat.service'
-import type { GlobalChatHistory } from '@dating-app/types'
+import type {
+  ConversationDetail,
+  ConversationSummary,
+  EditedMessage,
+  GlobalChatHistory,
+  MessageDto,
+} from '@dating-app/types'
 import { ChatGateway } from './chat.gateway'
 import { AdminService } from '../admin/admin.service'
 import { CreateDmDto } from './dto/create-dm.dto'
@@ -52,13 +58,13 @@ export class ChatController {
 
   @Get('conversations')
   @UseGuards(JwtAuthGuard)
-  getConversations(@CurrentUser() user: AuthUser) {
+  getConversations(@CurrentUser() user: AuthUser): Promise<ConversationSummary[]> {
     return this.chat.getConversations(user.id)
   }
 
   @Get('conversations/archived')
   @UseGuards(JwtAuthGuard)
-  getArchivedConversations(@CurrentUser() user: AuthUser) {
+  getArchivedConversations(@CurrentUser() user: AuthUser): Promise<ConversationSummary[]> {
     return this.chat.getArchivedConversations(user.id)
   }
 
@@ -76,7 +82,10 @@ export class ChatController {
 
   @Get('conversations/:id')
   @UseGuards(JwtAuthGuard)
-  getConversation(@CurrentUser() user: AuthUser, @Param('id') conversationId: string) {
+  getConversation(
+    @CurrentUser() user: AuthUser,
+    @Param('id') conversationId: string,
+  ): Promise<ConversationDetail> {
     return this.chat.getConversation(user.id, conversationId)
   }
 
@@ -86,7 +95,7 @@ export class ChatController {
     @CurrentUser() user: AuthUser,
     @Param('id') conversationId: string,
     @Query('cursor') cursor?: string,
-  ) {
+  ): Promise<MessageDto[]> {
     return this.chat.getMessages(user.id, conversationId, cursor)
   }
 
@@ -97,7 +106,7 @@ export class ChatController {
     @CurrentUser() user: AuthUser,
     @Param('id') conversationId: string,
     @UploadedFile() file: Express.Multer.File | undefined,
-  ) {
+  ): Promise<MessageDto> {
     if (!file) throw new BadRequestException('No audio file provided')
     if (!AUDIO_MIME.has(file.mimetype)) throw new BadRequestException('Unsupported audio format')
 
@@ -116,7 +125,7 @@ export class ChatController {
     @Param('id') conversationId: string,
     @UploadedFile() file: Express.Multer.File | undefined,
     @Body('body') body?: string,
-  ) {
+  ): Promise<MessageDto> {
     if (!file) throw new BadRequestException('No image provided')
     if (!IMAGE_MIME.has(file.mimetype))
       throw new BadRequestException('Only JPEG, PNG, WebP, and GIF are accepted')

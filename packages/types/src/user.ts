@@ -81,6 +81,29 @@ export interface MessageDto {
   deletedAt: string | null
 }
 
+/** A single conversation opened on its own, with presence and distance for the header. */
+export interface ConversationDetail {
+  id: string
+  type: string
+  otherUser: {
+    id: string
+    displayName: string | null
+    photoUrl: string | null
+    verified: boolean
+    lastActiveAt: string
+    distanceMiles: number | null
+  }
+}
+
+/** Result of a moderator edit. Carries the moderator id for the audit trail. */
+export interface EditedMessage {
+  id: string
+  conversationId: string
+  body: string | null
+  editedAt: string
+  moderatorId: string
+}
+
 export type VerificationStatus = 'pending' | 'approved' | 'rejected'
 
 export interface PublicUser {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { auditLogInclude, type AuditLogPage } from './admin.types'
 
 export type AuditAction =
   | 'user.warn'
@@ -48,7 +49,7 @@ export class AuditService {
     targetUserId?: string
     limit: number
     offset: number
-  }) {
+  }): Promise<AuditLogPage> {
     const where = {
       ...(opts.adminId ? { adminId: opts.adminId } : {}),
       ...(opts.action ? { action: { contains: opts.action } } : {}),
@@ -61,7 +62,7 @@ export class AuditService {
         orderBy: { createdAt: 'desc' },
         take: opts.limit,
         skip: opts.offset,
-        include: { targetUser: { select: { email: true } } },
+        include: auditLogInclude,
       }),
     ])
     return { total, logs }

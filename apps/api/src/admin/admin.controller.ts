@@ -18,6 +18,19 @@ import { Request, Response } from 'express'
 import { AdminGuard } from './admin.guard'
 import { ModeratorGuard } from './moderator.guard'
 import { AdminService } from './admin.service'
+import type {
+  AdminTicketDetail,
+  AdminUserDetail,
+  AuditLogPage,
+  BannedUserPage,
+  DashboardStats,
+  ElevatedUser,
+  ReportPage,
+  SystemStatus,
+  TicketPage,
+  TimedOutUserPage,
+  UserSearchPage,
+} from './admin.types'
 import {
   ReasonDto,
   TicketReplyDto,
@@ -66,34 +79,34 @@ export class AdminController {
   // ── Dashboard ──────────────────────────────────────────────────────
 
   @Get('stats')
-  async getStats() {
+  async getStats(): Promise<DashboardStats> {
     return this.admin.getDashboardStats()
   }
 
   // ── Users ──────────────────────────────────────────────────────────
 
   @Get('users')
-  async searchUsers(@Query() q: PaginationDto) {
+  async searchUsers(@Query() q: PaginationDto): Promise<UserSearchPage> {
     return this.admin.searchUsers(q.q ?? '', q.limit ?? 20, q.offset ?? 0)
   }
 
   @Get('users/banned')
-  async getBannedUsers(@Query() q: PaginationDto) {
+  async getBannedUsers(@Query() q: PaginationDto): Promise<BannedUserPage> {
     return this.admin.getBannedUsers(q.limit ?? 20, q.offset ?? 0)
   }
 
   @Get('users/timed-out')
-  async getTimedOutUsers(@Query() q: PaginationDto) {
+  async getTimedOutUsers(@Query() q: PaginationDto): Promise<TimedOutUserPage> {
     return this.admin.getTimedOutUsers(q.limit ?? 20, q.offset ?? 0)
   }
 
   @Get('users/elevated')
-  async getElevatedUsers() {
+  async getElevatedUsers(): Promise<ElevatedUser[]> {
     return this.admin.getElevatedUsers()
   }
 
   @Get('users/:id')
-  async getUser(@Param('id') id: string) {
+  async getUser(@Param('id') id: string): Promise<AdminUserDetail> {
     return this.admin.getUserDetail(id)
   }
 
@@ -162,7 +175,7 @@ export class AdminController {
   // ── Reports ────────────────────────────────────────────────────────
 
   @Get('reports')
-  async getReports(@Query() q: PaginationDto) {
+  async getReports(@Query() q: PaginationDto): Promise<ReportPage> {
     return this.admin.getReports(q.status ?? 'open', q.limit ?? 20, q.offset ?? 0)
   }
 
@@ -175,12 +188,12 @@ export class AdminController {
   // ── Support Inbox ──────────────────────────────────────────────────
 
   @Get('support')
-  async getTickets(@Query() q: PaginationDto) {
+  async getTickets(@Query() q: PaginationDto): Promise<TicketPage> {
     return this.admin.getTickets(q.status ?? 'open', q.limit ?? 20, q.offset ?? 0)
   }
 
   @Get('support/:id')
-  async getTicket(@Param('id') id: string) {
+  async getTicket(@Param('id') id: string): Promise<AdminTicketDetail> {
     return this.admin.getTicket(id)
   }
 
@@ -207,7 +220,7 @@ export class AdminController {
   // ── System ─────────────────────────────────────────────────────────
 
   @Get('system')
-  async getSystemStatus() {
+  async getSystemStatus(): Promise<SystemStatus> {
     return this.admin.getSystemStatus()
   }
 
@@ -244,7 +257,7 @@ export class AdminController {
   // ── Audit Log ──────────────────────────────────────────────────────
 
   @Get('audit')
-  async getAuditLog(@Query() q: PaginationDto) {
+  async getAuditLog(@Query() q: PaginationDto): Promise<AuditLogPage> {
     return this.admin.getAuditLog({
       adminId: q.adminId,
       action: q.action,

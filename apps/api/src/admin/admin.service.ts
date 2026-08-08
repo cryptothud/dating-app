@@ -17,6 +17,27 @@ import { PushService } from '../push/push.service'
 import { WarnBusService } from '../warn-bus/warn-bus.service'
 import { AuditService } from './audit.service'
 import type { Env } from '../config/configuration'
+import {
+  adminReportInclude,
+  adminTicketDetailInclude,
+  adminTicketInclude,
+  adminUserDetailInclude,
+  adminUserSummarySelect,
+  bannedUserSelect,
+  elevatedUserSelect,
+  timedOutUserSelect,
+  type AdminTicketDetail,
+  type AdminUserDetail,
+  type AuditLogPage,
+  type BannedUserPage,
+  type DashboardStats,
+  type ElevatedUser,
+  type ReportPage,
+  type SystemStatus,
+  type TicketPage,
+  type TimedOutUserPage,
+  type UserSearchPage,
+} from './admin.types'
 
 const MAINTENANCE_KEY = 'system:maintenance'
 const STATS_CACHE_KEY = 'admin:stats'
@@ -89,9 +110,9 @@ export class AdminService {
 
   // ── Dashboard ─────────────────────────────────────────────────────
 
-  async getDashboardStats() {
+  async getDashboardStats(): Promise<DashboardStats> {
     const cached = await this.redis.get(STATS_CACHE_KEY)
-    if (cached) return JSON.parse(cached) as Record<string, unknown>
+    if (cached) return JSON.parse(cached) as DashboardStats
 
     const now = new Date()
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -123,7 +144,7 @@ export class AdminService {
       where: { isSeeded: false, createdAt: { gte: startOfMonth } },
     })
 
-    const result = {
+    const result: DashboardStats = {
       totalUsers,
       newUsersToday,
       monthlySignups,
@@ -141,7 +162,7 @@ export class AdminService {
 
   // ── User Management ───────────────────────────────────────────────
 
-  async searchUsers(query: string, limit = 20, offset = 0) {
+  async searchUsers(query: string, limit = 20, offset = 0): Promise<UserSearchPage> {
     const where = query
       ? {
           OR: [
@@ -161,27 +182,13 @@ export class AdminService {
         take: limit,
         skip: offset,
         orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          phone: true,
-          verified: true,
-          suspended: true,
-          banned: true,
-          role: true,
-          createdAt: true,
-          lastActive: true,
-          timeoutUntil: true,
-          profile: { select: { displayName: true } },
-          subscription: { select: { tier: true, expiresAt: true } },
-          _count: { select: { reportsReceived: true } },
-        },
+        select: adminUserSummarySelect,
       }),
     ])
     return { total, users }
   }
 
-  async getBannedUsers(limit = 20, offset = 0) {
+  async getBannedUsers(limit = 20, offset = 0): Promise<BannedUserPage> {
     const where = { banned: true, isSeeded: false }
     const [total, users] = await Promise.all([
       this.prisma.user.count({ where }),
@@ -190,24 +197,13 @@ export class AdminService {
         take: limit,
         skip: offset,
         orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          verified: true,
-          banned: true,
-          suspended: true,
-          role: true,
-          createdAt: true,
-          timeoutUntil: true,
-          banReason: true,
-          profile: { select: { displayName: true } },
-        },
+        select: bannedUserSelect,
       }),
     ])
     return { total, users }
   }
 
-  async getTimedOutUsers(limit = 20, offset = 0) {
+  async getTimedOutUsers(limit = 20, offset = 0): Promise<TimedOutUserPage> {
     const now = new Date()
     const where = { timeoutUntil: { gt: now }, isSeeded: false }
     const [total, users] = await Promise.all([
@@ -217,32 +213,16 @@ export class AdminService {
         take: limit,
         skip: offset,
         orderBy: { timeoutUntil: 'asc' },
-        select: {
-          id: true,
-          email: true,
-          verified: true,
-          banned: true,
-          suspended: true,
-          role: true,
-          createdAt: true,
-          timeoutUntil: true,
-          profile: { select: { displayName: true } },
-        },
+        select: timedOutUserSelect,
       }),
     ])
     return { total, users }
   }
 
-  async getUserDetail(userId: string) {
+  async getUserDetail(userId: string): Promise<AdminUserDetail> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        profile: true,
-        subscription: true,
-        reportsReceived: { orderBy: { createdAt: 'desc' }, take: 10 },
-        reportsGiven: { orderBy: { createdAt: 'desc' }, take: 5 },
-        auditLogsTargeted: { orderBy: { createdAt: 'desc' }, take: 20 },
-      },
+      include: adminUserDetailInclude,
     })
     if (!user) throw new NotFoundException('User not found')
     return user
@@ -315,15 +295,10 @@ export class AdminService {
     await this.audit.log(adminId, 'user.timeout_cleared', userId)
   }
 
-  async getElevatedUsers() {
+  async getElevatedUsers(): Promise<ElevatedUser[]> {
     return this.prisma.user.findMany({
       where: { role: { in: ['admin', 'moderator'] } },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        profile: { select: { displayName: true } },
-      },
+      select: elevatedUserSelect,
       orderBy: [{ role: 'asc' }, { email: 'asc' }],
     })
   }
@@ -349,7 +324,7 @@ export class AdminService {
 
   // ── Moderation / Reports ──────────────────────────────────────────
 
-  async getReports(status: string, limit = 20, offset = 0) {
+  async getReports(status: string, limit = 20, offset = 0): Promise<ReportPage> {
     const where = status === 'all' ? {} : { status: status as never }
     const [total, reports] = await Promise.all([
       this.prisma.report.count({ where }),
@@ -358,20 +333,7 @@ export class AdminService {
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
-        include: {
-          reporter: {
-            select: { id: true, email: true, profile: { select: { displayName: true } } },
-          },
-          reported: {
-            select: {
-              id: true,
-              email: true,
-              profile: { select: { displayName: true } },
-              suspended: true,
-              banned: true,
-            },
-          },
-        },
+        include: adminReportInclude,
       }),
     ])
     return { total, reports }
@@ -390,7 +352,7 @@ export class AdminService {
 
   // ── Support Inbox ─────────────────────────────────────────────────
 
-  async getTickets(status: string, limit = 20, offset = 0) {
+  async getTickets(status: string, limit = 20, offset = 0): Promise<TicketPage> {
     const where = status === 'all' ? {} : { status: status as never }
     const [total, tickets] = await Promise.all([
       this.prisma.supportTicket.count({ where }),
@@ -399,37 +361,16 @@ export class AdminService {
         orderBy: { updatedAt: 'desc' },
         take: limit,
         skip: offset,
-        include: {
-          user: {
-            select: {
-              id: true,
-              suspended: true,
-              banned: true,
-              _count: { select: { reportsReceived: true } },
-            },
-          },
-          _count: { select: { replies: true } },
-        },
+        include: adminTicketInclude,
       }),
     ])
     return { total, tickets }
   }
 
-  async getTicket(ticketId: string) {
+  async getTicket(ticketId: string): Promise<AdminTicketDetail> {
     const ticket = await this.prisma.supportTicket.findUnique({
       where: { id: ticketId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            suspended: true,
-            banned: true,
-            profile: { select: { displayName: true } },
-          },
-        },
-        replies: { orderBy: { createdAt: 'asc' } },
-      },
+      include: adminTicketDetailInclude,
     })
     if (!ticket) throw new NotFoundException('Ticket not found')
     return ticket
@@ -463,7 +404,7 @@ export class AdminService {
 
   // ── System Controls ───────────────────────────────────────────────
 
-  async getSystemStatus() {
+  async getSystemStatus(): Promise<SystemStatus> {
     const maintenance = await this.redis.get(MAINTENANCE_KEY)
     const flags = await this.prisma.featureFlag.findMany({ orderBy: { key: 'asc' } })
     return { maintenanceMode: maintenance === '1', flags }
@@ -523,7 +464,7 @@ export class AdminService {
     targetUserId?: string
     limit: number
     offset: number
-  }) {
+  }): Promise<AuditLogPage> {
     return this.audit.list(opts)
   }
 
