@@ -61,7 +61,6 @@ export interface PublicProfileResponse {
   verified: boolean
 }
 
-const PROFILE_VIEWS_TTL = 60 * 60 * 24 * 30 // 30 days
 const PROFILE_VIEWS_MAX = 200
 
 @Injectable()

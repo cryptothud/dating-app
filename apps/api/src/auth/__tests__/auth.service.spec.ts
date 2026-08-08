@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import type { Response } from 'express'
 import {
   ConflictException,
   ForbiddenException,
@@ -63,14 +64,14 @@ function makeConfig() {
 }
 
 function makeRes() {
-  return { cookie: vi.fn(), clearCookie: vi.fn() } as unknown as import('express').Response
+  return { cookie: vi.fn(), clearCookie: vi.fn() } as unknown as Response
 }
 
 // res.cookie is overloaded; vi.mocked resolves to the 2-arg signature, which hides
 // the options argument. Read call args through this tuple to reach it.
 type CookieCall = [name: string, val: string, options: Record<string, unknown>]
 
-function cookieCalls(res: import('express').Response): CookieCall[] {
+function cookieCalls(res: Response): CookieCall[] {
   return vi.mocked(res.cookie).mock.calls as unknown as CookieCall[]
 }
 

@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { EmailService } from '../email/email.service'
 import { PremiumService } from './premium.service'
 import type { Env } from '../config/configuration'
+import type { SubscriptionStatus } from '@dating-app/types'
 
 // Stripe SDK v22 changed some field names; access runtime-proven fields via these local types
 type SubPeriod = {
@@ -53,11 +54,11 @@ export class BillingService {
 
   // ── Subscription info ──────────────────────────────────────────────
 
-  async getSubscription(userId: string) {
+  async getSubscription(userId: string): Promise<SubscriptionStatus> {
     const sub = await this.prisma.subscription.findUnique({
       where: { userId },
     })
-    if (!sub) return { active: false, tier: null, expiresAt: null }
+    if (!sub) return { active: false, tier: null, expiresAt: null, cancelledAt: null }
     const active = sub.expiresAt > new Date() && !sub.cancelledAt
     return {
       active,

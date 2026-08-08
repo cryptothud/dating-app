@@ -227,7 +227,7 @@ export class AuthService {
     const token = await this.jwt.signAsync(
       { sub: userId },
       {
-        secret: this.config.get('JWT_SECRET'),
+        secret: this.config.get('JWT_SECRET', { infer: true }),
         expiresIn: '60s',
       },
     )
@@ -263,12 +263,12 @@ export class AuthService {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(accessPayload, {
-        secret: this.config.get('JWT_SECRET'),
-        expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN'),
+        secret: this.config.get('JWT_SECRET', { infer: true }),
+        expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN', { infer: true }),
       }),
       this.jwt.signAsync(refreshPayload, {
-        secret: this.config.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
+        secret: this.config.get('JWT_REFRESH_SECRET', { infer: true }),
+        expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN', { infer: true }),
       }),
     ])
 
@@ -279,7 +279,7 @@ export class AuthService {
     res: Response,
     tokens: { accessToken: string; refreshToken: string },
   ): void {
-    const isProd = this.config.get('NODE_ENV') === 'production'
+    const isProd = this.config.get('NODE_ENV', { infer: true }) === 'production'
     // All browser API calls go through Next.js rewrites (same-origin), so Lax is fine everywhere.
     // The cookies land on the Vercel domain, not Railway, which is what the browser sees.
     const sameSite = 'lax'
@@ -299,7 +299,7 @@ export class AuthService {
   }
 
   private clearAuthCookies(res: Response): void {
-    const isProd = this.config.get('NODE_ENV') === 'production'
+    const isProd = this.config.get('NODE_ENV', { infer: true }) === 'production'
     res.clearCookie('access_token', { httpOnly: true, secure: isProd, sameSite: 'lax' })
     res.clearCookie('refresh_token', {
       httpOnly: true,

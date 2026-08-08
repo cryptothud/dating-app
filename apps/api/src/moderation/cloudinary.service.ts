@@ -60,10 +60,17 @@ export class CloudinaryService {
     const dataUri = `data:${mimePrefix};base64,${buffer.toString('base64')}`
 
     const result = await new Promise<UploadApiResponse>((resolve, reject): void => {
-      cloudinary.uploader.upload(dataUri, { folder, resource_type: resourceType }, (err, res): void => {
-        if (err || !res) reject(err ?? new Error('Upload failed'))
-        else resolve(res)
-      })
+      // The callback settles this promise; the one upload() returns is redundant, and
+      // leaving it unhandled would surface as an unhandled rejection on failure.
+      void cloudinary.uploader.upload(
+        dataUri,
+        { folder, resource_type: resourceType },
+        (err, res): void => {
+          // Cloudinary's error is a plain response object, not an Error.
+          if (err || !res) reject(new Error(err?.message ?? 'Upload failed'))
+          else resolve(res)
+        },
+      )
     })
 
     return {

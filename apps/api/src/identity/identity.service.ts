@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import type { Env } from '../config/configuration'
 import Stripe from 'stripe'
 import { PrismaService } from '../prisma/prisma.service'
 
@@ -9,7 +10,7 @@ export class IdentityService {
   private stripe: Stripe | null = null
 
   constructor(
-    private readonly config: ConfigService,
+    private readonly config: ConfigService<Env, true>,
     private readonly prisma: PrismaService,
   ) {}
 

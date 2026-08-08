@@ -22,7 +22,7 @@ async function createHandler(): Promise<(req: IncomingMessage, res: ServerRespon
   app.use(cookieParser())
 
   app.enableCors({
-    origin: config.get('WEB_URL'),
+    origin: config.get('WEB_URL', { infer: true }),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   })

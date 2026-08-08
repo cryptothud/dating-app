@@ -11,6 +11,19 @@ import {
 } from 'class-validator'
 import { Type, Transform } from 'class-transformer'
 
+/**
+ * Query params arrive as a string, a repeated string[], or -- for bracketed keys like
+ * ?lookingFor[x]=y -- a parsed object. Only primitives are meaningful here; stringifying an
+ * object would silently filter on the text "[object Object]".
+ */
+function toStringArray(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) return value.map((v): string => String(v))
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return [String(value)]
+  }
+  return undefined
+}
+
 export class MapQueryDto {
   @Type((): NumberConstructor => Number)
   @IsNumber()
@@ -52,9 +65,7 @@ export class MapQueryDto {
 
   // Query params arrive as string or string[] depending on the client
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) =>
-    Array.isArray(value) ? value : value ? [String(value)] : undefined,
-  )
+  @Transform(({ value }: { value: unknown }) => toStringArray(value))
   @IsArray()
   @IsString({ each: true })
   lookingFor?: string[]
@@ -69,9 +80,7 @@ export class MapQueryDto {
   bodyType?: string
 
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) =>
-    Array.isArray(value) ? value : value ? [String(value)] : undefined,
-  )
+  @Transform(({ value }: { value: unknown }) => toStringArray(value))
   @IsArray()
   @IsString({ each: true })
   interests?: string[]

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import type { Env } from '../config/configuration'
 import { PrismaService } from '../prisma/prisma.service'
 
 const AZURE_API_VERSION = '2024-02-15-preview'
@@ -49,7 +50,7 @@ export class ModerationService {
   private readonly logger = new Logger(ModerationService.name)
 
   constructor(
-    private readonly config: ConfigService,
+    private readonly config: ConfigService<Env, true>,
     private readonly prisma: PrismaService,
   ) {}
 

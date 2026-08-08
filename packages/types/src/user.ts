@@ -104,6 +104,14 @@ export interface EditedMessage {
   moderatorId: string
 }
 
+/** Current billing state. Absent subscriptions report inactive rather than 404. */
+export interface SubscriptionStatus {
+  active: boolean
+  tier: string | null
+  expiresAt: string | null
+  cancelledAt: string | null
+}
+
 export type VerificationStatus = 'pending' | 'approved' | 'rejected'
 
 export interface PublicUser {

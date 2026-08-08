@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client'
-import type { FeatureFlag } from '@prisma/client'
+import type { FeatureFlag, Prisma } from '@prisma/client'
 
 /**
  * Response shapes for the admin API.

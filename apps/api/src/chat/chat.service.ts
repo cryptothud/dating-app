@@ -16,6 +16,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
 import { EmailService } from '../email/email.service'
 import { ConfigService } from '@nestjs/config'
+import type { Env } from '../config/configuration'
 import { PremiumService } from '../billing/premium.service'
 import { CloudinaryService } from '../moderation/cloudinary.service'
 import { ModerationService } from '../moderation/moderation.service'
@@ -33,7 +34,7 @@ export class ChatService implements OnModuleInit {
     private premium: PremiumService,
     private cloudinary: CloudinaryService,
     private moderation: ModerationService,
-    private config: ConfigService,
+    private config: ConfigService<Env, true>,
   ) {}
 
   onModuleInit(): void {
@@ -674,7 +675,7 @@ export class ChatService implements OnModuleInit {
       conv: (typeof systemArchived)[0],
       archivedAt: string,
       isUserArchived: boolean,
-    ) => {
+    ): ConversationSummary | null => {
       const mine = conv.participants.find((p): boolean => p.userId === userId)
       const other = conv.participants.find((p): boolean => p.userId !== userId)
       if (!mine || !other) return null
@@ -705,7 +706,7 @@ export class ChatService implements OnModuleInit {
       }),
     ]
       .filter((c): c is NonNullable<typeof c> => c !== null)
-      .sort((a, b): number => b.archivedAt.localeCompare(a.archivedAt))
+      .sort((a, b): number => (b.archivedAt ?? '').localeCompare(a.archivedAt ?? ''))
   }
 
   async archiveConversation(userId: string, conversationId: string): Promise<void> {

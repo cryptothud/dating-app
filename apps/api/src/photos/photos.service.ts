@@ -83,7 +83,7 @@ export class PhotosService {
       throw new ForbiddenException('Image flagged for violent content')
     }
 
-    const allowNsfw = this.config.get('ALLOW_NSFW_CONTENT')
+    const allowNsfw = this.config.get('ALLOW_NSFW_CONTENT', { infer: true })
     const isNsfw =
       cdn.isNsfw || (azure?.sexualSeverity ?? 0) >= 4 || (google?.adultScore ?? 0) > 0.7
     if (isNsfw && !allowNsfw) {

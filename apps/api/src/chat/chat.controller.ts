@@ -295,7 +295,7 @@ export class ChatController {
     @CurrentUser() user: AuthUser,
     @Param('id') messageId: string,
     @Body() dto: EditMessageDto,
-  ) {
+  ): Promise<EditedMessage> {
     const result = await this.chat.editMessage(user.id, messageId, dto.body)
     this.gateway.broadcastToRoom(result.conversationId, 'message_edited', {
       messageId: result.id,

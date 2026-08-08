@@ -74,20 +74,20 @@ export class AdminService {
     if (user.role !== 'admin') throw new ForbiddenException('Admin access required')
 
     const family = randomUUID()
-    const isProd = this.config.get('NODE_ENV') === 'production'
+    const isProd = this.config.get('NODE_ENV', { infer: true }) === 'production'
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(
         { sub: user.id, email: user.email },
         {
-          secret: this.config.get('JWT_SECRET'),
-          expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN'),
+          secret: this.config.get('JWT_SECRET', { infer: true }),
+          expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN', { infer: true }),
         },
       ),
       this.jwt.signAsync(
         { sub: user.id, email: user.email, family },
         {
-          secret: this.config.get('JWT_REFRESH_SECRET'),
-          expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
+          secret: this.config.get('JWT_REFRESH_SECRET', { infer: true }),
+          expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN', { infer: true }),
         },
       ),
     ])

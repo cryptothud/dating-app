@@ -15,9 +15,9 @@ export class TwilioService {
   private readonly verifySid: string | undefined
 
   constructor(private config: ConfigService<Env, true>) {
-    const sid = this.config.get('TWILIO_ACCOUNT_SID')
-    const token = this.config.get('TWILIO_AUTH_TOKEN')
-    this.verifySid = this.config.get('TWILIO_VERIFY_SERVICE_SID')
+    const sid = this.config.get('TWILIO_ACCOUNT_SID', { infer: true })
+    const token = this.config.get('TWILIO_AUTH_TOKEN', { infer: true })
+    this.verifySid = this.config.get('TWILIO_VERIFY_SERVICE_SID', { infer: true })
 
     if (sid && token) {
       this.client = Twilio(sid, token)
@@ -27,7 +27,7 @@ export class TwilioService {
   }
 
   private get isProd(): boolean {
-    return this.config.get('NODE_ENV') === 'production'
+    return this.config.get('NODE_ENV', { infer: true }) === 'production'
   }
 
   async sendOtp(phone: string): Promise<void> {
@@ -74,7 +74,7 @@ export class TwilioService {
   }
 
   async sendSms(to: string, body: string): Promise<void> {
-    const from = this.config.get('TWILIO_PHONE_NUMBER')
+    const from = this.config.get('TWILIO_PHONE_NUMBER', { infer: true })
     if (!this.client || !from) {
       this.logger.debug(`[MOCK SMS] To: ${to} — ${body}`)
       return

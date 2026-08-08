@@ -20,6 +20,18 @@ export default [
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      // Both fire on ordinary test-double construction rather than on real defects.
+      '@typescript-eslint/unbound-method': 'off',
+      'security/detect-object-injection': 'off',
+    },
+  },
+  {
+    // The Vercel entry point is deliberately CommonJS: it loads the tsc-compiled Nest
+    // handler at runtime, so no decorators pass through esbuild.
+    files: ['api/**/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: { require: 'readonly', module: 'writable' },
     },
   },
 ]

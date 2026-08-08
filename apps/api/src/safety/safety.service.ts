@@ -62,7 +62,7 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
       },
     })
 
-    const trackUrl = `${this.config.get('WEB_URL')}/track/${trackToken}`
+    const trackUrl = `${this.config.get('WEB_URL', { infer: true })}/track/${trackToken}`
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { profile: { select: { displayName: true } } },
@@ -118,7 +118,7 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
       data: { sosTriggered: true, alertSent: true },
     })
 
-    const trackUrl = `${this.config.get('WEB_URL')}/track/${session.trackToken}`
+    const trackUrl = `${this.config.get('WEB_URL', { infer: true })}/track/${session.trackToken}`
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { profile: { select: { displayName: true } } },
@@ -178,7 +178,7 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
     for (const session of overdue) {
       await this.prisma.safetyDate.update({ where: { id: session.id }, data: { alertSent: true } })
 
-      const trackUrl = `${this.config.get('WEB_URL')}/track/${session.trackToken}`
+      const trackUrl = `${this.config.get('WEB_URL', { infer: true })}/track/${session.trackToken}`
       const name = session.user.profile?.displayName ?? 'Someone'
       const msg = `⚠️ ${name} missed their check-in time. Please check on them. Track their last known location: ${trackUrl}`
 

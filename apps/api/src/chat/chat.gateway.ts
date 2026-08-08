@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets'
 import { OnModuleInit } from '@nestjs/common'
 import { Server, Socket } from 'socket.io'
+import type { DefaultEventsMap } from 'socket.io'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { ChatService } from './chat.service'
@@ -17,6 +18,16 @@ import { PushService } from '../push/push.service'
 import { RedisService } from '../redis/redis.service'
 import { WarnBusService } from '../warn-bus/warn-bus.service'
 import type { Env } from '../config/configuration'
+
+/**
+ * socket.io leaves `data` as `any`, so every read of it was unchecked. Naming the payload
+ * types the whole gateway: null means an anonymous, read-only connection.
+ */
+interface ChatSocketData {
+  userId: string | null
+}
+
+type ChatSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, ChatSocketData>
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -58,7 +69,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     })
   }
 
-  async handleConnection(client: Socket): Promise<void> {
+  async handleConnection(client: ChatSocket): Promise<void> {
     const token = this.extractToken(client)
     if (!token) {
       client.data.userId = null // anonymous — read-only access
@@ -84,14 +95,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
   }
 
-  handleDisconnect(client: Socket): void {
+  handleDisconnect(client: ChatSocket): void {
     if (client.rooms.has('global')) {
       this.globalRoomCount = Math.max(0, this.globalRoomCount - 1)
       this.server.to('global').emit('global_user_count', this.globalRoomCount)
     }
   }
 
-  private extractToken(client: Socket): string | null {
+  private extractToken(client: ChatSocket): string | null {
     // Prefer explicit auth token (production cross-domain: Vercel frontend → Railway socket)
     const authToken = (client.handshake.auth as Record<string, unknown>)?.token
     if (typeof authToken === 'string' && authToken) return authToken
@@ -104,10 +115,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('join_room')
   async handleJoinRoom(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() conversationId: string,
   ): Promise<void> {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId) return
     try {
       await this.chat.assertParticipant(userId, conversationId)
@@ -125,7 +136,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('leave_room')
   async handleLeaveRoom(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() conversationId: string,
   ): Promise<void> {
     await client.leave(conversationId)
@@ -133,10 +144,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('send_message')
   async handleSendMessage(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() payload: { conversationId: string; body: string },
   ): Promise<void> {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId) return
     if (!payload.body?.trim()) return
 
@@ -181,10 +192,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('mark_read')
   async handleMarkRead(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() conversationId: string,
   ): Promise<void> {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId) return
     try {
       const readAt = await this.chat.markRead(userId, conversationId)
@@ -208,10 +219,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('typing')
   handleTyping(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() payload: { conversationId: string },
   ): void {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId || !payload.conversationId) return
     client
       .to(payload.conversationId)
@@ -220,10 +231,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('stopped_typing')
   handleStoppedTyping(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() payload: { conversationId: string },
   ): void {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId || !payload.conversationId) return
     client
       .to(payload.conversationId)
@@ -231,8 +242,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   }
 
   @SubscribeMessage('check_warnings')
-  async handleCheckWarnings(@ConnectedSocket() client: Socket): Promise<void> {
-    const userId = client.data.userId as string | null
+  async handleCheckWarnings(@ConnectedSocket() client: ChatSocket): Promise<void> {
+    const userId = client.data.userId
     if (!userId) return
     const raw = await this.redis.get(`pending:warn:${userId}`)
     if (!raw) return
@@ -244,14 +255,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   // ── Global chat ───────────────────────────────────────────────
 
   @SubscribeMessage('join_global')
-  async handleJoinGlobal(@ConnectedSocket() client: Socket): Promise<void> {
+  async handleJoinGlobal(@ConnectedSocket() client: ChatSocket): Promise<void> {
     await client.join('global')
     this.globalRoomCount++
     this.server.to('global').emit('global_user_count', this.globalRoomCount)
   }
 
   @SubscribeMessage('leave_global')
-  async handleLeaveGlobal(@ConnectedSocket() client: Socket): Promise<void> {
+  async handleLeaveGlobal(@ConnectedSocket() client: ChatSocket): Promise<void> {
     if (client.rooms.has('global')) {
       await client.leave('global')
       this.globalRoomCount = Math.max(0, this.globalRoomCount - 1)
@@ -261,10 +272,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
   @SubscribeMessage('send_global_message')
   async handleSendGlobalMessage(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: ChatSocket,
     @MessageBody() body: string,
   ): Promise<void> {
-    const userId = client.data.userId as string | null
+    const userId = client.data.userId
     if (!userId) {
       client.emit('chat_error', 'Session expired — please refresh the page to sign in again.')
       return

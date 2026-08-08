@@ -2,6 +2,7 @@ import { Controller, Get, Post, Delete, Body, UseGuards, Request } from '@nestjs
 import { IsEnum, IsIn } from 'class-validator'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { BillingService } from './billing.service'
+import type { SubscriptionStatus } from '@dating-app/types'
 
 class CheckoutDto {
   @IsEnum(['premium', 'premium_plus'])
@@ -17,7 +18,7 @@ export class BillingController {
   constructor(private billing: BillingService) {}
 
   @Get('subscription')
-  getSubscription(@Request() req: { user: { id: string } }) {
+  getSubscription(@Request() req: { user: { id: string } }): Promise<SubscriptionStatus> {
     return this.billing.getSubscription(req.user.id)
   }
 
