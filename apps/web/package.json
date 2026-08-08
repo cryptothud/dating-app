@@ -17,7 +17,7 @@
     "@hookform/resolvers": "^3.9.0",
     "framer-motion": "^11.3.2",
     "maplibre-gl": "^5.24.0",
-    "next": "14.2.35",
+    "next": "^15.1.8",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
