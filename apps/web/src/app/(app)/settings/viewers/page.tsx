@@ -31,13 +31,13 @@ function Avatar({ viewer }: { viewer: Viewer }) {
         alt={viewer.displayName ?? 'User'}
         width={48}
         height={48}
-        className="w-12 h-12 rounded-full object-cover shrink-0"
+        className="h-12 w-12 shrink-0 rounded-full object-cover"
       />
     )
   }
   return (
-    <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-      <span className="text-sm font-semibold text-primary">
+    <div className="bg-primary/15 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+      <span className="text-primary text-sm font-semibold">
         {(viewer.displayName ?? '?').slice(0, 2).toUpperCase()}
       </span>
     </div>
@@ -54,7 +54,8 @@ export default function ProfileViewersPage() {
 
   useEffect(() => {
     if (!isPremiumPlus) return
-    profileApi.getViewers()
+    profileApi
+      .getViewers()
       .then(setViewers)
       .catch(() => setError('Failed to load viewers'))
       .finally(() => setLoading(false))
@@ -62,38 +63,54 @@ export default function ProfileViewersPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-5 space-y-5">
+      <div className="space-y-5 p-5">
         {/* Header */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/settings')}
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-colors"
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 fill-none stroke-current"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
           </button>
           <div>
-            <h1 className="text-xl font-bold font-display text-foreground">Profile Viewers</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">People who viewed your profile in the last 30 days</p>
+            <h1 className="font-display text-foreground text-xl font-bold">Profile Viewers</h1>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              People who viewed your profile in the last 30 days
+            </p>
           </div>
         </div>
 
         {/* Premium+ gate */}
         {!isPremiumPlus && !loading && (
-          <div className="flex flex-col items-center text-center gap-4 py-10 px-6">
-            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-amber-500" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-8 w-8 fill-none stroke-amber-500"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-foreground">Premium+ Feature</p>
-              <p className="text-sm text-muted-foreground mt-1">See who's been viewing your profile with a Premium+ subscription.</p>
+              <p className="text-foreground font-semibold">Premium+ Feature</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                See who's been viewing your profile with a Premium+ subscription.
+              </p>
             </div>
             <Link
               href="/upgrade"
-              className="px-6 py-2.5 rounded-xl bg-amber-500 text-black text-sm font-semibold hover:bg-amber-600 transition-colors"
+              className="rounded-xl bg-amber-500 px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-amber-600"
             >
               Upgrade to Premium+
             </Link>
@@ -103,28 +120,37 @@ export default function ProfileViewersPage() {
         {/* Loading */}
         {isPremiumPlus && loading && (
           <div className="flex items-center justify-center py-16">
-            <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="border-primary h-7 w-7 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         )}
 
         {/* Error */}
         {error && (
-          <div className="text-center py-10">
-            <p className="text-sm text-muted-foreground">{error}</p>
+          <div className="py-10 text-center">
+            <p className="text-muted-foreground text-sm">{error}</p>
           </div>
         )}
 
         {/* Empty state */}
         {isPremiumPlus && !loading && !error && viewers.length === 0 && (
-          <div className="flex flex-col items-center text-center gap-3 py-12">
-            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-7 h-7 fill-none stroke-muted-foreground" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" /><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <div className="bg-muted flex h-14 w-14 items-center justify-center rounded-full">
+              <svg
+                viewBox="0 0 24 24"
+                className="stroke-muted-foreground h-7 w-7 fill-none"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-foreground">No viewers yet</p>
-              <p className="text-sm text-muted-foreground mt-1">When someone views your profile, they'll appear here.</p>
+              <p className="text-foreground font-semibold">No viewers yet</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                When someone views your profile, they'll appear here.
+              </p>
             </div>
           </div>
         )}
@@ -136,16 +162,24 @@ export default function ProfileViewersPage() {
               <Link
                 key={v.id}
                 href={`/messages/${v.id}`}
-                className="flex items-center gap-3 px-3 py-3.5 rounded-2xl hover:bg-muted/50 transition-colors"
+                className="hover:bg-muted/50 flex items-center gap-3 rounded-2xl px-3 py-3.5 transition-colors"
               >
                 <Avatar viewer={v} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">
+                <div className="min-w-0 flex-1">
+                  <p className="text-foreground truncate text-sm font-semibold">
                     {v.displayName ?? 'Anonymous'}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{formatRelative(v.viewedAt)}</p>
+                  <p className="text-muted-foreground mt-0.5 text-xs">
+                    {formatRelative(v.viewedAt)}
+                  </p>
                 </div>
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-muted-foreground" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="stroke-muted-foreground h-4 w-4 fill-none"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                 </svg>
               </Link>

@@ -9,17 +9,8 @@ import { TwilioModule } from '../twilio/twilio.module'
 import { EmailModule } from '../email/email.module'
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register({}),
-    TwilioModule,
-    EmailModule,
-  ],
+  imports: [PassportModule, JwtModule.register({}), TwilioModule, EmailModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    RefreshStrategy,
-  ],
+  providers: [AuthService, JwtStrategy, RefreshStrategy],
 })
 export class AuthModule {}

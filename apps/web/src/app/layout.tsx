@@ -20,13 +20,21 @@ const syne = Syne({
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_WEB_URL ?? 'https://crushapp.co'
-const DESCRIPTION = 'CRUSH is a map-first dating app that lets you see who\'s near you right now. Browse in real time, start a conversation, and make a real connection.'
+const DESCRIPTION =
+  "CRUSH is a map-first dating app that lets you see who's near you right now. Browse in real time, start a conversation, and make a real connection."
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'CRUSH — Meet People Near You', template: '%s | CRUSH' },
   description: DESCRIPTION,
-  keywords: ['dating app', 'meet people nearby', 'map dating', 'real-time dating', 'local dating', 'crush app'],
+  keywords: [
+    'dating app',
+    'meet people nearby',
+    'map dating',
+    'real-time dating',
+    'local dating',
+    'crush app',
+  ],
   authors: [{ name: 'CRUSH' }],
   creator: 'CRUSH',
   applicationName: 'CRUSH',
@@ -38,7 +46,14 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: SITE_URL,
     locale: 'en_US',
-    images: [{ url: '/og.svg', width: 1200, height: 630, alt: 'CRUSH — Meet people near you in real time' }],
+    images: [
+      {
+        url: '/og.svg',
+        width: 1200,
+        height: 630,
+        alt: 'CRUSH — Meet people near you in real time',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -71,7 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
             extends from behind the status bar to the bottom, so screen.height is exactly
             right. visualViewport.height and 100dvh both report the wrong value until first
             user touch; screen.height does not. */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){if(!navigator.standalone)return;document.documentElement.style.setProperty('--pwa-h',window.screen.height+'px')})()` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(!navigator.standalone)return;document.documentElement.style.setProperty('--pwa-h',window.screen.height+'px')})()`,
+          }}
+        />
         {/* Preconnect to CARTO tile CDN — eliminates DNS + TLS handshake on first map load */}
         <link rel="preconnect" href="https://basemaps.cartocdn.com" />
         <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossOrigin="anonymous" />

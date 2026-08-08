@@ -37,40 +37,68 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#080613] flex items-center justify-center px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-[#080613] px-4">
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 25% 15%, hsl(270 70% 25%) 0%, transparent 55%), radial-gradient(ellipse at 75% 85%, hsl(330 65% 20%) 0%, transparent 55%)' }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse at 25% 15%, hsl(270 70% 25%) 0%, transparent 55%), radial-gradient(ellipse at 75% 85%, hsl(330 65% 20%) 0%, transparent 55%)',
+          }}
+        />
       </div>
       <div className="relative z-10 w-full max-w-sm">
         <div className="mb-6 text-center">
-          <span className="font-display font-bold text-xl text-purple-400 tracking-tight">CRUSH</span>
-          <span className="ml-2 text-xs text-white/30 font-mono">admin</span>
+          <span className="font-display text-xl font-bold tracking-tight text-purple-400">
+            CRUSH
+          </span>
+          <span className="ml-2 font-mono text-xs text-white/30">admin</span>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-xs text-amber-400/80">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-500" />
             </span>
             Site is under maintenance
           </p>
         </div>
-        <form onSubmit={(e) => void handleSubmit(e)} className="rounded-2xl bg-[#0d0a16] border border-white/8 p-6 space-y-4">
+        <form
+          onSubmit={(e) => void handleSubmit(e)}
+          className="border-white/8 space-y-4 rounded-2xl border bg-[#0d0a16] p-6"
+        >
           {error && (
-            <div className="rounded-xl bg-red-600/10 border border-red-500/20 px-3.5 py-2.5 text-xs text-red-400">{error}</div>
+            <div className="rounded-xl border border-red-500/20 bg-red-600/10 px-3.5 py-2.5 text-xs text-red-400">
+              {error}
+            </div>
           )}
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-white/50">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50"
-              placeholder="you@example.com" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-purple-500/50 focus:outline-none"
+              placeholder="you@example.com"
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-white/50">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50"
-              placeholder="••••••••" />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-purple-500/50 focus:outline-none"
+              placeholder="••••••••"
+            />
           </div>
-          <button type="submit" disabled={loading || !email || !password}
-            className="w-full rounded-xl bg-purple-600 text-white text-sm font-semibold py-2.5 disabled:opacity-40 hover:bg-purple-700 transition-colors">
+          <button
+            type="submit"
+            disabled={loading || !email || !password}
+            className="w-full rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-purple-700 disabled:opacity-40"
+          >
             {loading ? 'Signing in…' : 'Sign in to Admin'}
           </button>
         </form>
@@ -93,13 +121,19 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
   useEffect(() => {
     fetch('/api/admin/status', { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { maintenance: boolean } | null) => { setMaintenance(data?.maintenance ?? false) })
-      .catch(() => { setMaintenance(false) })
+      .then((data: { maintenance: boolean } | null) => {
+        setMaintenance(data?.maintenance ?? false)
+      })
+      .catch(() => {
+        setMaintenance(false)
+      })
   }, [])
 
   // Also listen for the global maintenance event (any 503 from any call)
   useEffect(() => {
-    const handler = () => { setMaintenance(true) }
+    const handler = () => {
+      setMaintenance(true)
+    }
     window.addEventListener('crush_maintenance', handler)
     return () => window.removeEventListener('crush_maintenance', handler)
   }, [])
@@ -135,8 +169,8 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
 
   if (uiState === 'loading' || uiState === 'redirect') {
     return (
-      <div className="min-h-[100dvh] bg-[#0d0a16] flex items-center justify-center">
-        <div className="w-6 h-6 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
+      <div className="flex min-h-[100dvh] items-center justify-center bg-[#0d0a16]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
       </div>
     )
   }
@@ -144,39 +178,61 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
   if (uiState === 'login') return <AdminLogin onSuccess={handleLoginSuccess} />
 
   return (
-    <div className="min-h-[100dvh] bg-[#080613] flex">
-      <aside className={[
-        'fixed inset-y-0 left-0 z-40 w-56 bg-[#0d0a16] border-r border-white/8 flex flex-col transition-transform duration-200',
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-        'md:translate-x-0 md:static md:flex',
-      ].join(' ')}>
-        <div className="flex items-center gap-2 px-5 h-14 border-b border-white/8">
-          <span className="font-display font-bold text-lg text-purple-400">CRUSH</span>
-          <span className="text-xs text-white/30 font-mono">admin</span>
+    <div className="flex min-h-[100dvh] bg-[#080613]">
+      <aside
+        className={[
+          'border-white/8 fixed inset-y-0 left-0 z-40 flex w-56 flex-col border-r bg-[#0d0a16] transition-transform duration-200',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          'md:static md:flex md:translate-x-0',
+        ].join(' ')}
+      >
+        <div className="border-white/8 flex h-14 items-center gap-2 border-b px-5">
+          <span className="font-display text-lg font-bold text-purple-400">CRUSH</span>
+          <span className="font-mono text-xs text-white/30">admin</span>
         </div>
-        <nav className="flex-1 py-4 space-y-0.5 px-2">
+        <nav className="flex-1 space-y-0.5 px-2 py-4">
           {NAV.map(({ href, label, exact }) => {
-            const active = exact ? pathname === href : pathname.startsWith(href + '/') || pathname === href
+            const active = exact
+              ? pathname === href
+              : pathname.startsWith(href + '/') || pathname === href
             return (
-              <Link key={href} href={href} onClick={() => setSidebarOpen(false)}
-                className={['flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  active ? 'bg-purple-600/20 text-purple-300' : 'text-white/50 hover:text-white/80 hover:bg-white/5'].join(' ')}>
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setSidebarOpen(false)}
+                className={[
+                  'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  active
+                    ? 'bg-purple-600/20 text-purple-300'
+                    : 'text-white/50 hover:bg-white/5 hover:text-white/80',
+                ].join(' ')}
+              >
                 {label}
               </Link>
             )
           })}
         </nav>
-        <div className="px-4 py-4 border-t border-white/8">
-          <p className="text-xs text-white/30 truncate">{user?.email}</p>
+        <div className="border-white/8 border-t px-4 py-4">
+          <p className="truncate text-xs text-white/30">{user?.email}</p>
         </div>
       </aside>
 
-      {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex items-center gap-3 h-14 px-5 bg-[#0d0a16] border-b border-white/8 md:hidden">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="border-white/8 flex h-14 items-center gap-3 border-b bg-[#0d0a16] px-5 md:hidden">
           <button onClick={() => setSidebarOpen(true)} className="text-white/50 hover:text-white">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 fill-none stroke-current"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>

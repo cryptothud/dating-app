@@ -40,7 +40,11 @@ export class GlobalChatService {
     let lat: number | undefined
     let lng: number | undefined
     if (location) {
-      const fuzzed = this.fuzzCoordinates(location.latitude, location.longitude, location.fuzzRadius)
+      const fuzzed = this.fuzzCoordinates(
+        location.latitude,
+        location.longitude,
+        location.fuzzRadius,
+      )
       lat = fuzzed.lat
       lng = fuzzed.lng
     }
@@ -67,7 +71,12 @@ export class GlobalChatService {
     return msg
   }
 
-  async pinGlobalMessage(messageId: string, body: string, senderName: string, durationMinutes: number) {
+  async pinGlobalMessage(
+    messageId: string,
+    body: string,
+    senderName: string,
+    durationMinutes: number,
+  ) {
     const pinnedUntil = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString()
     const pinned = { messageId, body, senderName, pinnedUntil }
     await this.redis.set('global_chat:pinned', JSON.stringify(pinned), durationMinutes * 60)
@@ -78,7 +87,11 @@ export class GlobalChatService {
     // Scan all members, find the one with matching id, remove it
     const all = await this.redis.zrangebyscore(REDIS_KEY, '-inf', '+inf')
     const member = all.find((s) => {
-      try { return (JSON.parse(s) as { id: string }).id === messageId } catch { return false }
+      try {
+        return (JSON.parse(s) as { id: string }).id === messageId
+      } catch {
+        return false
+      }
     })
     if (member) await this.redis.zrem(REDIS_KEY, member)
   }
@@ -86,7 +99,11 @@ export class GlobalChatService {
   async deleteUserMessages(userId: string): Promise<void> {
     const all = await this.redis.zrangebyscore(REDIS_KEY, '-inf', '+inf')
     const toRemove = all.filter((s) => {
-      try { return (JSON.parse(s) as { userId: string }).userId === userId } catch { return false }
+      try {
+        return (JSON.parse(s) as { userId: string }).userId === userId
+      } catch {
+        return false
+      }
     })
     if (toRemove.length) await this.redis.zrem(REDIS_KEY, ...toRemove)
   }
@@ -98,12 +115,21 @@ export class GlobalChatService {
   async getPinnedGlobalMessage() {
     const raw = await this.redis.get('global_chat:pinned')
     if (!raw) return null
-    const pinned = JSON.parse(raw) as { messageId: string; body: string; senderName: string; pinnedUntil: string }
+    const pinned = JSON.parse(raw) as {
+      messageId: string
+      body: string
+      senderName: string
+      pinnedUntil: string
+    }
     if (new Date(pinned.pinnedUntil) <= new Date()) return null
     return pinned
   }
 
-  private fuzzCoordinates(lat: number, lng: number, radiusMeters: number): { lat: number; lng: number } {
+  private fuzzCoordinates(
+    lat: number,
+    lng: number,
+    radiusMeters: number,
+  ): { lat: number; lng: number } {
     const radiusDeg = radiusMeters / 111320
     const angle = Math.random() * 2 * Math.PI
     const distance = Math.sqrt(Math.random()) * radiusDeg

@@ -71,19 +71,27 @@ export const chatApi = {
     api.get<PinnedMessage | null>(`/chat/conversations/${conversationId}/pinned`),
 
   pinConvMessage: (conversationId: string, messageId: string, durationMinutes: number) =>
-    api.post<PinnedMessage>(`/chat/mod/conversations/${conversationId}/pin/${messageId}`, { durationMinutes }),
+    api.post<PinnedMessage>(`/chat/mod/conversations/${conversationId}/pin/${messageId}`, {
+      durationMinutes,
+    }),
 
-  getPinnedGlobalMessage: () =>
-    api.get<PinnedMessage | null>('/chat/global/pinned'),
+  getPinnedGlobalMessage: () => api.get<PinnedMessage | null>('/chat/global/pinned'),
 
-  pinGlobalMessage: (messageId: string, body: string, senderName: string, durationMinutes: number) =>
-    api.post<PinnedMessage>(`/chat/mod/global/pin/${messageId}`, { durationMinutes, body, senderName }),
+  pinGlobalMessage: (
+    messageId: string,
+    body: string,
+    senderName: string,
+    durationMinutes: number,
+  ) =>
+    api.post<PinnedMessage>(`/chat/mod/global/pin/${messageId}`, {
+      durationMinutes,
+      body,
+      senderName,
+    }),
 
-  deleteGlobalMessage: (messageId: string) =>
-    api.del<void>(`/chat/mod/global/${messageId}`),
+  deleteGlobalMessage: (messageId: string) => api.del<void>(`/chat/mod/global/${messageId}`),
 
-  unpinGlobalMessage: () =>
-    api.del<void>('/chat/mod/global/pin'),
+  unpinGlobalMessage: () => api.del<void>('/chat/mod/global/pin'),
 
   timeoutUserFromChat: (userId: string, durationMinutes: number) =>
     api.post<void>(`/chat/mod/users/${userId}/timeout`, { durationMinutes }),

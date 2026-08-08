@@ -23,19 +23,22 @@ export function YearPicker({
   const dragStartScroll = useRef(0)
   const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const snapToNearest = useCallback((el: HTMLDivElement, animate = true): void => {
-    const raw = el.scrollTop / ITEM_HEIGHT
-    const idx = Math.max(0, Math.min(Math.round(raw), YEARS.length - 1))
-    el.scrollTo({ top: idx * ITEM_HEIGHT, behavior: animate ? 'smooth' : 'instant' })
-    onChange(YEARS[idx] ?? DEFAULT_YEAR)
-  }, [onChange])
+  const snapToNearest = useCallback(
+    (el: HTMLDivElement, animate = true): void => {
+      const raw = el.scrollTop / ITEM_HEIGHT
+      const idx = Math.max(0, Math.min(Math.round(raw), YEARS.length - 1))
+      el.scrollTo({ top: idx * ITEM_HEIGHT, behavior: animate ? 'smooth' : 'instant' })
+      onChange(YEARS[idx] ?? DEFAULT_YEAR)
+    },
+    [onChange],
+  )
 
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
     el.scrollTop = DEFAULT_IDX * ITEM_HEIGHT
     onChange(DEFAULT_YEAR)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -105,23 +108,25 @@ export function YearPicker({
   }, [snapToNearest])
 
   return (
-    <div className="mx-auto w-52 rounded-xl border border-border/60 dark:border-white/12 bg-black/[0.04] dark:bg-white/[0.04] overflow-hidden">
+    <div className="border-border/60 dark:border-white/12 mx-auto w-52 overflow-hidden rounded-xl border bg-black/[0.04] dark:bg-white/[0.04]">
       <div
         className="relative"
         style={{
           height: `${CONTAINER_H}px`,
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 33%, black 67%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 33%, black 67%, transparent 100%)',
+          maskImage:
+            'linear-gradient(to bottom, transparent 0%, black 33%, black 67%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, transparent 0%, black 33%, black 67%, transparent 100%)',
         }}
       >
         {/* Selected-year highlight */}
         <div
-          className="pointer-events-none absolute inset-x-3 z-10 rounded-xl border border-primary/30 bg-primary/5"
+          className="border-primary/30 bg-primary/5 pointer-events-none absolute inset-x-3 z-10 rounded-xl border"
           style={{ top: `${ITEM_HEIGHT}px`, height: `${ITEM_HEIGHT}px` }}
         />
         <div
           ref={scrollRef}
-          className="h-full overflow-y-scroll overflow-x-hidden select-none"
+          className="h-full select-none overflow-x-hidden overflow-y-scroll"
           style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', cursor: 'grab' }}
         >
           <div style={{ height: `${ITEM_HEIGHT}px` }} />
@@ -132,8 +137,8 @@ export function YearPicker({
               className={[
                 'flex items-center justify-center transition-all duration-100',
                 year === value
-                  ? 'text-2xl font-bold text-foreground'
-                  : 'text-base font-medium text-muted-foreground/50',
+                  ? 'text-foreground text-2xl font-bold'
+                  : 'text-muted-foreground/50 text-base font-medium',
               ].join(' ')}
             >
               {year}

@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service'
 
 const OVERLAP_RADIUS_METERS = 200
 const DETECT_INTERVAL_MS = 5 * 60 * 1000 // run every 5 minutes
-const DEDUPE_WINDOW_HOURS = 2              // skip pairs seen < 2h ago
+const DEDUPE_WINDOW_HOURS = 2 // skip pairs seen < 2h ago
 
 export interface WildSighting {
   id: string
@@ -23,7 +23,9 @@ export class SeenInWildService implements OnModuleInit, OnModuleDestroy {
   constructor(private prisma: PrismaService) {}
 
   onModuleInit(): void {
-    this.timer = setInterval(() => { void this.detectOverlaps() }, DETECT_INTERVAL_MS)
+    this.timer = setInterval(() => {
+      void this.detectOverlaps()
+    }, DETECT_INTERVAL_MS)
   }
 
   onModuleDestroy(): void {
@@ -39,8 +41,12 @@ export class SeenInWildService implements OnModuleInit, OnModuleDestroy {
       orderBy: { occurredAt: 'desc' },
       take: 20,
       include: {
-        userA: { include: { profile: { include: { photos: { where: { isPrimary: true }, take: 1 } } } } },
-        userB: { include: { profile: { include: { photos: { where: { isPrimary: true }, take: 1 } } } } },
+        userA: {
+          include: { profile: { include: { photos: { where: { isPrimary: true }, take: 1 } } } },
+        },
+        userB: {
+          include: { profile: { include: { photos: { where: { isPrimary: true }, take: 1 } } } },
+        },
       },
     })
 

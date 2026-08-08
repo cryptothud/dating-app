@@ -8,6 +8,8 @@ export class ChangePasswordDto {
 
   @IsString()
   @MinLength(8)
-  @Matches(PASSWORD_REGEX, { message: 'newPassword must contain uppercase, lowercase, and a number' })
+  @Matches(PASSWORD_REGEX, {
+    message: 'newPassword must contain uppercase, lowercase, and a number',
+  })
   newPassword!: string
 }

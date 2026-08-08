@@ -122,14 +122,14 @@ export default function SignupPage(): React.JSX.Element {
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -16 }}
-            className="p-7 space-y-5"
+            className="space-y-5 p-7"
           >
-            <div className="text-center space-y-1">
-              <div className="text-3xl mb-2">🎂</div>
-              <h1 className="text-2xl font-bold font-display text-foreground dark:text-white tracking-tight">
+            <div className="space-y-1 text-center">
+              <div className="mb-2 text-3xl">🎂</div>
+              <h1 className="font-display text-foreground text-2xl font-bold tracking-tight dark:text-white">
                 How old are you?
               </h1>
-              <p className="text-sm text-muted-foreground dark:text-white/50">
+              <p className="text-muted-foreground text-sm dark:text-white/50">
                 CRUSH is for adults only. This cannot be changed later.
               </p>
             </div>
@@ -139,29 +139,36 @@ export default function SignupPage(): React.JSX.Element {
             <div className="flex gap-2">
               <select
                 value={birthMonth || ''}
-                onChange={(e) => { setBirthMonth(Number(e.target.value)); setBirthDay(0) }}
-                className="flex-1 h-10 px-3 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-ring dark:focus:ring-primary/60 focus:border-transparent"
+                onChange={(e) => {
+                  setBirthMonth(Number(e.target.value))
+                  setBirthDay(0)
+                }}
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
               >
                 <option value="">Month</option>
                 {MONTHS.map((m, i) => (
-                  <option key={m} value={i + 1}>{m}</option>
+                  <option key={m} value={i + 1}>
+                    {m}
+                  </option>
                 ))}
               </select>
               <select
                 value={birthDay || ''}
                 onChange={(e) => setBirthDay(Number(e.target.value))}
                 disabled={!birthMonth}
-                className="w-24 h-10 px-3 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-ring dark:focus:ring-primary/60 focus:border-transparent disabled:opacity-40"
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
               >
                 <option value="">Day</option>
                 {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={d}>{d}</option>
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
                 ))}
               </select>
             </div>
 
             {showAgeError && (
-              <p className="text-center text-sm font-semibold text-destructive">
+              <p className="text-destructive text-center text-sm font-semibold">
                 You must be 18 or older to join CRUSH.
               </p>
             )}
@@ -169,25 +176,33 @@ export default function SignupPage(): React.JSX.Element {
             <div className="flex gap-3">
               <button
                 onClick={() => router.push('/map')}
-                className="flex-1 h-11 rounded-xl border border-border text-sm font-medium text-muted-foreground dark:text-white/50 hover:bg-muted dark:hover:bg-white/8 transition-colors"
+                className="border-border text-muted-foreground hover:bg-muted dark:hover:bg-white/8 h-11 flex-1 rounded-xl border text-sm font-medium transition-colors dark:text-white/50"
               >
                 Go back
               </button>
               <button
                 onClick={() => setStep('details')}
                 disabled={!isOldEnough}
-                className="flex-1 h-11 bg-primary rounded-xl text-white font-semibold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity flex items-center justify-center gap-1.5"
+                className="bg-primary flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Continue
-                <svg viewBox="0 0 16 16" className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  viewBox="0 0 16 16"
+                  className="h-4 w-4 fill-none stroke-current"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M6 4l4 4-4 4" />
                 </svg>
               </button>
             </div>
 
-            <p className="text-center text-sm text-muted-foreground dark:text-white/45">
+            <p className="text-muted-foreground text-center text-sm dark:text-white/45">
               Already have an account?{' '}
-              <Link href="/" className="text-primary hover:underline font-medium">Sign in</Link>
+              <Link href="/" className="text-primary font-medium hover:underline">
+                Sign in
+              </Link>
             </p>
           </motion.div>
         ) : (
@@ -196,13 +211,13 @@ export default function SignupPage(): React.JSX.Element {
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 16 }}
-            className="p-7 space-y-5"
+            className="space-y-5 p-7"
           >
-            <div className="text-center space-y-0.5">
-              <h1 className="text-2xl font-bold font-display text-foreground dark:text-white tracking-tight">
+            <div className="space-y-0.5 text-center">
+              <h1 className="font-display text-foreground text-2xl font-bold tracking-tight dark:text-white">
                 Create account
               </h1>
-              <p className="text-sm text-muted-foreground dark:text-white/50">
+              <p className="text-muted-foreground text-sm dark:text-white/50">
                 Almost there — just a few more details.
               </p>
             </div>
@@ -214,9 +229,11 @@ export default function SignupPage(): React.JSX.Element {
                   type="email"
                   autoComplete="email"
                   placeholder="Email"
-                  className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-white/35 text-sm focus:outline-none focus:ring-1 focus:ring-ring dark:focus:ring-primary/60 focus:border-transparent transition-all"
+                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
-                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
+                )}
               </div>
 
               <div>
@@ -229,12 +246,15 @@ export default function SignupPage(): React.JSX.Element {
                     const formatted = formatPhone(e.target.value)
                     setValue('phone', formatted, { shouldValidate: true })
                   }}
-                  className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-white/35 text-sm focus:outline-none focus:ring-1 focus:ring-ring dark:focus:ring-primary/60 focus:border-transparent transition-all"
+                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
-                {errors.phone
-                  ? <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>
-                  : <p className="text-xs text-muted-foreground/60 dark:text-white/25 mt-1">US number auto-formats — or enter any country code manually (+44…)</p>
-                }
+                {errors.phone ? (
+                  <p className="text-destructive mt-1 text-xs">{errors.phone.message}</p>
+                ) : (
+                  <p className="text-muted-foreground/60 mt-1 text-xs dark:text-white/25">
+                    US number auto-formats — or enter any country code manually (+44…)
+                  </p>
+                )}
               </div>
 
               <div>
@@ -242,7 +262,7 @@ export default function SignupPage(): React.JSX.Element {
                   {...register('password')}
                   autoComplete="new-password"
                   placeholder="Password"
-                  className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-white/35 text-sm focus:outline-none focus:ring-1 focus:ring-ring dark:focus:ring-primary/60 focus:border-transparent transition-all"
+                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
                 {passwordValue.length > 0 && (
                   <div className="mt-2 space-y-1.5">
@@ -257,21 +277,25 @@ export default function SignupPage(): React.JSX.Element {
                         />
                       ))}
                     </div>
-                    <p className={`text-xs font-medium ${strength.score <= 1 ? 'text-destructive' : strength.score === 2 ? 'text-amber-500' : strength.score === 3 ? 'text-blue-500' : 'text-green-500'}`}>
+                    <p
+                      className={`text-xs font-medium ${strength.score <= 1 ? 'text-destructive' : strength.score === 2 ? 'text-amber-500' : strength.score === 3 ? 'text-blue-500' : 'text-green-500'}`}
+                    >
                       {strength.label}
                       {strength.score < 3 && ' — add symbols or length to strengthen'}
                     </p>
                   </div>
                 )}
-                {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-destructive mt-1 text-xs">{errors.password.message}</p>
+                )}
               </div>
 
-              {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+              {serverError && <p className="text-destructive text-sm">{serverError}</p>}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 bg-primary rounded-xl text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+                className="bg-primary h-11 w-full rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {isSubmitting ? 'Creating account…' : 'Create account'}
               </button>
@@ -279,17 +303,27 @@ export default function SignupPage(): React.JSX.Element {
 
             <button
               onClick={() => setStep('age')}
-              className="w-full text-center text-sm text-muted-foreground dark:text-white/40 hover:text-foreground dark:hover:text-white/65 transition-colors"
+              className="text-muted-foreground hover:text-foreground w-full text-center text-sm transition-colors dark:text-white/40 dark:hover:text-white/65"
             >
               ← Back
             </button>
 
-            <p className="text-center text-[11px] text-muted-foreground/70 dark:text-white/25 leading-relaxed">
+            <p className="text-muted-foreground/70 text-center text-[11px] leading-relaxed dark:text-white/25">
               By creating an account you agree to our{' '}
-              <Link href="/terms" className="underline hover:text-foreground dark:hover:text-white/45">Terms of Use</Link>
+              <Link
+                href="/terms"
+                className="hover:text-foreground underline dark:hover:text-white/45"
+              >
+                Terms of Use
+              </Link>
               {' and '}
-              <Link href="/privacy" className="underline hover:text-foreground dark:hover:text-white/45">Privacy Policy</Link>.
-              You must be 18+.
+              <Link
+                href="/privacy"
+                className="hover:text-foreground underline dark:hover:text-white/45"
+              >
+                Privacy Policy
+              </Link>
+              . You must be 18+.
             </p>
           </motion.div>
         )}

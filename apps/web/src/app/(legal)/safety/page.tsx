@@ -10,11 +10,10 @@ export default function SafetyPage(): React.JSX.Element {
       <LegalHeader badge="Safety" title="Safety Policy" draft />
 
       <LegalArticle>
-
         <p>
-          Your safety is our highest priority. CRUSH is built for real-world connections, which means
-          we take safety more seriously than most platforms. This policy explains what we do and what
-          you can do.
+          Your safety is our highest priority. CRUSH is built for real-world connections, which
+          means we take safety more seriously than most platforms. This policy explains what we do
+          and what you can do.
         </p>
 
         <h2>Safety Features — Always Free</h2>
@@ -22,12 +21,12 @@ export default function SafetyPage(): React.JSX.Element {
         <ul>
           <li>
             <strong>Safety Date Mode</strong> — Share live date details (time, location, partner
-            profile) with a trusted contact who receives real-time updates and an emergency alert
-            if you don&apos;t check in on time.
+            profile) with a trusted contact who receives real-time updates and an emergency alert if
+            you don&apos;t check in on time.
           </li>
           <li>
-            <strong>Block &amp; Report</strong> — Block any user instantly. Blocked users cannot
-            see your profile or contact you.
+            <strong>Block &amp; Report</strong> — Block any user instantly. Blocked users cannot see
+            your profile or contact you.
           </li>
           <li>
             <strong>Location fuzzing</strong> — Your exact location is never shown. Choose your fuzz
@@ -41,10 +40,15 @@ export default function SafetyPage(): React.JSX.Element {
 
         <h2>Content Moderation</h2>
         <ul>
-          <li>All uploaded images are automatically scanned by Azure Content Safety, Google Vision SafeSearch, and Cloudinary AI before reaching any storage.</li>
+          <li>
+            All uploaded images are automatically scanned by Azure Content Safety, Google Vision
+            SafeSearch, and Cloudinary AI before reaching any storage.
+          </li>
           <li>NSFW content is blurred by default and requires explicit user opt-in to view.</li>
           <li>Flagged content is reviewed by trained human moderators within 24 hours.</li>
-          <li>Repeat violators are permanently banned and their device fingerprint is blocklisted.</li>
+          <li>
+            Repeat violators are permanently banned and their device fingerprint is blocklisted.
+          </li>
         </ul>
 
         <h2>Zero Tolerance: CSAM</h2>
@@ -53,8 +57,8 @@ export default function SafetyPage(): React.JSX.Element {
           <li>Immediate upload block — content is rejected before it reaches storage.</li>
           <li>Immediate account suspension — the account is locked pending investigation.</li>
           <li>
-            Mandatory CyberTipline report to NCMEC as required by 18 U.S.C. § 2258A,
-            filed within 24 hours.
+            Mandatory CyberTipline report to NCMEC as required by 18 U.S.C. § 2258A, filed within 24
+            hours.
           </li>
           <li>Referral to federal law enforcement.</li>
         </ol>
@@ -63,8 +67,8 @@ export default function SafetyPage(): React.JSX.Element {
         <h2>Non-Consensual Intimate Images (NCII)</h2>
         <p>
           Posting intimate images of another person without their consent is prohibited and illegal
-          in most US states. We remove verified NCII within 24 hours of a report.
-          See <a href="/content-removal">Content Removal</a> to submit a request.
+          in most US states. We remove verified NCII within 24 hours of a report. See{' '}
+          <a href="/content-removal">Content Removal</a> to submit a request.
         </p>
 
         <h2>Harassment &amp; Abuse</h2>
@@ -87,8 +91,8 @@ export default function SafetyPage(): React.JSX.Element {
         <h2>Reporting</h2>
         <p>
           Use the in-app report button on any profile, photo, or message. For urgent safety
-          concerns: <a href="mailto:safety@crush.app">safety@crush.app</a>.
-          In an emergency, contact local law enforcement (911).
+          concerns: <a href="mailto:safety@crush.app">safety@crush.app</a>. In an emergency, contact
+          local law enforcement (911).
         </p>
       </LegalArticle>
     </div>

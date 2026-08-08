@@ -1,5 +1,14 @@
 import {
-  Controller, Post, Get, Delete, Param, Body, Req, UseGuards, HttpCode, HttpStatus,
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 import { Throttle } from '@nestjs/throttler'
 import { Request } from 'express'
@@ -7,7 +16,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { SafetyService } from './safety.service'
 import { CreateSafetyDateDto } from './dto/create-safety-date.dto'
 
-interface AuthRequest extends Request { user: { id: string } }
+interface AuthRequest extends Request {
+  user: { id: string }
+}
 
 @Controller('track')
 export class TrackController {

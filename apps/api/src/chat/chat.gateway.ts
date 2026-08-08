@@ -21,9 +21,10 @@ import type { Env } from '../config/configuration'
 @WebSocketGateway({
   namespace: '/chat',
   cors: {
-    origin: process.env['NODE_ENV'] === 'production'
-      ? (process.env['WEB_URL'] ?? 'https://crush.app')
-      : 'http://localhost:3000',
+    origin:
+      process.env['NODE_ENV'] === 'production'
+        ? (process.env['WEB_URL'] ?? 'https://crush.app')
+        : 'http://localhost:3000',
     credentials: true,
   },
 })
@@ -212,7 +213,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   ): void {
     const userId = client.data.userId as string | null
     if (!userId || !payload.conversationId) return
-    client.to(payload.conversationId).emit('typing', { userId, conversationId: payload.conversationId })
+    client
+      .to(payload.conversationId)
+      .emit('typing', { userId, conversationId: payload.conversationId })
   }
 
   @SubscribeMessage('stopped_typing')
@@ -222,7 +225,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   ): void {
     const userId = client.data.userId as string | null
     if (!userId || !payload.conversationId) return
-    client.to(payload.conversationId).emit('stopped_typing', { userId, conversationId: payload.conversationId })
+    client
+      .to(payload.conversationId)
+      .emit('stopped_typing', { userId, conversationId: payload.conversationId })
   }
 
   @SubscribeMessage('check_warnings')
@@ -280,11 +285,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.redis.incr(`gchat:min:${userId}`, 60),
       ])
       if (burst > 2) {
-        client.emit('chat_error', 'Slow down — you\'re sending messages too quickly.')
+        client.emit('chat_error', "Slow down — you're sending messages too quickly.")
         return
       }
       if (sustained > 20) {
-        client.emit('chat_error', 'You\'ve sent too many messages. Try again in a minute.')
+        client.emit('chat_error', "You've sent too many messages. Try again in a minute.")
         return
       }
     } catch {

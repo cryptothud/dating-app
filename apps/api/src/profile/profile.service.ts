@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import type { User, Profile, Photo, ProfilePrompt } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
@@ -8,9 +13,15 @@ import type { UpsertPromptDto } from './dto/upsert-prompt.dto'
 type FullProfile = Profile & { photos: Photo[]; prompts: ProfilePrompt[]; interests: string[] }
 
 type PhotoItem = {
-  id: string; url: string; thumbUrl: string; isPrimary: boolean
-  blurEnabled: boolean; isNsfw: boolean; nsfwScore: number | null
-  moderationStatus: string; order: number
+  id: string
+  url: string
+  thumbUrl: string
+  isPrimary: boolean
+  blurEnabled: boolean
+  isNsfw: boolean
+  nsfwScore: number | null
+  moderationStatus: string
+  order: number
 }
 type PromptItem = { id: string; promptKey: string; answer: string; order: number }
 
@@ -60,7 +71,10 @@ export class ProfileService {
     private readonly redis: RedisService,
   ) {}
 
-  async getPublicProfile(targetUserId: string, requestingUserId: string): Promise<PublicProfileResponse> {
+  async getPublicProfile(
+    targetUserId: string,
+    requestingUserId: string,
+  ): Promise<PublicProfileResponse> {
     const user = await this.prisma.user.findUnique({ where: { id: targetUserId } })
     if (!user) throw new NotFoundException('Profile not found')
 
@@ -97,9 +111,9 @@ export class ProfileService {
     // Record view (non-blocking, skip self-views)
     if (requestingUserId !== targetUserId) {
       const key = `profile_views:${targetUserId}`
-      void this.redis.zadd(key, Date.now(), requestingUserId).then(() =>
-        this.redis.zremrangebyrank(key, 0, -(PROFILE_VIEWS_MAX + 1)),
-      )
+      void this.redis
+        .zadd(key, Date.now(), requestingUserId)
+        .then(() => this.redis.zremrangebyrank(key, 0, -(PROFILE_VIEWS_MAX + 1)))
     }
 
     return this.toPublicResponse(user, profile, viewerNsfwEnabled)
@@ -114,10 +128,12 @@ export class ProfileService {
         prompts: { orderBy: { order: 'asc' } },
       },
     })
-    const profile = existing ?? await this.prisma.profile.create({
-      data: { userId },
-      include: { photos: true, prompts: true },
-    })
+    const profile =
+      existing ??
+      (await this.prisma.profile.create({
+        data: { userId },
+        include: { photos: true, prompts: true },
+      }))
     return this.toResponse(user, profile)
   }
 
@@ -167,13 +183,21 @@ export class ProfileService {
     const count = await this.prisma.profilePrompt.count({ where: { profileId: profile.id } })
     if (count >= 3) throw new BadRequestException('Maximum 3 prompts allowed')
     return this.prisma.profilePrompt.create({
-      data: { profileId: profile.id, promptKey: dto.promptKey, answer: dto.answer, order: dto.order ?? count },
+      data: {
+        profileId: profile.id,
+        promptKey: dto.promptKey,
+        answer: dto.answer,
+        order: dto.order ?? count,
+      },
     })
   }
 
   async recordProfileView(viewedUserId: string, viewerUserId: string): Promise<void> {
     if (viewedUserId === viewerUserId) return
-    const viewer = await this.prisma.user.findUnique({ where: { id: viewerUserId }, select: { incognito: true } })
+    const viewer = await this.prisma.user.findUnique({
+      where: { id: viewerUserId },
+      select: { incognito: true },
+    })
     if (!viewer || viewer.incognito) return
     const key = `profile_views:${viewedUserId}`
     const now = Date.now()
@@ -182,7 +206,11 @@ export class ProfileService {
     await this.redis.expire(key, 30 * 24 * 3600)
   }
 
-  async getProfileViewers(userId: string): Promise<{ id: string; displayName: string | null; photoUrl: string | null; viewedAt: string }[]> {
+  async getProfileViewers(
+    userId: string,
+  ): Promise<
+    { id: string; displayName: string | null; photoUrl: string | null; viewedAt: string }[]
+  > {
     const key = `profile_views:${userId}`
     const all = await this.redis.zrevrangeWithScores(key, 0, 99)
     const cutoff = Date.now() - 30 * 24 * 3600 * 1000
@@ -243,12 +271,21 @@ export class ProfileService {
       nsfwEnabled: profile.nsfwEnabled,
       activelyLooking: profile.activelyLooking,
       photos: profile.photos.map((p) => ({
-        id: p.id, url: p.url, thumbUrl: p.thumbUrl, isPrimary: p.isPrimary,
-        blurEnabled: p.blurEnabled, isNsfw: p.isNsfw, nsfwScore: p.nsfwScore,
-        moderationStatus: p.moderationStatus, order: p.order,
+        id: p.id,
+        url: p.url,
+        thumbUrl: p.thumbUrl,
+        isPrimary: p.isPrimary,
+        blurEnabled: p.blurEnabled,
+        isNsfw: p.isNsfw,
+        nsfwScore: p.nsfwScore,
+        moderationStatus: p.moderationStatus,
+        order: p.order,
       })),
       prompts: profile.prompts.map((p) => ({
-        id: p.id, promptKey: p.promptKey, answer: p.answer, order: p.order,
+        id: p.id,
+        promptKey: p.promptKey,
+        answer: p.answer,
+        order: p.order,
       })),
       verified: user.verified,
       trustScore: user.trustScore,
@@ -260,7 +297,11 @@ export class ProfileService {
     return url.replace('/image/upload/', '/image/upload/e_blur:800/')
   }
 
-  private toPublicResponse(user: User, profile: FullProfile, viewerNsfwEnabled: boolean): PublicProfileResponse {
+  private toPublicResponse(
+    user: User,
+    profile: FullProfile,
+    viewerNsfwEnabled: boolean,
+  ): PublicProfileResponse {
     return {
       id: profile.id,
       userId: user.id,
@@ -287,7 +328,10 @@ export class ProfileService {
         }
       }),
       prompts: profile.prompts.map((p) => ({
-        id: p.id, promptKey: p.promptKey, answer: p.answer, order: p.order,
+        id: p.id,
+        promptKey: p.promptKey,
+        answer: p.answer,
+        order: p.order,
       })),
       verified: user.verified,
     }

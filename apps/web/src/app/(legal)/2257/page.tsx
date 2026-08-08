@@ -10,11 +10,10 @@ export default function Page2257(): React.JSX.Element {
       <LegalHeader badge="Legal" title="18 U.S.C. § 2257 Compliance Statement" draft />
 
       <LegalArticle>
-
         <p>
-          CRUSH (operated by Crush Inc.) is an interactive computer service as defined by
-          47 U.S.C. § 230(f)(2). The user-generated content available on this platform is created
-          by third parties (our users), not by Crush Inc.
+          CRUSH (operated by Crush Inc.) is an interactive computer service as defined by 47 U.S.C.
+          § 230(f)(2). The user-generated content available on this platform is created by third
+          parties (our users), not by Crush Inc.
         </p>
 
         <h2>Exemption Claim</h2>
@@ -22,14 +21,14 @@ export default function Page2257(): React.JSX.Element {
           Crush Inc. is not the &quot;producer&quot; of any visual depictions of actual sexually
           explicit conduct as defined in 18 U.S.C. § 2256(2)(A)–(D) that appear on the CRUSH
           platform. All such visual depictions, if any, are user-generated content uploaded by
-          platform users who are the primary and secondary producers of such content under
-          18 U.S.C. § 2257.
+          platform users who are the primary and secondary producers of such content under 18 U.S.C.
+          § 2257.
         </p>
         <p>
           With respect to user-generated content, Crush Inc. is exempt from the record-keeping
-          requirements of 18 U.S.C. § 2257 and 28 C.F.R. Part 75 pursuant to
-          18 U.S.C. § 2257(h)(2)(B)(v) because CRUSH is an internet access service provider or
-          hosting service that does not produce the sexually explicit content at issue.
+          requirements of 18 U.S.C. § 2257 and 28 C.F.R. Part 75 pursuant to 18 U.S.C. §
+          2257(h)(2)(B)(v) because CRUSH is an internet access service provider or hosting service
+          that does not produce the sexually explicit content at issue.
         </p>
 
         <h2>Age Verification of Users</h2>
@@ -46,9 +45,11 @@ export default function Page2257(): React.JSX.Element {
           Notwithstanding our exemption claim, to the extent any records are required to be
           maintained, the designated records custodian is:
         </p>
-        <address className="not-italic pl-4 border-l-2 border-border text-muted-foreground">
-          Crush Inc.<br />
-          Attn: Records Custodian / Legal Department<br />
+        <address className="border-border text-muted-foreground border-l-2 pl-4 not-italic">
+          Crush Inc.
+          <br />
+          Attn: Records Custodian / Legal Department
+          <br />
           <a href="mailto:legal@crush.app">legal@crush.app</a>
         </address>
 
@@ -61,7 +62,7 @@ export default function Page2257(): React.JSX.Element {
           that they hold the required records.
         </p>
 
-        <p className="text-sm text-muted-foreground/70">
+        <p className="text-muted-foreground/70 text-sm">
           This statement was prepared based on current legal understanding and is subject to
           revision. Crush Inc. strongly recommends that any users uploading adult content consult
           qualified legal counsel regarding their obligations under 18 U.S.C. § 2257.

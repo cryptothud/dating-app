@@ -1,5 +1,9 @@
 import {
-  Injectable, NotFoundException, BadRequestException, OnModuleInit, OnModuleDestroy,
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  OnModuleInit,
+  OnModuleDestroy,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { randomUUID } from 'crypto'
@@ -22,7 +26,12 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
 
   onModuleInit(): void {
     // Check for missed check-ins every 2 minutes
-    this.checkinInterval = setInterval(() => { void this.checkMissedCheckins() }, 2 * 60 * 1000)
+    this.checkinInterval = setInterval(
+      () => {
+        void this.checkMissedCheckins()
+      },
+      2 * 60 * 1000,
+    )
   }
 
   onModuleDestroy(): void {
@@ -65,7 +74,12 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
       void this.twilio.sendSms(dto.trustedContactPhone, message)
     }
     if (dto.trustedContactEmail) {
-      void this.email.sendSafetyDateStarted(dto.trustedContactEmail, name, trackUrl, checkinAt.toLocaleString())
+      void this.email.sendSafetyDateStarted(
+        dto.trustedContactEmail,
+        name,
+        trackUrl,
+        checkinAt.toLocaleString(),
+      )
     }
 
     return this.formatSafetyDate(safetyDate)
@@ -96,7 +110,8 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
     const session = await this.prisma.safetyDate.findFirst({
       where: { id, userId, endedAt: null, sosTriggered: false },
     })
-    if (!session) throw new NotFoundException('No active safety date found or SOS already triggered')
+    if (!session)
+      throw new NotFoundException('No active safety date found or SOS already triggered')
 
     const updated = await this.prisma.safetyDate.update({
       where: { id },
@@ -168,7 +183,8 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
       const msg = `⚠️ ${name} missed their check-in time. Please check on them. Track their last known location: ${trackUrl}`
 
       if (session.trustedContactPhone) void this.twilio.sendSms(session.trustedContactPhone, msg)
-      if (session.trustedContactEmail) void this.email.sendSafetyDateMissedCheckin(session.trustedContactEmail, name, trackUrl)
+      if (session.trustedContactEmail)
+        void this.email.sendSafetyDateMissedCheckin(session.trustedContactEmail, name, trackUrl)
     }
   }
 
@@ -178,8 +194,13 @@ export class SafetyService implements OnModuleInit, OnModuleDestroy {
   }
 
   private formatSafetyDate(s: {
-    id: string; trackToken: string; checkinAt: Date; durationMinutes: number
-    endedAt: Date | null; sosTriggered: boolean; createdAt: Date
+    id: string
+    trackToken: string
+    checkinAt: Date
+    durationMinutes: number
+    endedAt: Date | null
+    sosTriggered: boolean
+    createdAt: Date
   }): object {
     return {
       id: s.id,

@@ -13,7 +13,6 @@ export default function TermsPage(): React.JSX.Element {
       <LegalHeader badge="Legal" title="Terms of Use" effectiveDate={EFFECTIVE} draft />
 
       <LegalArticle>
-
         <p>
           These Terms of Use (&quot;Terms&quot;) govern your access to and use of the CRUSH platform
           (&quot;Service&quot;) operated by Crush Inc. (&quot;we,&quot; &quot;us,&quot; or
@@ -37,8 +36,8 @@ export default function TermsPage(): React.JSX.Element {
 
         <h2>3. Phone Verification</h2>
         <p>
-          To access messaging features, you must verify a valid US phone number via one-time passcode
-          (OTP). Phone numbers are stored hashed and are not displayed to other users.
+          To access messaging features, you must verify a valid US phone number via one-time
+          passcode (OTP). Phone numbers are stored hashed and are not displayed to other users.
         </p>
 
         <h2>4. User Conduct</h2>
@@ -56,16 +55,17 @@ export default function TermsPage(): React.JSX.Element {
         <h2>5. Adult Content</h2>
         <p>
           CRUSH permits adult (NSFW) content on user profiles and in direct messages between users
-          who have enabled NSFW viewing. You must be 18+ to view or post adult content.
-          Content that depicts minors in any sexual context is strictly prohibited and will result in
-          immediate account termination and mandatory reporting to NCMEC under 18 U.S.C. § 2258A.
+          who have enabled NSFW viewing. You must be 18+ to view or post adult content. Content that
+          depicts minors in any sexual context is strictly prohibited and will result in immediate
+          account termination and mandatory reporting to NCMEC under 18 U.S.C. § 2258A.
         </p>
 
         <h2>6. Location Data</h2>
         <p>
           Your exact GPS coordinates are never shared with other users or third parties. Coordinates
-          are fuzzed server-side within your chosen randomization radius (minimum 200 m) before being
-          made available on the map. See our <Link href="/privacy">Privacy Policy</Link> for full details.
+          are fuzzed server-side within your chosen randomization radius (minimum 200 m) before
+          being made available on the map. See our <Link href="/privacy">Privacy Policy</Link> for
+          full details.
         </p>
 
         <h2>7. Intellectual Property</h2>
@@ -79,16 +79,17 @@ export default function TermsPage(): React.JSX.Element {
         <h2>8. Subscriptions &amp; Payments</h2>
         <p>
           CRUSH offers optional paid subscriptions (Premium and Premium+). Subscription terms,
-          pricing, and cancellation policies are disclosed at the time of purchase. You may cancel at
-          any time in ≤ 2 taps from your account settings. No refunds for partial periods except
+          pricing, and cancellation policies are disclosed at the time of purchase. You may cancel
+          at any time in ≤ 2 taps from your account settings. No refunds for partial periods except
           where required by law.
         </p>
 
         <h2>9. Termination</h2>
         <p>
-          We may suspend or terminate your account at any time for violations of these Terms, without
-          prior notice. You may delete your account at any time from settings. Upon deletion, your
-          personal data is removed within 30 days except where retention is required by law.
+          We may suspend or terminate your account at any time for violations of these Terms,
+          without prior notice. You may delete your account at any time from settings. Upon
+          deletion, your personal data is removed within 30 days except where retention is required
+          by law.
         </p>
 
         <h2>10. Disclaimers</h2>
@@ -119,8 +120,8 @@ export default function TermsPage(): React.JSX.Element {
 
         <h2>14. Contact</h2>
         <p>
-          Questions about these Terms:{' '}
-          <a href="mailto:legal@crush.app">legal@crush.app</a> · Crush Inc., Delaware, USA.
+          Questions about these Terms: <a href="mailto:legal@crush.app">legal@crush.app</a> · Crush
+          Inc., Delaware, USA.
         </p>
       </LegalArticle>
     </div>

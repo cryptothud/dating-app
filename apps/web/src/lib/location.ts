@@ -26,7 +26,9 @@ export const locationApi = {
     return api.get<MapUser[]>(`/location/map?${params.toString()}`)
   },
 
-  getClusters: (viewport: MapViewportQuery): Promise<Array<{ lat: number; lng: number; count: number }>> => {
+  getClusters: (
+    viewport: MapViewportQuery,
+  ): Promise<Array<{ lat: number; lng: number; count: number }>> => {
     const params = new URLSearchParams({
       swLat: String(viewport.swLat),
       swLng: String(viewport.swLng),
@@ -34,7 +36,9 @@ export const locationApi = {
       neLng: String(viewport.neLng),
     })
     if (viewport.zoom !== undefined) params.set('zoom', String(Math.floor(viewport.zoom)))
-    return api.get<Array<{ lat: number; lng: number; count: number }>>(`/location/map/clusters?${params.toString()}`)
+    return api.get<Array<{ lat: number; lng: number; count: number }>>(
+      `/location/map/clusters?${params.toString()}`,
+    )
   },
 
   getMyLocation: (): Promise<{ lat: number; lng: number; fuzzRadius: number } | null> =>

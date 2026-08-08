@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, ForbiddenException } from '@nestjs/common'
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { Response } from 'express'
@@ -49,18 +55,35 @@ export class AdminService {
     const family = randomUUID()
     const isProd = this.config.get('NODE_ENV') === 'production'
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync({ sub: user.id, email: user.email }, {
-        secret: this.config.get('JWT_SECRET'),
-        expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN'),
-      }),
-      this.jwt.signAsync({ sub: user.id, email: user.email, family }, {
-        secret: this.config.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
-      }),
+      this.jwt.signAsync(
+        { sub: user.id, email: user.email },
+        {
+          secret: this.config.get('JWT_SECRET'),
+          expiresIn: this.config.get('JWT_ACCESS_EXPIRES_IN'),
+        },
+      ),
+      this.jwt.signAsync(
+        { sub: user.id, email: user.email, family },
+        {
+          secret: this.config.get('JWT_REFRESH_SECRET'),
+          expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
+        },
+      ),
     ])
 
-    res.cookie('access_token', accessToken, { httpOnly: true, secure: isProd, sameSite: 'lax', maxAge: 15 * 60 * 1000 })
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: isProd, sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/api/auth' })
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000,
+    })
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    })
     return { message: 'Logged in' }
   }
 
@@ -75,12 +98,20 @@ export class AdminService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
     const [
-      totalUsers, newUsersToday, onlineNow, activeSubscriptions,
-      messagesTotal, openReports, openTickets, maintenanceMode,
+      totalUsers,
+      newUsersToday,
+      onlineNow,
+      activeSubscriptions,
+      messagesTotal,
+      openReports,
+      openTickets,
+      maintenanceMode,
     ] = await Promise.all([
       this.prisma.user.count({ where: { isSeeded: false } }),
       this.prisma.user.count({ where: { isSeeded: false, createdAt: { gte: startOfDay } } }),
-      this.prisma.user.count({ where: { isSeeded: false, lastActive: { gte: new Date(Date.now() - 5 * 60_000) } } }),
+      this.prisma.user.count({
+        where: { isSeeded: false, lastActive: { gte: new Date(Date.now() - 5 * 60_000) } },
+      }),
       this.prisma.subscription.count({ where: { expiresAt: { gt: now }, cancelledAt: null } }),
       this.prisma.message.count(),
       this.prisma.report.count({ where: { status: 'open' } }),
@@ -93,8 +124,14 @@ export class AdminService {
     })
 
     const result = {
-      totalUsers, newUsersToday, monthlySignups, onlineNow,
-      activeSubscriptions, messagesTotal, openReports, openTickets,
+      totalUsers,
+      newUsersToday,
+      monthlySignups,
+      onlineNow,
+      activeSubscriptions,
+      messagesTotal,
+      openReports,
+      openTickets,
       maintenanceMode: maintenanceMode === '1',
     }
 
@@ -105,15 +142,17 @@ export class AdminService {
   // ── User Management ───────────────────────────────────────────────
 
   async searchUsers(query: string, limit = 20, offset = 0) {
-    const where = query ? {
-      OR: [
-        { email: { contains: query, mode: 'insensitive' as const } },
-        { phone: { contains: query } },
-        { profile: { displayName: { contains: query, mode: 'insensitive' as const } } },
-        { id: query },
-      ],
-      isSeeded: false,
-    } : { isSeeded: false }
+    const where = query
+      ? {
+          OR: [
+            { email: { contains: query, mode: 'insensitive' as const } },
+            { phone: { contains: query } },
+            { profile: { displayName: { contains: query, mode: 'insensitive' as const } } },
+            { id: query },
+          ],
+          isSeeded: false,
+        }
+      : { isSeeded: false }
 
     const [total, users] = await Promise.all([
       this.prisma.user.count({ where }),
@@ -123,8 +162,15 @@ export class AdminService {
         skip: offset,
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true, email: true, phone: true, verified: true,
-          suspended: true, banned: true, role: true, createdAt: true, lastActive: true,
+          id: true,
+          email: true,
+          phone: true,
+          verified: true,
+          suspended: true,
+          banned: true,
+          role: true,
+          createdAt: true,
+          lastActive: true,
           timeoutUntil: true,
           profile: { select: { displayName: true } },
           subscription: { select: { tier: true, expiresAt: true } },
@@ -145,8 +191,15 @@ export class AdminService {
         skip: offset,
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true, email: true, verified: true, banned: true, suspended: true,
-          role: true, createdAt: true, timeoutUntil: true, banReason: true,
+          id: true,
+          email: true,
+          verified: true,
+          banned: true,
+          suspended: true,
+          role: true,
+          createdAt: true,
+          timeoutUntil: true,
+          banReason: true,
           profile: { select: { displayName: true } },
         },
       }),
@@ -165,8 +218,14 @@ export class AdminService {
         skip: offset,
         orderBy: { timeoutUntil: 'asc' },
         select: {
-          id: true, email: true, verified: true, banned: true, suspended: true,
-          role: true, createdAt: true, timeoutUntil: true,
+          id: true,
+          email: true,
+          verified: true,
+          banned: true,
+          suspended: true,
+          role: true,
+          createdAt: true,
+          timeoutUntil: true,
           profile: { select: { displayName: true } },
         },
       }),
@@ -192,7 +251,11 @@ export class AdminService {
   async warnUser(adminId: string, userId: string, reason: string) {
     const user = await this.requireUser(userId)
     await this.prisma.user.update({ where: { id: userId }, data: { warnCount: { increment: 1 } } })
-    await this.redis.set(`pending:warn:${userId}`, JSON.stringify({ reason, warnedAt: new Date().toISOString() }), 7 * 24 * 60 * 60)
+    await this.redis.set(
+      `pending:warn:${userId}`,
+      JSON.stringify({ reason, warnedAt: new Date().toISOString() }),
+      7 * 24 * 60 * 60,
+    )
     this.warnBus.emit('warn', userId, reason)
     void this.email.sendAccountSuspended(user.email, `Warning: ${reason}`)
     await this.audit.log(adminId, 'user.warn', userId, { reason })
@@ -215,7 +278,10 @@ export class AdminService {
   async banUser(adminId: string, userId: string, reason: string) {
     await this.requireCanActOn(adminId, userId)
     const user = await this.requireUser(userId)
-    await this.prisma.user.update({ where: { id: userId }, data: { banned: true, banReason: reason, suspended: false } })
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { banned: true, banReason: reason, suspended: false },
+    })
     void this.email.sendAccountBanned(user.email, reason)
     await this.audit.log(adminId, 'user.ban', userId, { reason })
     await this.invalidateSessions(userId)
@@ -224,7 +290,10 @@ export class AdminService {
 
   async unbanUser(adminId: string, userId: string) {
     await this.requireUser(userId)
-    await this.prisma.user.update({ where: { id: userId }, data: { banned: false, banReason: null } })
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { banned: false, banReason: null },
+    })
     await this.audit.log(adminId, 'user.unban', userId)
   }
 
@@ -233,7 +302,11 @@ export class AdminService {
     await this.requireUser(userId)
     const timeoutUntil = new Date(Date.now() + durationMinutes * 60_000)
     await this.prisma.user.update({ where: { id: userId }, data: { timeoutUntil } })
-    await this.audit.log(adminId, 'user.timeout', userId, { durationMinutes, reason, until: timeoutUntil.toISOString() })
+    await this.audit.log(adminId, 'user.timeout', userId, {
+      durationMinutes,
+      reason,
+      until: timeoutUntil.toISOString(),
+    })
   }
 
   async clearTimeout(adminId: string, userId: string) {
@@ -286,8 +359,18 @@ export class AdminService {
         take: limit,
         skip: offset,
         include: {
-          reporter: { select: { id: true, email: true, profile: { select: { displayName: true } } } },
-          reported: { select: { id: true, email: true, profile: { select: { displayName: true } }, suspended: true, banned: true } },
+          reporter: {
+            select: { id: true, email: true, profile: { select: { displayName: true } } },
+          },
+          reported: {
+            select: {
+              id: true,
+              email: true,
+              profile: { select: { displayName: true } },
+              suspended: true,
+              banned: true,
+            },
+          },
         },
       }),
     ])
@@ -317,7 +400,14 @@ export class AdminService {
         take: limit,
         skip: offset,
         include: {
-          user: { select: { id: true, suspended: true, banned: true, _count: { select: { reportsReceived: true } } } },
+          user: {
+            select: {
+              id: true,
+              suspended: true,
+              banned: true,
+              _count: { select: { reportsReceived: true } },
+            },
+          },
           _count: { select: { replies: true } },
         },
       }),
@@ -329,7 +419,15 @@ export class AdminService {
     const ticket = await this.prisma.supportTicket.findUnique({
       where: { id: ticketId },
       include: {
-        user: { select: { id: true, email: true, suspended: true, banned: true, profile: { select: { displayName: true } } } },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            suspended: true,
+            banned: true,
+            profile: { select: { displayName: true } },
+          },
+        },
         replies: { orderBy: { createdAt: 'asc' } },
       },
     })
@@ -342,7 +440,10 @@ export class AdminService {
     if (!ticket) throw new NotFoundException('Ticket not found')
 
     await this.prisma.supportTicketReply.create({ data: { ticketId, adminId, body } })
-    await this.prisma.supportTicket.update({ where: { id: ticketId }, data: { status: 'pending', updatedAt: new Date() } })
+    await this.prisma.supportTicket.update({
+      where: { id: ticketId },
+      data: { status: 'pending', updatedAt: new Date() },
+    })
     void this.email.sendSupportReply(ticket.email, ticket.subject, body)
     await this.audit.log(adminId, 'ticket.reply', ticket.userId ?? undefined, { ticketId })
   }
@@ -350,8 +451,14 @@ export class AdminService {
   async updateTicketStatus(adminId: string, ticketId: string, status: string) {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id: ticketId } })
     if (!ticket) throw new NotFoundException('Ticket not found')
-    await this.prisma.supportTicket.update({ where: { id: ticketId }, data: { status: status as never } })
-    await this.audit.log(adminId, 'ticket.status_change', ticket.userId ?? undefined, { ticketId, status })
+    await this.prisma.supportTicket.update({
+      where: { id: ticketId },
+      data: { status: status as never },
+    })
+    await this.audit.log(adminId, 'ticket.status_change', ticket.userId ?? undefined, {
+      ticketId,
+      status,
+    })
   }
 
   // ── System Controls ───────────────────────────────────────────────
@@ -402,19 +509,31 @@ export class AdminService {
       )
     }
 
-    await this.audit.log(adminId, 'system.broadcast_push', undefined, { title, recipients: subs.length })
+    await this.audit.log(adminId, 'system.broadcast_push', undefined, {
+      title,
+      recipients: subs.length,
+    })
   }
 
   // ── Audit Log ─────────────────────────────────────────────────────
 
-  async getAuditLog(opts: { adminId?: string; action?: string; targetUserId?: string; limit: number; offset: number }) {
+  async getAuditLog(opts: {
+    adminId?: string
+    action?: string
+    targetUserId?: string
+    limit: number
+    offset: number
+  }) {
     return this.audit.list(opts)
   }
 
   // ── Helpers ───────────────────────────────────────────────────────
 
   private async requireUser(userId: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true } })
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    })
     if (!user) throw new NotFoundException('User not found')
     return user
   }
@@ -428,12 +547,18 @@ export class AdminService {
     if (!actor || !target) throw new NotFoundException('User not found')
     const rank = (r: string) => (r === 'admin' ? 2 : r === 'moderator' ? 1 : 0)
     if (rank(actor.role) <= rank(target.role)) {
-      throw new ForbiddenException('You cannot perform this action on a user with equal or higher role')
+      throw new ForbiddenException(
+        'You cannot perform this action on a user with equal or higher role',
+      )
     }
   }
 
   private async invalidateSessions(userId: string) {
-    await this.redis.set(`sessions:invalidated_before:${userId}`, Date.now().toString(), 60 * 60 * 24 * 8)
+    await this.redis.set(
+      `sessions:invalidated_before:${userId}`,
+      Date.now().toString(),
+      60 * 60 * 24 * 8,
+    )
   }
 
   private invalidateStatsCache() {

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const PUBLIC_ROUTES = [
-  '/login', '/signup', '/verify-phone', '/', '/map', '/chat',
-  '/about', '/terms', '/privacy', '/safety', '/2257', '/takedown', '/content-removal',
+  '/login',
+  '/signup',
+  '/verify-phone',
+  '/',
+  '/map',
+  '/chat',
+  '/about',
+  '/terms',
+  '/privacy',
+  '/safety',
+  '/2257',
+  '/takedown',
+  '/content-removal',
   '/forgot-password',
   '/control', // control layout handles its own auth + maintenance gate
 ]
@@ -39,8 +50,18 @@ export function middleware(req: NextRequest): NextResponse {
   if (isAuthenticated && pathname !== '/verify-phone') {
     const payload = decodeJwtPayload(accessToken!)
     if (payload && payload['verified'] === false) {
-      const ALLOW_UNVERIFIED = ['/about', '/terms', '/privacy', '/safety', '/2257', '/takedown', '/content-removal']
-      const isLegalPage = ALLOW_UNVERIFIED.some((r) => pathname === r || pathname.startsWith(r + '/'))
+      const ALLOW_UNVERIFIED = [
+        '/about',
+        '/terms',
+        '/privacy',
+        '/safety',
+        '/2257',
+        '/takedown',
+        '/content-removal',
+      ]
+      const isLegalPage = ALLOW_UNVERIFIED.some(
+        (r) => pathname === r || pathname.startsWith(r + '/'),
+      )
       if (!isLegalPage) {
         return NextResponse.redirect(new URL('/verify-phone', req.url))
       }

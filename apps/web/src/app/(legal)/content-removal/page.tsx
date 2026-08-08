@@ -28,7 +28,6 @@ export default function ContentRemovalPage(): React.JSX.Element {
       <LegalHeader badge="Safety" title="Report or Request Content Removal" draft />
 
       <LegalArticle>
-
         <p>
           CRUSH provides multiple channels for reporting harmful content or requesting the removal
           of content that depicts you without your consent.
@@ -65,8 +64,8 @@ export default function ContentRemovalPage(): React.JSX.Element {
 
         <h3>DMCA / Copyright</h3>
         <p>
-          To submit a DMCA takedown notice, email <a href="mailto:dmca@crush.app">dmca@crush.app</a>.
-          Your notice must include:
+          To submit a DMCA takedown notice, email <a href="mailto:dmca@crush.app">dmca@crush.app</a>
+          . Your notice must include:
         </p>
         <ul>
           <li>Identification of the copyrighted work and infringing material</li>
@@ -85,20 +84,25 @@ export default function ContentRemovalPage(): React.JSX.Element {
 
       {/* Response times table */}
       <div className="mt-10 space-y-4">
-        <h2 className="font-display font-bold text-xl text-foreground tracking-tight">Response Times</h2>
-        <div className="rounded-xl border border-border overflow-hidden">
+        <h2 className="font-display text-foreground text-xl font-bold tracking-tight">
+          Response Times
+        </h2>
+        <div className="border-border overflow-hidden rounded-xl border">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="text-left px-4 py-3 font-medium text-foreground">Request type</th>
-                <th className="text-left px-4 py-3 font-medium text-foreground">Response time</th>
+              <tr className="border-border bg-muted/50 border-b">
+                <th className="text-foreground px-4 py-3 text-left font-medium">Request type</th>
+                <th className="text-foreground px-4 py-3 text-left font-medium">Response time</th>
               </tr>
             </thead>
             <tbody>
               {RESPONSE_TIMES.map((r, i) => (
-                <tr key={r.type} className={i < RESPONSE_TIMES.length - 1 ? 'border-b border-border' : ''}>
-                  <td className="px-4 py-3 text-foreground">{r.type}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{r.time}</td>
+                <tr
+                  key={r.type}
+                  className={i < RESPONSE_TIMES.length - 1 ? 'border-border border-b' : ''}
+                >
+                  <td className="text-foreground px-4 py-3">{r.type}</td>
+                  <td className="text-muted-foreground px-4 py-3">{r.time}</td>
                 </tr>
               ))}
             </tbody>
@@ -108,16 +112,20 @@ export default function ContentRemovalPage(): React.JSX.Element {
 
       {/* Contact directory */}
       <div className="mt-10 space-y-4">
-        <h2 className="font-display font-bold text-xl text-foreground tracking-tight">Contact Directory</h2>
-        <div className="grid sm:grid-cols-2 gap-3">
+        <h2 className="font-display text-foreground text-xl font-bold tracking-tight">
+          Contact Directory
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
           {CONTACTS.map((c) => (
             <a
               key={c.email}
               href={`mailto:${c.email}`}
-              className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/30 hover:bg-primary/3 transition-colors group no-underline"
+              className="border-border bg-card hover:border-primary/30 hover:bg-primary/3 group flex items-center justify-between rounded-xl border px-4 py-3 no-underline transition-colors"
             >
-              <span className="text-sm font-medium text-foreground">{c.label}</span>
-              <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">{c.email}</span>
+              <span className="text-foreground text-sm font-medium">{c.label}</span>
+              <span className="text-muted-foreground group-hover:text-primary text-sm transition-colors">
+                {c.email}
+              </span>
             </a>
           ))}
         </div>

@@ -10,7 +10,6 @@ export default function TakedownPage(): React.JSX.Element {
       <LegalHeader badge="Legal" title="TAKE IT DOWN Act Policy" effectiveDate="June 2026" draft />
 
       <LegalArticle>
-
         <p>
           The TAKE IT DOWN Act (Pub. L. No. 119-___, signed 2025) requires online platforms to
           remove intimate visual depictions of minors within 48 hours of receiving a valid notice.
@@ -31,8 +30,8 @@ export default function TakedownPage(): React.JSX.Element {
         </p>
         <ol>
           <li>
-            Email <a href="mailto:takedown@crush.app">takedown@crush.app</a> with the subject
-            line <strong>&quot;TAKE IT DOWN Act Request&quot;</strong>.
+            Email <a href="mailto:takedown@crush.app">takedown@crush.app</a> with the subject line{' '}
+            <strong>&quot;TAKE IT DOWN Act Request&quot;</strong>.
           </li>
           <li>
             Include: your name and relationship to the minor; a description of the content and its
@@ -40,8 +39,8 @@ export default function TakedownPage(): React.JSX.Element {
             is a minor.
           </li>
           <li>
-            We will acknowledge your request within 24 hours and complete removal or blocking
-            within 48 hours of a valid notice.
+            We will acknowledge your request within 24 hours and complete removal or blocking within
+            48 hours of a valid notice.
           </li>
         </ol>
 
@@ -57,8 +56,8 @@ export default function TakedownPage(): React.JSX.Element {
         <h2>Hash Matching &amp; Re-Upload Prevention</h2>
         <p>
           CRUSH uses PhotoDNA-based hash matching to prevent re-upload of known CSAM and intimate
-          images of minors. Removed content is hashed and blocklisted to prevent reappearance on
-          our platform or any platform using the same hash database.
+          images of minors. Removed content is hashed and blocklisted to prevent reappearance on our
+          platform or any platform using the same hash database.
         </p>
 
         <h2>Contact</h2>
@@ -68,9 +67,9 @@ export default function TakedownPage(): React.JSX.Element {
           General safety concerns: <a href="mailto:safety@crush.app">safety@crush.app</a>
         </p>
 
-        <p className="text-sm text-muted-foreground/70">
-          This policy will be updated as regulatory guidance under the TAKE IT DOWN Act is
-          issued by the FTC. Last reviewed June 2026.
+        <p className="text-muted-foreground/70 text-sm">
+          This policy will be updated as regulatory guidance under the TAKE IT DOWN Act is issued by
+          the FTC. Last reviewed June 2026.
         </p>
       </LegalArticle>
     </div>

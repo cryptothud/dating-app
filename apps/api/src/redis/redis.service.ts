@@ -93,7 +93,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return this.client.zcard(key)
   }
 
-  async zrevrangeWithScores(key: string, start: number, stop: number): Promise<Array<{ member: string; score: number }>> {
+  async zrevrangeWithScores(
+    key: string,
+    start: number,
+    stop: number,
+  ): Promise<Array<{ member: string; score: number }>> {
     const raw = await this.client.zrevrange(key, start, stop, 'WITHSCORES')
     const result: Array<{ member: string; score: number }> = []
     for (let i = 0; i < raw.length; i += 2) {

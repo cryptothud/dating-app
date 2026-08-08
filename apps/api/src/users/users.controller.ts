@@ -1,5 +1,16 @@
 import {
-  Controller, Post, Delete, Get, Patch, Param, Body, Req, UseGuards, HttpCode, HttpStatus, ForbiddenException,
+  Controller,
+  Post,
+  Delete,
+  Get,
+  Patch,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common'
 import { IsBoolean } from 'class-validator'
 import { Request } from 'express'
@@ -8,7 +19,9 @@ import { UsersService } from './users.service'
 import { PremiumService } from '../billing/premium.service'
 import { ReportDto } from './dto/report.dto'
 
-interface AuthRequest extends Request { user: { id: string } }
+interface AuthRequest extends Request {
+  user: { id: string }
+}
 
 class IncognitoDto {
   @IsBoolean()
@@ -42,7 +55,11 @@ export class UsersController {
 
   @Post(':id/report')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async report(@Req() req: AuthRequest, @Param('id') id: string, @Body() dto: ReportDto): Promise<void> {
+  async report(
+    @Req() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: ReportDto,
+  ): Promise<void> {
     await this.users.reportUser(req.user.id, id, dto)
   }
 

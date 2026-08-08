@@ -104,37 +104,41 @@ export default function UpgradePage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="bg-background h-full overflow-y-auto">
+      <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8 space-y-1">
-          <h1 className="text-3xl font-display font-bold text-foreground">Upgrade CRUSH</h1>
-          <p className="text-muted-foreground text-sm">Unlock group chats, voice notes, boosts, and more.</p>
+        <div className="mb-8 space-y-1 text-center">
+          <h1 className="font-display text-foreground text-3xl font-bold">Upgrade CRUSH</h1>
+          <p className="text-muted-foreground text-sm">
+            Unlock group chats, voice notes, boosts, and more.
+          </p>
         </div>
 
         {/* Annual toggle — save badge always visible */}
-        <div className="flex justify-center mb-6">
+        <div className="mb-6 flex justify-center">
           <button
             onClick={() => setAnnual(!annual)}
             className={[
-              'flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium border transition-colors',
+              'flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-medium transition-colors',
               annual
-                ? 'bg-purple-600 text-white border-purple-500'
+                ? 'border-purple-500 bg-purple-600 text-white'
                 : 'bg-background text-muted-foreground border-border hover:text-foreground',
             ].join(' ')}
           >
             <span>Annual billing</span>
-            <span className={[
-              'text-xs rounded-full px-2 py-0.5 transition-colors',
-              annual ? 'bg-white/20 text-white' : 'bg-purple-600/15 text-purple-500',
-            ].join(' ')}>
+            <span
+              className={[
+                'rounded-full px-2 py-0.5 text-xs transition-colors',
+                annual ? 'bg-white/20 text-white' : 'bg-purple-600/15 text-purple-500',
+              ].join(' ')}
+            >
               Save ~50%
             </span>
           </button>
         </div>
 
         {error && (
-          <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400 text-center">
+          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
             {error}
           </div>
         )}
@@ -142,13 +146,13 @@ export default function UpgradePage() {
         {/* Mobile: swipeable cards */}
         <div className="md:hidden">
           {/* Tier tabs */}
-          <div className="flex rounded-xl border border-border bg-muted/40 p-1 mb-5 gap-1">
+          <div className="border-border bg-muted/40 mb-5 flex gap-1 rounded-xl border p-1">
             {TIERS.map((tier, i) => (
               <button
                 key={tier.id}
                 onClick={() => setActiveTier(i)}
                 className={[
-                  'flex-1 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
                   activeTier === i
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground',
@@ -171,31 +175,45 @@ export default function UpgradePage() {
               style={{ transform: `translateX(calc(-${activeTier * 100}%))` }}
             >
               {TIERS.map((tier) => (
-                <div key={tier.id} className="w-full shrink-0 px-px relative pt-4 flex flex-col">
+                <div key={tier.id} className="relative flex w-full shrink-0 flex-col px-px pt-4">
                   {tier.badge && (
-                    <span className={[
-                      'absolute top-0 left-1/2 -translate-x-1/2 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap z-10',
-                      tier.badgeColor,
-                    ].join(' ')}>
+                    <span
+                      className={[
+                        'absolute left-1/2 top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold',
+                        tier.badgeColor,
+                      ].join(' ')}
+                    >
                       {tier.badge}
                     </span>
                   )}
-                  <div className={['rounded-2xl border bg-card p-6 flex-1 flex flex-col', tier.color].join(' ')}>
+                  <div
+                    className={[
+                      'bg-card flex flex-1 flex-col rounded-2xl border p-6',
+                      tier.color,
+                    ].join(' ')}
+                  >
                     <div className="mb-5">
-                      <h2 className="text-xl font-display font-bold text-foreground">{tier.name}</h2>
+                      <h2 className="font-display text-foreground text-xl font-bold">
+                        {tier.name}
+                      </h2>
                       <div className="mt-1">
-                        <span className="text-3xl font-bold text-foreground">
+                        <span className="text-foreground text-3xl font-bold">
                           {annual ? tier.price.annual : tier.price.monthly}
                         </span>
                         {tier.id !== 'free' && (
-                          <span className="text-muted-foreground text-sm ml-1">/{annual ? 'yr' : 'mo'}</span>
+                          <span className="text-muted-foreground ml-1 text-sm">
+                            /{annual ? 'yr' : 'mo'}
+                          </span>
                         )}
                       </div>
                     </div>
-                    <ul className="flex-1 space-y-2.5 mb-6">
+                    <ul className="mb-6 flex-1 space-y-2.5">
                       {tier.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                          <span className="text-purple-400 shrink-0">✓</span>
+                        <li
+                          key={f}
+                          className="text-muted-foreground flex items-center gap-2.5 text-sm"
+                        >
+                          <span className="shrink-0 text-purple-400">✓</span>
                           {f}
                         </li>
                       ))}
@@ -208,11 +226,15 @@ export default function UpgradePage() {
                         tier.id === 'free'
                           ? 'bg-muted text-muted-foreground cursor-default'
                           : tier.id === 'premium'
-                          ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60'
-                          : 'bg-amber-500 text-black hover:bg-amber-600 disabled:opacity-60',
+                            ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60'
+                            : 'bg-amber-500 text-black hover:bg-amber-600 disabled:opacity-60',
                       ].join(' ')}
                     >
-                      {tier.id === 'free' ? 'Current plan' : loading === tier.id ? 'Redirecting…' : `Get ${tier.name}`}
+                      {tier.id === 'free'
+                        ? 'Current plan'
+                        : loading === tier.id
+                          ? 'Redirecting…'
+                          : `Get ${tier.name}`}
                     </button>
                   </div>
                 </div>
@@ -221,14 +243,14 @@ export default function UpgradePage() {
           </div>
 
           {/* Dot indicators */}
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="mt-4 flex justify-center gap-2">
             {TIERS.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setActiveTier(i)}
                 className={[
                   'rounded-full transition-all duration-200',
-                  i === activeTier ? 'w-5 h-1.5 bg-primary' : 'w-1.5 h-1.5 bg-border',
+                  i === activeTier ? 'bg-primary h-1.5 w-5' : 'bg-border h-1.5 w-1.5',
                 ].join(' ')}
               />
             ))}
@@ -238,27 +260,39 @@ export default function UpgradePage() {
         {/* Desktop: 3-column grid */}
         <div className="hidden md:grid md:grid-cols-3 md:gap-4">
           {TIERS.map((tier) => (
-            <div key={tier.id} className={['relative rounded-2xl border bg-card p-6 flex flex-col', tier.color].join(' ')}>
+            <div
+              key={tier.id}
+              className={['bg-card relative flex flex-col rounded-2xl border p-6', tier.color].join(
+                ' ',
+              )}
+            >
               {tier.badge && (
-                <div className={['absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap', tier.badgeColor].join(' ')}>
+                <div
+                  className={[
+                    'absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold',
+                    tier.badgeColor,
+                  ].join(' ')}
+                >
                   {tier.badge}
                 </div>
               )}
               <div className="mb-4">
-                <h2 className="text-lg font-display font-bold text-foreground">{tier.name}</h2>
+                <h2 className="font-display text-foreground text-lg font-bold">{tier.name}</h2>
                 <div className="mt-1">
-                  <span className="text-2xl font-bold text-foreground">
+                  <span className="text-foreground text-2xl font-bold">
                     {annual ? tier.price.annual : tier.price.monthly}
                   </span>
                   {tier.id !== 'free' && (
-                    <span className="text-muted-foreground text-sm ml-1">/{annual ? 'yr' : 'mo'}</span>
+                    <span className="text-muted-foreground ml-1 text-sm">
+                      /{annual ? 'yr' : 'mo'}
+                    </span>
                   )}
                 </div>
               </div>
-              <ul className="flex-1 space-y-2 mb-6">
+              <ul className="mb-6 flex-1 space-y-2">
                 {tier.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <span className="text-purple-400 mt-0.5">✓</span>
+                  <li key={f} className="text-muted-foreground flex items-start gap-2 text-sm">
+                    <span className="mt-0.5 text-purple-400">✓</span>
                     {f}
                   </li>
                 ))}
@@ -271,22 +305,30 @@ export default function UpgradePage() {
                   tier.id === 'free'
                     ? 'bg-muted text-muted-foreground cursor-default'
                     : tier.id === 'premium'
-                    ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60'
-                    : 'bg-amber-500 text-black hover:bg-amber-600 disabled:opacity-60',
+                      ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60'
+                      : 'bg-amber-500 text-black hover:bg-amber-600 disabled:opacity-60',
                 ].join(' ')}
               >
-                {tier.id === 'free' ? 'Current plan' : loading === tier.id ? 'Redirecting…' : `Get ${tier.name}`}
+                {tier.id === 'free'
+                  ? 'Current plan'
+                  : loading === tier.id
+                    ? 'Redirecting…'
+                    : `Get ${tier.name}`}
               </button>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          Subscriptions renew automatically. Cancel anytime in 2 taps from Settings — no dark patterns.
+        <p className="text-muted-foreground mt-8 text-center text-xs">
+          Subscriptions renew automatically. Cancel anytime in 2 taps from Settings — no dark
+          patterns.
         </p>
 
-        <div className="text-center mt-4">
-          <button onClick={() => router.back()} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => router.back()}
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
             ← Back
           </button>
         </div>

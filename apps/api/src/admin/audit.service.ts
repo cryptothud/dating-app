@@ -33,11 +33,22 @@ export class AuditService {
     details?: Record<string, unknown>,
   ): Promise<void> {
     await this.prisma.auditLog.create({
-      data: { adminId, action, targetUserId, details: details as Prisma.InputJsonValue | undefined },
+      data: {
+        adminId,
+        action,
+        targetUserId,
+        details: details as Prisma.InputJsonValue | undefined,
+      },
     })
   }
 
-  async list(opts: { adminId?: string; action?: string; targetUserId?: string; limit: number; offset: number }) {
+  async list(opts: {
+    adminId?: string
+    action?: string
+    targetUserId?: string
+    limit: number
+    offset: number
+  }) {
     const where = {
       ...(opts.adminId ? { adminId: opts.adminId } : {}),
       ...(opts.action ? { action: { contains: opts.action } } : {}),

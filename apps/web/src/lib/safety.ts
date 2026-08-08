@@ -27,21 +27,15 @@ export interface TrackingInfo {
 }
 
 export const safety = {
-  create: (payload: CreateSafetyDatePayload) =>
-    api.post<SafetyDate>('/safety/dates', payload),
+  create: (payload: CreateSafetyDatePayload) => api.post<SafetyDate>('/safety/dates', payload),
 
-  getActive: () =>
-    api.get<SafetyDate | null>('/safety/dates/active'),
+  getActive: () => api.get<SafetyDate | null>('/safety/dates/active'),
 
-  checkin: (id: string) =>
-    api.post<SafetyDate>(`/safety/dates/${id}/checkin`),
+  checkin: (id: string) => api.post<SafetyDate>(`/safety/dates/${id}/checkin`),
 
-  sos: (id: string) =>
-    api.post<SafetyDate>(`/safety/dates/${id}/sos`),
+  sos: (id: string) => api.post<SafetyDate>(`/safety/dates/${id}/sos`),
 
-  end: (id: string) =>
-    api.del(`/safety/dates/${id}`),
+  end: (id: string) => api.del(`/safety/dates/${id}`),
 
-  getTracking: (token: string) =>
-    api.get<TrackingInfo>(`/track/${token}`),
+  getTracking: (token: string) => api.get<TrackingInfo>(`/track/${token}`),
 }

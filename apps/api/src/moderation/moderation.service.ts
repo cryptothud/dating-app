@@ -28,10 +28,21 @@ export interface GoogleResult {
   flagged: boolean
 }
 
-interface AzureCategory { category: string; severity: number }
-interface AzureResponse { categoriesAnalysis: AzureCategory[] }
-interface GoogleSafeSearch { adult: string; violence: string; racy: string }
-interface GoogleResponse { responses: Array<{ safeSearchAnnotation?: GoogleSafeSearch }> }
+interface AzureCategory {
+  category: string
+  severity: number
+}
+interface AzureResponse {
+  categoriesAnalysis: AzureCategory[]
+}
+interface GoogleSafeSearch {
+  adult: string
+  violence: string
+  racy: string
+}
+interface GoogleResponse {
+  responses: Array<{ safeSearchAnnotation?: GoogleSafeSearch }>
+}
 
 @Injectable()
 export class ModerationService {
@@ -53,7 +64,9 @@ export class ModerationService {
     // Azure Content Safety base64 limit is 4 MB
     const AZURE_MAX_BYTES = 4 * 1024 * 1024
     if (imageBuffer.length > AZURE_MAX_BYTES) {
-      this.logger.warn(`Azure scan skipped — image (${(imageBuffer.length / 1024 / 1024).toFixed(1)} MB) exceeds 4 MB base64 limit`)
+      this.logger.warn(
+        `Azure scan skipped — image (${(imageBuffer.length / 1024 / 1024).toFixed(1)} MB) exceeds 4 MB base64 limit`,
+      )
       return null
     }
 
@@ -75,7 +88,8 @@ export class ModerationService {
     }
 
     const data = (await res.json()) as AzureResponse
-    const find = (name: string) => data.categoriesAnalysis.find((c) => c.category === name)?.severity ?? 0
+    const find = (name: string) =>
+      data.categoriesAnalysis.find((c) => c.category === name)?.severity ?? 0
     const sexualSeverity = find('Sexual')
     const violenceSeverity = find('Violence')
 
@@ -98,7 +112,12 @@ export class ModerationService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        requests: [{ image: { source: { imageUri: imageUrl } }, features: [{ type: 'SAFE_SEARCH_DETECTION' }] }],
+        requests: [
+          {
+            image: { source: { imageUri: imageUrl } },
+            features: [{ type: 'SAFE_SEARCH_DETECTION' }],
+          },
+        ],
       }),
     })
 
@@ -146,7 +165,9 @@ export class ModerationService {
       const data = (await res.json()) as { IsMatch: boolean }
       return { isMatch: data.IsMatch }
     } catch (err) {
-      this.logger.error(`PhotoDNA request failed: ${err instanceof Error ? err.message : String(err)}`)
+      this.logger.error(
+        `PhotoDNA request failed: ${err instanceof Error ? err.message : String(err)}`,
+      )
       return null
     }
   }

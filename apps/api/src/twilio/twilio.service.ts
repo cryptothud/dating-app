@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException, ServiceUnavailableException } from '@nestjs/common'
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  ServiceUnavailableException,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import Twilio from 'twilio'
 import type { Env } from '../config/configuration'
@@ -41,8 +46,15 @@ export class TwilioService {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown Twilio error'
       this.logger.error(`Twilio sendOtp failed: ${msg}`)
-      if (msg.includes('unverified') || msg.includes('Caller ID') || msg.includes('21608') || msg.includes('21219')) {
-        throw new BadRequestException('This number is not verified in your Twilio trial account. Add it at console.twilio.com → Verified Caller IDs.')
+      if (
+        msg.includes('unverified') ||
+        msg.includes('Caller ID') ||
+        msg.includes('21608') ||
+        msg.includes('21219')
+      ) {
+        throw new BadRequestException(
+          'This number is not verified in your Twilio trial account. Add it at console.twilio.com → Verified Caller IDs.',
+        )
       }
       throw new BadRequestException(`Could not send verification code: ${msg}`)
     }

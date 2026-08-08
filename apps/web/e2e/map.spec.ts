@@ -10,8 +10,12 @@ test.describe('Map page — anonymous', () => {
 
   test('age gate has confirm and go-back actions', async ({ page }) => {
     await page.goto('/map')
-    await expect(page.getByRole('button', { name: /i am 18|confirm|yes/i })).toBeVisible({ timeout: 8_000 })
-    await expect(page.getByRole('button', { name: /go back|cancel|no/i })).toBeVisible({ timeout: 8_000 })
+    await expect(page.getByRole('button', { name: /i am 18|confirm|yes/i })).toBeVisible({
+      timeout: 8_000,
+    })
+    await expect(page.getByRole('button', { name: /go back|cancel|no/i })).toBeVisible({
+      timeout: 8_000,
+    })
   })
 
   test('map renders after age gate is dismissed', async ({ page }) => {

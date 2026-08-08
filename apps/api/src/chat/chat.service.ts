@@ -1,4 +1,10 @@
-import { Injectable, ForbiddenException, NotFoundException, BadRequestException, OnModuleInit } from '@nestjs/common'
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  OnModuleInit,
+} from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
 import { EmailService } from '../email/email.service'
@@ -33,7 +39,9 @@ export class ChatService implements OnModuleInit {
     const R = 3958.8
     const dLat = toRad(lat2 - lat1)
     const dLng = toRad(lng2 - lng1)
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   }
 
@@ -87,7 +95,14 @@ export class ChatService implements OnModuleInit {
         const otherLoc = other.user.location
         const distanceMiles =
           myLoc && otherLoc
-            ? Math.round(this.haversineMi(myLoc.latitude, myLoc.longitude, otherLoc.latitude, otherLoc.longitude) * 10) / 10
+            ? Math.round(
+                this.haversineMi(
+                  myLoc.latitude,
+                  myLoc.longitude,
+                  otherLoc.latitude,
+                  otherLoc.longitude,
+                ) * 10,
+              ) / 10
             : null
 
         return {
@@ -163,14 +178,25 @@ export class ChatService implements OnModuleInit {
     })
     if (!user) return { allowed: false, errorMessage: 'User not found' }
     if (user.banned) {
-      return { allowed: false, errorMessage: `Your account has been permanently banned.${user.banReason ? ` Reason: ${user.banReason}` : ''}` }
+      return {
+        allowed: false,
+        errorMessage: `Your account has been permanently banned.${user.banReason ? ` Reason: ${user.banReason}` : ''}`,
+      }
     }
     if (user.suspended) {
       return { allowed: false, errorMessage: 'Your account is currently suspended.' }
     }
     if (user.timeoutUntil && user.timeoutUntil > new Date()) {
-      const until = user.timeoutUntil.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-      return { allowed: false, errorMessage: `You are in timeout until ${until}. You cannot send messages during this time.` }
+      const until = user.timeoutUntil.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+      return {
+        allowed: false,
+        errorMessage: `You are in timeout until ${until}. You cannot send messages during this time.`,
+      }
     }
     return { allowed: true }
   }
@@ -179,10 +205,10 @@ export class ChatService implements OnModuleInit {
     await this.assertParticipant(userId, conversationId)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const participant = await (this.prisma.conversationParticipant as any).findUnique({
+    const participant = (await (this.prisma.conversationParticipant as any).findUnique({
       where: { conversationId_userId: { conversationId, userId } },
       select: { clearedAt: true },
-    }) as { clearedAt: Date | null } | null
+    })) as { clearedAt: Date | null } | null
 
     const msgs = await this.prisma.message.findMany({
       where: {
@@ -219,7 +245,9 @@ export class ChatService implements OnModuleInit {
     if (conv?.archivedAt) {
       const { isPremiumPlus } = await this.premium.getStatus(userId)
       if (!isPremiumPlus) {
-        throw new ForbiddenException('This conversation is archived. Upgrade to Premium+ to revive it.')
+        throw new ForbiddenException(
+          'This conversation is archived. Upgrade to Premium+ to revive it.',
+        )
       }
       await this.prisma.conversation.update({
         where: { id: conversationId },
@@ -244,7 +272,12 @@ export class ChatService implements OnModuleInit {
     })
 
     const msg = await this.prisma.message.create({
-      data: { conversationId, senderId: userId, body, ...(mediaType ? { mediaType: mediaType as never } : {}) },
+      data: {
+        conversationId,
+        senderId: userId,
+        body,
+        ...(mediaType ? { mediaType: mediaType as never } : {}),
+      },
     })
 
     return {
@@ -315,7 +348,11 @@ export class ChatService implements OnModuleInit {
                   profile: {
                     select: {
                       displayName: true,
-                      photos: { orderBy: [{ isPrimary: 'desc' }, { order: 'asc' }], take: 1, select: { url: true } },
+                      photos: {
+                        orderBy: [{ isPrimary: 'desc' }, { order: 'asc' }],
+                        take: 1,
+                        select: { url: true },
+                      },
                     },
                   },
                   location: true,
@@ -331,9 +368,17 @@ export class ChatService implements OnModuleInit {
     const other = conv.participants[0]
     if (!other) throw new NotFoundException('Conversation not found')
     const otherLoc = other.user.location
-    const distanceMiles = myLoc && otherLoc
-      ? Math.round(this.haversineMi(myLoc.latitude, myLoc.longitude, otherLoc.latitude, otherLoc.longitude) * 10) / 10
-      : null
+    const distanceMiles =
+      myLoc && otherLoc
+        ? Math.round(
+            this.haversineMi(
+              myLoc.latitude,
+              myLoc.longitude,
+              otherLoc.latitude,
+              otherLoc.longitude,
+            ) * 10,
+          ) / 10
+        : null
     return {
       id: conv.id,
       type: conv.type,
@@ -378,7 +423,13 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async uploadImageMessage(userId: string, conversationId: string, buffer: Buffer, mimetype: string, body?: string) {
+  async uploadImageMessage(
+    userId: string,
+    conversationId: string,
+    buffer: Buffer,
+    mimetype: string,
+    body?: string,
+  ) {
     await this.assertParticipant(userId, conversationId)
 
     const otherMsg = await this.prisma.message.findFirst({
@@ -435,10 +486,7 @@ export class ChatService implements OnModuleInit {
     }
   }
 
-  async notifyMessagesWaiting(
-    senderId: string,
-    conversationId: string,
-  ): Promise<void> {
+  async notifyMessagesWaiting(senderId: string, conversationId: string): Promise<void> {
     const participants = await this.prisma.conversationParticipant.findMany({
       where: { conversationId, userId: { not: senderId } },
       include: {
@@ -487,7 +535,9 @@ export class ChatService implements OnModuleInit {
     return user?.profile?.displayName ?? 'Someone'
   }
 
-  async getSenderProfile(userId: string): Promise<{ displayName: string; avatarUrl: string | null }> {
+  async getSenderProfile(
+    userId: string,
+  ): Promise<{ displayName: string; avatarUrl: string | null }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -508,20 +558,30 @@ export class ChatService implements OnModuleInit {
   async pinMessage(conversationId: string, messageId: string, durationMinutes: number) {
     const msg = await this.prisma.message.findUnique({ where: { id: messageId } })
     if (!msg) throw new NotFoundException('Message not found')
-    if (msg.conversationId !== conversationId) throw new BadRequestException('Message not in this conversation')
+    if (msg.conversationId !== conversationId)
+      throw new BadRequestException('Message not in this conversation')
     if (msg.deletedAt) throw new BadRequestException('Cannot pin a deleted message')
 
     const senderName = await this.getDisplayName(msg.senderId)
     const pinnedUntil = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString()
     const pinned = { messageId, body: msg.body ?? '', senderName, pinnedUntil }
-    await this.redis.set(`pinned:conv:${conversationId}`, JSON.stringify(pinned), durationMinutes * 60)
+    await this.redis.set(
+      `pinned:conv:${conversationId}`,
+      JSON.stringify(pinned),
+      durationMinutes * 60,
+    )
     return pinned
   }
 
   async getPinnedMessage(conversationId: string) {
     const raw = await this.redis.get(`pinned:conv:${conversationId}`)
     if (!raw) return null
-    const pinned = JSON.parse(raw) as { messageId: string; body: string; senderName: string; pinnedUntil: string }
+    const pinned = JSON.parse(raw) as {
+      messageId: string
+      body: string
+      senderName: string
+      pinnedUntil: string
+    }
     if (new Date(pinned.pinnedUntil) <= new Date()) return null
     return pinned
   }
@@ -562,7 +622,9 @@ export class ChatService implements OnModuleInit {
         include: {
           user: {
             include: {
-              profile: { include: { photos: { orderBy: { isPrimary: 'desc' as const }, take: 1 } } },
+              profile: {
+                include: { photos: { orderBy: { isPrimary: 'desc' as const }, take: 1 } },
+              },
             },
           },
         },
@@ -571,15 +633,25 @@ export class ChatService implements OnModuleInit {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereParticipant = (extra: Record<string, unknown>) => ({ some: { userId, ...extra } as any })
+    const whereParticipant = (extra: Record<string, unknown>) => ({
+      some: { userId, ...extra } as any,
+    })
 
     const [systemArchived, userArchived] = await Promise.all([
       this.prisma.conversation.findMany({
-        where: { type: 'direct', archivedAt: { not: null }, participants: whereParticipant({ hiddenAt: null }) },
+        where: {
+          type: 'direct',
+          archivedAt: { not: null },
+          participants: whereParticipant({ hiddenAt: null }),
+        },
         include,
       }),
       this.prisma.conversation.findMany({
-        where: { type: 'direct', archivedAt: null, participants: whereParticipant({ archivedAt: { not: null }, hiddenAt: null }) },
+        where: {
+          type: 'direct',
+          archivedAt: null,
+          participants: whereParticipant({ archivedAt: { not: null }, hiddenAt: null }),
+        },
         include,
       }),
     ])
@@ -601,7 +673,9 @@ export class ChatService implements OnModuleInit {
           photoUrl: other.user.profile?.photos[0]?.url ?? null,
           verified: other.user.verified,
         },
-        lastMessage: last ? { body: last.body ?? '', sentAt: last.sentAt.toISOString(), senderId: last.senderId } : null,
+        lastMessage: last
+          ? { body: last.body ?? '', sentAt: last.sentAt.toISOString(), senderId: last.senderId }
+          : null,
         unreadCount: 0,
         archivedAt,
         isUserArchived,

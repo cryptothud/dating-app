@@ -37,10 +37,7 @@ export class ProfileController {
   }
 
   @Patch()
-  update(
-    @CurrentUser() user: AuthUser,
-    @Body() dto: UpdateProfileDto,
-  ): Promise<ProfileResponse> {
+  update(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto): Promise<ProfileResponse> {
     return this.profile.updateProfile(user.id, dto)
   }
 

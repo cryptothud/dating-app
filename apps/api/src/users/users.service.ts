@@ -44,10 +44,17 @@ export class UsersService {
   }
 
   async deleteAccount(userId: string): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    })
     if (!user) return
     // Invalidate all sessions before deleting
-    await this.redis.set(`sessions:invalidated_before:${userId}`, Date.now().toString(), 60 * 60 * 24 * 8)
+    await this.redis.set(
+      `sessions:invalidated_before:${userId}`,
+      Date.now().toString(),
+      60 * 60 * 24 * 8,
+    )
     await this.prisma.user.delete({ where: { id: userId } })
     void this.email.sendAccountDeleted(user.email)
   }

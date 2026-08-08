@@ -28,19 +28,22 @@ let refreshPromise: Promise<void> | null = null
 function silentRefresh(): Promise<void> {
   if (refreshPromise) return refreshPromise
   refreshPromise = fetch(`${BASE_URL}/auth/refresh`, { method: 'POST', credentials: 'include' })
-    .then((r) => { if (!r.ok) throw new Error('refresh_failed') })
-    .finally(() => { refreshPromise = null })
+    .then((r) => {
+      if (!r.ok) throw new Error('refresh_failed')
+    })
+    .finally(() => {
+      refreshPromise = null
+    })
   return refreshPromise
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const isFormData = init?.body instanceof FormData
   const headers = isFormData
-    ? { ...init?.headers }  // let the browser set multipart Content-Type + boundary
+    ? { ...init?.headers } // let the browser set multipart Content-Type + boundary
     : { 'Content-Type': 'application/json', ...init?.headers }
 
-  const doFetch = () =>
-    fetch(`${BASE_URL}${path}`, { ...init, credentials: 'include', headers })
+  const doFetch = () => fetch(`${BASE_URL}${path}`, { ...init, credentials: 'include', headers })
 
   let res = await doFetch()
 
@@ -91,6 +94,5 @@ export const api = {
     request<T>(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
   del: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: 'DELETE', body: body ? JSON.stringify(body) : undefined }),
-  upload: <T>(path: string, form: FormData) =>
-    request<T>(path, { method: 'POST', body: form }),
+  upload: <T>(path: string, form: FormData) => request<T>(path, { method: 'POST', body: form }),
 }

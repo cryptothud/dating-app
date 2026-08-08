@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common'
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { PremiumService } from '../billing/premium.service'
 import type { CreateEventDto } from './dto/create-event.dto'
@@ -104,7 +109,8 @@ export class EventsService {
   async createEvent(userId: string, dto: CreateEventDto): Promise<EventSummary> {
     await this.premium.requirePremium(userId)
     const scheduledAt = new Date(dto.scheduledAt)
-    if (scheduledAt <= new Date()) throw new BadRequestException('Event must be scheduled in the future')
+    if (scheduledAt <= new Date())
+      throw new BadRequestException('Event must be scheduled in the future')
 
     // Expire 4 hours after scheduled time
     const expiresAt = new Date(scheduledAt.getTime() + 4 * 60 * 60 * 1000)

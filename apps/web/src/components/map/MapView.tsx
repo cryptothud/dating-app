@@ -32,11 +32,15 @@ function readLastPos(): [number, number] | null {
     const { lng, lat } = JSON.parse(raw) as { lng: number; lat: number }
     if (typeof lng !== 'number' || typeof lat !== 'number') return null
     return [lng, lat]
-  } catch { return null }
+  } catch {
+    return null
+  }
 }
 
 function writeLastPos(lat: number, lng: number): void {
-  try { localStorage.setItem(LAST_POS_KEY, JSON.stringify({ lat, lng })) } catch {}
+  try {
+    localStorage.setItem(LAST_POS_KEY, JSON.stringify({ lat, lng }))
+  } catch {}
 }
 
 const COLOR_ONLINE = '#9333ea'
@@ -81,7 +85,7 @@ function createCircle(lng: number, lat: number, radiusMeters: number): Feature<P
   for (let i = 0; i < steps; i++) {
     const angle = (i / steps) * 2 * Math.PI
     const dLat = (km / R) * (180 / Math.PI) * Math.cos(angle)
-    const dLng = (km / R) * (180 / Math.PI) * Math.sin(angle) / Math.cos(latRad)
+    const dLng = ((km / R) * (180 / Math.PI) * Math.sin(angle)) / Math.cos(latRad)
     coords.push([lng + dLng, lat + dLat])
   }
   if (coords[0]) coords.push(coords[0])
@@ -90,7 +94,9 @@ function createCircle(lng: number, lat: number, radiusMeters: number): Feature<P
 
 const CLUSTER_ZOOM_THRESHOLD = 9
 
-function clustersToGeoJSON(clusters: Array<{ lat: number; lng: number; count: number }>): FeatureCollection {
+function clustersToGeoJSON(
+  clusters: Array<{ lat: number; lng: number; count: number }>,
+): FeatureCollection {
   return {
     type: 'FeatureCollection',
     features: clusters.map((c) => ({
@@ -117,7 +123,9 @@ function eventsToGeoJSON(events: EventSummary[]): FeatureCollection {
   }
 }
 
-function loadCircularPfp(url: string): Promise<{ data: Uint8Array; width: number; height: number }> {
+function loadCircularPfp(
+  url: string,
+): Promise<{ data: Uint8Array; width: number; height: number }> {
   const scale = Math.min(window.devicePixelRatio || 1, 3)
   const px = Math.round(40 * scale)
   // Proxy through Next.js image optimizer — same-origin request, no canvas CORS taint
@@ -199,12 +207,18 @@ function queueProfileImageLoads(
 
     const addInitials = () => {
       const initials = getInitials(u.displayName)
-      const bgColor = u.activelyLooking ? COLOR_ACTIVE : u.status === 'online' ? COLOR_ONLINE : COLOR_AWAY
+      const bgColor = u.activelyLooking
+        ? COLOR_ACTIVE
+        : u.status === 'online'
+          ? COLOR_ONLINE
+          : COLOR_AWAY
       try {
         const img = createInitialsPlaceholder(initials, bgColor, scale)
         if (!map.hasImage(id)) map.addImage(id, img, { pixelRatio: scale })
         loaded.add(id)
-      } catch { /* map not ready */ }
+      } catch {
+        /* map not ready */
+      }
     }
 
     if (u.primaryPhotoUrl) {
@@ -215,10 +229,14 @@ function queueProfileImageLoads(
             if (!map.getCanvas()) return
             if (!map.hasImage(id)) map.addImage(id, img, { pixelRatio: scale })
             loaded.add(id)
-          } catch { /* map destroyed between load and addImage */ }
+          } catch {
+            /* map destroyed between load and addImage */
+          }
         })
         .catch(addInitials)
-        .finally(() => { pending.delete(id) })
+        .finally(() => {
+          pending.delete(id)
+        })
     } else {
       addInitials()
     }
@@ -226,7 +244,19 @@ function queueProfileImageLoads(
 }
 
 function setupLayers(map: maplibregl.Map): void {
-  for (const layer of ['cluster-count', 'clusters', 'highlight-ring', 'looking-pulse', 'unclustered-point', 'unclustered-pfp', 'event-pins', 'fuzz-zone-fill', 'fuzz-zone-outline', 'server-cluster-circle', 'server-cluster-count']) {
+  for (const layer of [
+    'cluster-count',
+    'clusters',
+    'highlight-ring',
+    'looking-pulse',
+    'unclustered-point',
+    'unclustered-pfp',
+    'event-pins',
+    'fuzz-zone-fill',
+    'fuzz-zone-outline',
+    'server-cluster-circle',
+    'server-cluster-count',
+  ]) {
     if (map.getLayer(layer)) map.removeLayer(layer)
   }
   for (const source of ['users', 'events', 'my-fuzz-zone', 'server-clusters']) {
@@ -288,7 +318,12 @@ function setupLayers(map: maplibregl.Map): void {
     id: 'fuzz-zone-outline',
     type: 'line',
     source: 'my-fuzz-zone',
-    paint: { 'line-color': '#9333ea', 'line-opacity': 0.35, 'line-width': 1.5, 'line-dasharray': [4, 3] },
+    paint: {
+      'line-color': '#9333ea',
+      'line-opacity': 0.35,
+      'line-width': 1.5,
+      'line-dasharray': [4, 3],
+    },
   })
 
   map.addSource('users', {
@@ -360,9 +395,12 @@ function setupLayers(map: maplibregl.Map): void {
       'circle-radius': ['case', ['boolean', ['get', 'isBoosted'], false], 10, 8],
       'circle-color': [
         'case',
-        ['boolean', ['get', 'activelyLooking'], false], COLOR_ACTIVE,
-        ['==', ['get', 'status'], 'online'], COLOR_ONLINE,
-        ['==', ['get', 'status'], 'away'], COLOR_AWAY,
+        ['boolean', ['get', 'activelyLooking'], false],
+        COLOR_ACTIVE,
+        ['==', ['get', 'status'], 'online'],
+        COLOR_ONLINE,
+        ['==', ['get', 'status'], 'away'],
+        COLOR_AWAY,
         COLOR_SEEDED,
       ],
       'circle-opacity': ['case', ['==', ['get', 'status'], 'seeded'], 0.5, 1],
@@ -521,8 +559,10 @@ export function MapView(): React.JSX.Element {
     // a user can pan until an icon disappears and triangulate the exact real GPS.
     const PAD = 0.014
     const viewport = {
-      swLat: bounds.getSouth() - PAD, swLng: bounds.getWest() - PAD,
-      neLat: bounds.getNorth() + PAD, neLng: bounds.getEast() + PAD,
+      swLat: bounds.getSouth() - PAD,
+      swLng: bounds.getWest() - PAD,
+      neLat: bounds.getNorth() + PAD,
+      neLng: bounds.getEast() + PAD,
       zoom,
     }
     try {
@@ -531,7 +571,13 @@ export function MapView(): React.JSX.Element {
       const clusterSrc = map.getSource('server-clusters') as maplibregl.GeoJSONSource | undefined
       const eventSrc = map.getSource('events') as maplibregl.GeoJSONSource | undefined
 
-      const individualLayers = ['clusters', 'cluster-count', 'highlight-ring', 'unclustered-point', 'unclustered-pfp']
+      const individualLayers = [
+        'clusters',
+        'cluster-count',
+        'highlight-ring',
+        'unclustered-point',
+        'unclustered-pfp',
+      ]
       const serverClusterLayers = ['server-cluster-circle', 'server-cluster-count']
 
       if (useServerClusters) {
@@ -541,8 +587,12 @@ export function MapView(): React.JSX.Element {
         ])
         userSrc?.setData({ type: 'FeatureCollection', features: [] })
         clusterSrc?.setData(clustersToGeoJSON(clusters))
-        for (const l of individualLayers) { if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none') }
-        for (const l of serverClusterLayers) { if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'visible') }
+        for (const l of individualLayers) {
+          if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none')
+        }
+        for (const l of serverClusterLayers) {
+          if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'visible')
+        }
         eventSrc?.setData(eventsToGeoJSON(evts))
         setEvents(evts)
       } else {
@@ -551,8 +601,12 @@ export function MapView(): React.JSX.Element {
           eventsApi.getMapEvents(viewport),
         ])
         clusterSrc?.setData({ type: 'FeatureCollection', features: [] })
-        for (const l of serverClusterLayers) { if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none') }
-        for (const l of individualLayers) { if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'visible') }
+        for (const l of serverClusterLayers) {
+          if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none')
+        }
+        for (const l of individualLayers) {
+          if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'visible')
+        }
         const othersOnly = currentUserIdRef.current
           ? users.filter((u) => u.id !== currentUserIdRef.current)
           : users
@@ -561,7 +615,9 @@ export function MapView(): React.JSX.Element {
         setEvents(evts)
         queueProfileImageLoads(map, othersOnly, loadedPfpRef.current, pendingPfpRef.current)
       }
-    } catch { /* non-fatal */ }
+    } catch {
+      /* non-fatal */
+    }
   }, [])
 
   // Initialize map
@@ -573,7 +629,11 @@ export function MapView(): React.JSX.Element {
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: initialStyle,
-      center: (() => { const p = readLastPos(); startedAtCachedPosRef.current = p !== null; return p ?? DEFAULT_CENTER })(),
+      center: (() => {
+        const p = readLastPos()
+        startedAtCachedPosRef.current = p !== null
+        return p ?? DEFAULT_CENTER
+      })(),
       zoom: DEFAULT_ZOOM,
       maxZoom: 16,
       attributionControl: false,
@@ -582,7 +642,9 @@ export function MapView(): React.JSX.Element {
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
 
     // Suppress noisy vector-tile parse errors (out-of-bounds index, malformed tiles)
-    map.on('error', () => { /* noop */ })
+    map.on('error', () => {
+      /* noop */
+    })
 
     map.once('load', () => {
       setupLayers(map)
@@ -631,9 +693,19 @@ export function MapView(): React.JSX.Element {
       if (found) setSelectedEvent(found)
     })
 
-    for (const layer of ['clusters', 'server-cluster-circle', 'unclustered-point', 'unclustered-pfp', 'event-pins']) {
-      map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer' })
-      map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = '' })
+    for (const layer of [
+      'clusters',
+      'server-cluster-circle',
+      'unclustered-point',
+      'unclustered-pfp',
+      'event-pins',
+    ]) {
+      map.on('mouseenter', layer, () => {
+        map.getCanvas().style.cursor = 'pointer'
+      })
+      map.on('mouseleave', layer, () => {
+        map.getCanvas().style.cursor = ''
+      })
     }
 
     return () => {
@@ -665,14 +737,19 @@ export function MapView(): React.JSX.Element {
       const gps = myGpsRef.current
       if (gps) {
         const fuzzSrc = map.getSource('my-fuzz-zone') as maplibregl.GeoJSONSource | undefined
-        fuzzSrc?.setData({ type: 'FeatureCollection', features: [createCircle(gps.lng, gps.lat, fuzzRadiusRef.current)] })
+        fuzzSrc?.setData({
+          type: 'FeatureCollection',
+          features: [createCircle(gps.lng, gps.lat, fuzzRadiusRef.current)],
+        })
       }
       void fetchUsers()
     })
   }, [resolvedTheme, mapReady, fetchUsers])
 
   // Keep filtersRef in sync for fetchUsers closure
-  useEffect(() => { filtersRef.current = filters }, [filters])
+  useEffect(() => {
+    filtersRef.current = filters
+  }, [filters])
 
   // Location tracking + polling
   useEffect(() => {
@@ -701,7 +778,9 @@ export function MapView(): React.JSX.Element {
             const el = document.createElement('div')
             el.className = 'crush-you-dot'
             el.title = 'You — click to edit profile'
-            el.addEventListener('click', () => { window.location.href = '/profile' })
+            el.addEventListener('click', () => {
+              window.location.href = '/profile'
+            })
             myDotElRef.current = el
             if (activelyLookingRef.current) el.classList.add('crush-you-dot--active')
             myMarkerRef.current = new maplibregl.Marker({ element: el, anchor: 'center' })
@@ -714,15 +793,24 @@ export function MapView(): React.JSX.Element {
           // Fuzz zone circle — shows the blur radius so users know their exact GPS isn't shown
           myGpsRef.current = { lat: latitude, lng: longitude }
           const fuzzSrc = map.getSource('my-fuzz-zone') as maplibregl.GeoJSONSource | undefined
-          fuzzSrc?.setData({ type: 'FeatureCollection', features: [createCircle(longitude, latitude, fuzzRadiusRef.current)] })
+          fuzzSrc?.setData({
+            type: 'FeatureCollection',
+            features: [createCircle(longitude, latitude, fuzzRadiusRef.current)],
+          })
 
           const now = Date.now()
           if (now - lastLocationUpdateRef.current >= 60_000) {
             lastLocationUpdateRef.current = now
-            try { await locationApi.update(latitude, longitude) } catch { /* refresh handled in api.ts */ }
+            try {
+              await locationApi.update(latitude, longitude)
+            } catch {
+              /* refresh handled in api.ts */
+            }
           }
         },
-        (err) => { if (err.code === err.PERMISSION_DENIED) setLocationDenied(true) },
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) setLocationDenied(true)
+        },
         { enableHighAccuracy: true, maximumAge: 10000 },
       )
     }
@@ -746,18 +834,26 @@ export function MapView(): React.JSX.Element {
   // Fetch fuzz radius so the circle on the map reflects the user's chosen blur
   useEffect(() => {
     if (!isAuthenticated || isLoading) return
-    locationApi.getMyLocation()
-      .then((loc) => { if (loc?.fuzzRadius) fuzzRadiusRef.current = loc.fuzzRadius })
+    locationApi
+      .getMyLocation()
+      .then((loc) => {
+        if (loc?.fuzzRadius) fuzzRadiusRef.current = loc.fuzzRadius
+      })
       .catch(() => {})
   }, [isAuthenticated, isLoading])
 
   // Load actively-looking status
   useEffect(() => {
     if (!isAuthenticated || isLoading) return
-    locationApi.getActivelyLooking().then(({ enabled, expiresAt }) => {
-      setActivelyLooking(enabled)
-      setActivelyLookingExpiresAt(expiresAt)
-    }).catch(() => { /* not fatal */ })
+    locationApi
+      .getActivelyLooking()
+      .then(({ enabled, expiresAt }) => {
+        setActivelyLooking(enabled)
+        setActivelyLookingExpiresAt(expiresAt)
+      })
+      .catch(() => {
+        /* not fatal */
+      })
   }, [isAuthenticated, isLoading])
 
   async function handleToggleActivelyLooking(next: boolean): Promise<void> {
@@ -775,7 +871,9 @@ export function MapView(): React.JSX.Element {
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapReady) return
-    type LayerHandler = (e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] } & object) => void
+    type LayerHandler = (
+      e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] } & object,
+    ) => void
     const handler: LayerHandler = (e) => {
       const feature = e.features?.[0]
       if (!feature?.properties) return
@@ -785,48 +883,65 @@ export function MapView(): React.JSX.Element {
     }
     map.off('click', 'event-pins', handler)
     map.on('click', 'event-pins', handler)
-    return () => { map.off('click', 'event-pins', handler) }
+    return () => {
+      map.off('click', 'event-pins', handler)
+    }
   }, [events, mapReady])
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={containerRef} className="w-full h-full" />
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
 
       {!mapReady && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background">
+        <div className="bg-background absolute inset-0 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            <p className="text-sm text-muted-foreground">Loading map…</p>
+            <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+            <p className="text-muted-foreground text-sm">Loading map…</p>
           </div>
         </div>
       )}
 
       {locationDenied && isAuthenticated && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/90 backdrop-blur text-white text-xs font-medium shadow-lg">
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current shrink-0" strokeWidth="2" strokeLinecap="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+        <div className="absolute left-1/2 top-3 z-30 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-amber-500/90 px-3 py-2 text-xs font-medium text-white shadow-lg backdrop-blur">
+          <svg
+            viewBox="0 0 24 24"
+            className="h-3.5 w-3.5 shrink-0 fill-none stroke-current"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+            <circle cx="12" cy="10" r="3" />
           </svg>
           Location blocked — enable it in your browser to appear on the map
         </div>
       )}
 
       {mapReady && (
-        <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+        <div className="absolute left-3 top-3 z-20 flex items-center gap-2">
           <button
-            onClick={() => { setShowFilters((s) => !s); setSelectedUser(null); setSelectedEvent(null) }}
+            onClick={() => {
+              setShowFilters((s) => !s)
+              setSelectedUser(null)
+              setSelectedEvent(null)
+            }}
             className={[
-              'flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold shadow-md transition-colors',
+              'flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold shadow-md transition-colors',
               activeFilterCount > 0
                 ? 'bg-primary text-white'
-                : 'bg-background/90 backdrop-blur text-foreground border border-border hover:bg-muted/80',
+                : 'bg-background/90 text-foreground border-border hover:bg-muted/80 border backdrop-blur',
             ].join(' ')}
           >
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5 fill-none stroke-current"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
             </svg>
             Filters
             {activeFilterCount > 0 && (
-              <span className="ml-0.5 bg-white/25 text-white rounded-full px-1.5 py-0.5 text-[10px] leading-none">
+              <span className="ml-0.5 rounded-full bg-white/25 px-1.5 py-0.5 text-[10px] leading-none text-white">
                 {activeFilterCount}
               </span>
             )}
@@ -837,11 +952,22 @@ export function MapView(): React.JSX.Element {
               title="Go to my location"
               onClick={() => {
                 const gps = myGpsRef.current
-                if (gps) mapRef.current?.flyTo({ center: [gps.lng, gps.lat], zoom: DEFAULT_ZOOM, duration: 800 })
+                if (gps)
+                  mapRef.current?.flyTo({
+                    center: [gps.lng, gps.lat],
+                    zoom: DEFAULT_ZOOM,
+                    duration: 800,
+                  })
               }}
-              className="w-8 h-8 rounded-xl bg-background/90 backdrop-blur border border-border text-foreground hover:bg-muted/80 shadow-md flex items-center justify-center transition-colors"
+              className="bg-background/90 border-border text-foreground hover:bg-muted/80 flex h-8 w-8 items-center justify-center rounded-xl border shadow-md backdrop-blur transition-colors"
             >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4 fill-none stroke-current"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <circle cx="12" cy="12" r="3" />
                 <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
               </svg>
@@ -854,42 +980,51 @@ export function MapView(): React.JSX.Element {
         {showFilters && (
           <FilterPanel
             filters={filters}
-            onChange={(f) => { setFilters(f) }}
+            onChange={(f) => {
+              setFilters(f)
+            }}
             onClose={() => setShowFilters(false)}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedUser && (isAuthenticated ? (
-          <UserProfileDrawer
-            key={selectedUser.id}
-            userId={selectedUser.id}
-            displayName={selectedUser.displayName ?? null}
-            lastActiveAt={selectedUser.lastActiveAt}
-            activelyLooking={selectedUser.activelyLooking}
-            distanceMiles={myGpsRef.current
-              ? (() => {
-                  const R = 6371
-                  const toRad = (d: number) => (d * Math.PI) / 180
-                  const dLat = toRad(selectedUser.lat - myGpsRef.current!.lat)
-                  const dLng = toRad(selectedUser.lng - myGpsRef.current!.lng)
-                  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(myGpsRef.current!.lat)) * Math.cos(toRad(selectedUser.lat)) * Math.sin(dLng / 2) ** 2
-                  return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) / 1.60934
-                })()
-              : undefined}
-            onClose={() => setSelectedUser(null)}
-            onMessage={handleMessage}
-          />
-        ) : (
-          <MiniProfileCard
-            key={selectedUser.id}
-            user={selectedUser}
-            isAuthenticated={isAuthenticated}
-            onClose={() => setSelectedUser(null)}
-            onMessage={handleMessage}
-          />
-        ))}
+        {selectedUser &&
+          (isAuthenticated ? (
+            <UserProfileDrawer
+              key={selectedUser.id}
+              userId={selectedUser.id}
+              displayName={selectedUser.displayName ?? null}
+              lastActiveAt={selectedUser.lastActiveAt}
+              activelyLooking={selectedUser.activelyLooking}
+              distanceMiles={
+                myGpsRef.current
+                  ? (() => {
+                      const R = 6371
+                      const toRad = (d: number) => (d * Math.PI) / 180
+                      const dLat = toRad(selectedUser.lat - myGpsRef.current!.lat)
+                      const dLng = toRad(selectedUser.lng - myGpsRef.current!.lng)
+                      const a =
+                        Math.sin(dLat / 2) ** 2 +
+                        Math.cos(toRad(myGpsRef.current!.lat)) *
+                          Math.cos(toRad(selectedUser.lat)) *
+                          Math.sin(dLng / 2) ** 2
+                      return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) / 1.60934
+                    })()
+                  : undefined
+              }
+              onClose={() => setSelectedUser(null)}
+              onMessage={handleMessage}
+            />
+          ) : (
+            <MiniProfileCard
+              key={selectedUser.id}
+              user={selectedUser}
+              isAuthenticated={isAuthenticated}
+              onClose={() => setSelectedUser(null)}
+              onMessage={handleMessage}
+            />
+          ))}
       </AnimatePresence>
 
       <AnimatePresence>
@@ -901,7 +1036,7 @@ export function MapView(): React.JSX.Element {
             onClose={() => setSelectedEvent(null)}
             onRsvpChange={(updated) => {
               setSelectedEvent(updated)
-              setEvents((prev) => prev.map((e) => e.id === updated.id ? updated : e))
+              setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
             }}
           />
         )}

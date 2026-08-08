@@ -14,7 +14,11 @@ import { PaymentFailedEmail } from './templates/payment-failed'
 import { AccountSuspendedEmail } from './templates/account-suspended'
 import { AccountBannedEmail } from './templates/account-banned'
 import { AccountDeletedEmail } from './templates/account-deleted'
-import { SafetyDateStartedEmail, SafetyDateSosEmail, SafetyDateMissedCheckinEmail } from './templates/safety-date'
+import {
+  SafetyDateStartedEmail,
+  SafetyDateSosEmail,
+  SafetyDateMissedCheckinEmail,
+} from './templates/safety-date'
 import { SupportReplyEmail } from './templates/support-reply'
 
 @Injectable()
@@ -72,7 +76,12 @@ export class EmailService {
     )
   }
 
-  async sendSubscriptionReceipt(to: string, planName: string, amount: string, periodEnd: string): Promise<void> {
+  async sendSubscriptionReceipt(
+    to: string,
+    planName: string,
+    amount: string,
+    periodEnd: string,
+  ): Promise<void> {
     await this.send(
       to,
       `Your CRUSH ${planName} receipt`,
@@ -114,7 +123,12 @@ export class EmailService {
     )
   }
 
-  async sendSafetyDateStarted(to: string, name: string, trackUrl: string, checkinTime: string): Promise<void> {
+  async sendSafetyDateStarted(
+    to: string,
+    name: string,
+    trackUrl: string,
+    checkinTime: string,
+  ): Promise<void> {
     await this.send(
       to,
       `${name} shared their location with you for safety`,
@@ -148,7 +162,9 @@ export class EmailService {
 
   async sendAccountDeleted(to: string): Promise<void> {
     const deadline = new Date(Date.now() + 30 * 24 * 3600 * 1000).toLocaleDateString('en-US', {
-      month: 'long', day: 'numeric', year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
     })
     await this.send(
       to,

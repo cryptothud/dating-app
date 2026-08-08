@@ -17,21 +17,40 @@ import type { MessageDto } from '@dating-app/types'
 // ── Icons ────────────────────────────────────────────────────────
 function BackIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5 fill-none stroke-current"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M19 12H5M12 5l-7 7 7 7" />
     </svg>
   )
 }
 function SendIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5 fill-none stroke-current"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
     </svg>
   )
 }
 function MicIcon({ active }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className={['w-5 h-5 fill-none stroke-current', active ? 'text-red-400' : ''].join(' ')} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className={['h-5 w-5 fill-none stroke-current', active ? 'text-red-400' : ''].join(' ')}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="9" y="2" width="6" height="11" rx="3" />
       <path d="M5 10a7 7 0 0014 0M12 19v4M8 23h8" />
     </svg>
@@ -39,7 +58,7 @@ function MicIcon({ active }: { active?: boolean }) {
 }
 function VerifiedIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-primary shrink-0">
+    <svg viewBox="0 0 16 16" className="fill-primary h-3.5 w-3.5 shrink-0">
       <path d="M8 1l1.48 3.01 3.32.48-2.4 2.34.57 3.3L8 8.57 5.03 10.13l.57-3.3-2.4-2.34 3.32-.48z" />
     </svg>
   )
@@ -48,21 +67,28 @@ function VerifiedIcon() {
 // ── Pinned message banner ─────────────────────────────────────────
 function PinnedBanner({ pinned, onDismiss }: { pinned: PinnedMessage; onDismiss: () => void }) {
   return (
-    <div className="shrink-0 flex items-center gap-2.5 pl-3 pr-3 py-2 border-b border-primary/20 bg-primary/[0.06] dark:bg-primary/[0.12]">
-      <div className="w-[3px] h-7 rounded-full bg-primary shrink-0" />
-      <svg viewBox="0 0 16 16" className="w-3 h-3 fill-primary shrink-0 opacity-70">
+    <div className="border-primary/20 bg-primary/[0.06] dark:bg-primary/[0.12] flex shrink-0 items-center gap-2.5 border-b py-2 pl-3 pr-3">
+      <div className="bg-primary h-7 w-[3px] shrink-0 rounded-full" />
+      <svg viewBox="0 0 16 16" className="fill-primary h-3 w-3 shrink-0 opacity-70">
         <path d="M10.667 2a.667.667 0 0 1 .471.195l2.667 2.667a.667.667 0 0 1-.688 1.099L11.333 5.49V9.333a.667.667 0 0 1-.369.597l-2.666 1.333a.667.667 0 0 1-.894-.298L6.667 9.745l-2.37 2.37a.667.667 0 0 1-.942-.942L5.724 8.8 4.505 8.07a.667.667 0 0 1-.298-.894l1.333-2.667A.667.667 0 0 1 6.137 4h3.843l.446-1.789A.667.667 0 0 1 10.667 2z" />
       </svg>
-      <div className="flex-1 min-w-0">
-        <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">Pinned</span>
-        <p className="text-xs text-foreground truncate leading-snug">{pinned.body}</p>
+      <div className="min-w-0 flex-1">
+        <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
+          Pinned
+        </span>
+        <p className="text-foreground truncate text-xs leading-snug">{pinned.body}</p>
       </div>
       <button
         onClick={onDismiss}
         aria-label="Dismiss pinned message"
-        className="w-6 h-6 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors shrink-0"
+        className="text-muted-foreground hover:text-foreground hover:bg-primary/10 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-colors"
       >
-        <svg viewBox="0 0 16 16" className="w-3 h-3 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
+        <svg
+          viewBox="0 0 16 16"
+          className="h-3 w-3 fill-none stroke-current"
+          strokeWidth="2"
+          strokeLinecap="round"
+        >
           <path d="M12 4L4 12M4 4l8 8" />
         </svg>
       </button>
@@ -73,10 +99,10 @@ function PinnedBanner({ pinned, onDismiss }: { pinned: PinnedMessage; onDismiss:
 // ── Date separator ───────────────────────────────────────────────
 function DateSeparator({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="my-4 flex items-center gap-3">
+      <div className="bg-border h-px flex-1" />
+      <span className="text-muted-foreground text-[11px] font-medium">{label}</span>
+      <div className="bg-border h-px flex-1" />
     </div>
   )
 }
@@ -91,7 +117,11 @@ function VoicePlayer({ src, isMine }: { src: string; isMine: boolean }) {
   const toggle = () => {
     const el = audioRef.current
     if (!el) return
-    if (playing) { el.pause() } else { void el.play() }
+    if (playing) {
+      el.pause()
+    } else {
+      void el.play()
+    }
   }
 
   const fmt = (s: number) => {
@@ -101,32 +131,49 @@ function VoicePlayer({ src, isMine }: { src: string; isMine: boolean }) {
   }
 
   return (
-    <div className={['flex items-center gap-2.5 px-3 py-2 rounded-2xl min-w-[160px]',
-      isMine ? 'bg-primary text-white rounded-br-sm' : 'bg-muted text-foreground rounded-bl-sm'].join(' ')}>
+    <div
+      className={[
+        'flex min-w-[160px] items-center gap-2.5 rounded-2xl px-3 py-2',
+        isMine ? 'bg-primary rounded-br-sm text-white' : 'bg-muted text-foreground rounded-bl-sm',
+      ].join(' ')}
+    >
       <audio
         ref={audioRef}
         src={src}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
-        onEnded={() => { setPlaying(false); setProgress(0) }}
+        onEnded={() => {
+          setPlaying(false)
+          setProgress(0)
+        }}
         onTimeUpdate={() => setProgress(audioRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
       />
-      <button onClick={toggle} className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors">
+      <button
+        onClick={toggle}
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 transition-colors hover:bg-white/30"
+      >
         {playing ? (
-          <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-current"><rect x="3" y="2" width="4" height="12" rx="1"/><rect x="9" y="2" width="4" height="12" rx="1"/></svg>
+          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
+            <rect x="3" y="2" width="4" height="12" rx="1" />
+            <rect x="9" y="2" width="4" height="12" rx="1" />
+          </svg>
         ) : (
-          <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-current"><path d="M4 2l10 6-10 6V2z"/></svg>
+          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
+            <path d="M4 2l10 6-10 6V2z" />
+          </svg>
         )}
       </button>
-      <div className="flex-1 flex flex-col gap-1 min-w-0">
-        <div className="h-1 bg-white/30 rounded-full overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="h-1 overflow-hidden rounded-full bg-white/30">
           <div
-            className="h-full bg-current rounded-full transition-all"
+            className="h-full rounded-full bg-current transition-all"
             style={{ width: duration > 0 ? `${(progress / duration) * 100}%` : '0%' }}
           />
         </div>
-        <span className={['text-[10px]', isMine ? 'text-white/70' : 'text-muted-foreground'].join(' ')}>
+        <span
+          className={['text-[10px]', isMine ? 'text-white/70' : 'text-muted-foreground'].join(' ')}
+        >
           {fmt(playing ? progress : duration)}
         </span>
       </div>
@@ -134,12 +181,17 @@ function VoicePlayer({ src, isMine }: { src: string; isMine: boolean }) {
   )
 }
 
-
 // ── Message bubble ───────────────────────────────────────────────
 function MessageBubble({
-  msg, isMine, showSeen, isPremium,
+  msg,
+  isMine,
+  showSeen,
+  isPremium,
 }: {
-  msg: MessageDto; isMine: boolean; showSeen: boolean; isPremium: boolean
+  msg: MessageDto
+  isMine: boolean
+  showSeen: boolean
+  isPremium: boolean
 }) {
   const isVoice = msg.mediaType === 'voice'
   const isImage = msg.mediaType === 'photo'
@@ -148,7 +200,9 @@ function MessageBubble({
 
   useEffect(() => {
     if (!lightboxOpen) return
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightboxOpen(false) }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false)
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [lightboxOpen])
@@ -156,32 +210,47 @@ function MessageBubble({
   return (
     <div className={['flex flex-col', isMine ? 'items-end' : 'items-start'].join(' ')}>
       {isDeleted ? (
-        <div className="max-w-[75%] px-4 py-2.5 rounded-2xl border border-border">
-          <p className="text-xs text-muted-foreground/60 italic">Message deleted</p>
+        <div className="border-border max-w-[75%] rounded-2xl border px-4 py-2.5">
+          <p className="text-muted-foreground/60 text-xs italic">Message deleted</p>
         </div>
       ) : isVoice && msg.mediaUrl ? (
         <>
           <VoicePlayer src={msg.mediaUrl} isMine={isMine} />
-          <span className="text-[10px] text-muted-foreground mt-0.5 px-1">{formatMessageTime(msg.sentAt)}</span>
+          <span className="text-muted-foreground mt-0.5 px-1 text-[10px]">
+            {formatMessageTime(msg.sentAt)}
+          </span>
         </>
       ) : isImage && msg.mediaUrl ? (
-        <div className={['max-w-[75%] flex flex-col gap-1', isMine ? 'items-end' : 'items-start'].join(' ')}>
+        <div
+          className={['flex max-w-[75%] flex-col gap-1', isMine ? 'items-end' : 'items-start'].join(
+            ' ',
+          )}
+        >
           <button onClick={() => setLightboxOpen(true)} className="focus:outline-none">
             <img
               src={msg.mediaUrl}
               alt="Image"
-              className={['rounded-2xl max-h-72 w-auto object-cover cursor-zoom-in hover:opacity-90 transition-opacity', isMine ? 'rounded-br-sm' : 'rounded-bl-sm'].join(' ')}
+              className={[
+                'max-h-72 w-auto cursor-zoom-in rounded-2xl object-cover transition-opacity hover:opacity-90',
+                isMine ? 'rounded-br-sm' : 'rounded-bl-sm',
+              ].join(' ')}
             />
           </button>
           {msg.body && (
-            <div className={[
-              'px-4 py-2 rounded-2xl text-sm',
-              isMine ? 'bg-primary text-white rounded-br-sm self-end' : 'bg-muted dark:bg-white/10 text-foreground rounded-bl-sm self-start',
-            ].join(' ')}>
-              <p className="leading-relaxed break-words">{msg.body}</p>
+            <div
+              className={[
+                'rounded-2xl px-4 py-2 text-sm',
+                isMine
+                  ? 'bg-primary self-end rounded-br-sm text-white'
+                  : 'bg-muted text-foreground self-start rounded-bl-sm dark:bg-white/10',
+              ].join(' ')}
+            >
+              <p className="break-words leading-relaxed">{msg.body}</p>
             </div>
           )}
-          <span className="text-[10px] text-muted-foreground px-1">{formatMessageTime(msg.sentAt)}</span>
+          <span className="text-muted-foreground px-1 text-[10px]">
+            {formatMessageTime(msg.sentAt)}
+          </span>
 
           <AnimatePresence>
             {lightboxOpen && (
@@ -190,7 +259,7 @@ function MessageBubble({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4"
                 onClick={() => setLightboxOpen(false)}
               >
                 <motion.img
@@ -200,14 +269,19 @@ function MessageBubble({
                   transition={{ duration: 0.15 }}
                   src={msg.mediaUrl}
                   alt="Image"
-                  className="max-w-full max-h-full object-contain rounded-xl select-none"
+                  className="max-h-full max-w-full select-none rounded-xl object-contain"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <button
                   onClick={() => setLightboxOpen(false)}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                  className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 >
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5 fill-none stroke-current"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
                     <path d="M18 6L6 18M6 6l12 12" />
                   </svg>
                 </button>
@@ -217,20 +291,33 @@ function MessageBubble({
         </div>
       ) : (
         <>
-          <div className={[
-            'max-w-[75%] px-4 py-2.5 rounded-2xl text-sm',
-            isMine ? 'bg-primary text-white rounded-br-sm' : 'bg-muted dark:bg-white/10 text-foreground rounded-bl-sm',
-          ].join(' ')}>
-            <p className="leading-relaxed break-words">{msg.body}</p>
+          <div
+            className={[
+              'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
+              isMine
+                ? 'bg-primary rounded-br-sm text-white'
+                : 'bg-muted text-foreground rounded-bl-sm dark:bg-white/10',
+            ].join(' ')}
+          >
+            <p className="break-words leading-relaxed">{msg.body}</p>
           </div>
-          <div className={['flex items-center gap-1 mt-0.5 px-1', isMine ? 'justify-end' : 'justify-start'].join(' ')}>
-            {msg.editedAt && <span className="text-[10px] text-muted-foreground italic">edited</span>}
-            <span className="text-[10px] text-muted-foreground">{formatMessageTime(msg.sentAt)}</span>
+          <div
+            className={[
+              'mt-0.5 flex items-center gap-1 px-1',
+              isMine ? 'justify-end' : 'justify-start',
+            ].join(' ')}
+          >
+            {msg.editedAt && (
+              <span className="text-muted-foreground text-[10px] italic">edited</span>
+            )}
+            <span className="text-muted-foreground text-[10px]">
+              {formatMessageTime(msg.sentAt)}
+            </span>
           </div>
         </>
       )}
       {isMine && showSeen && isPremium && !isDeleted && (
-        <span className="text-[10px] text-muted-foreground mt-0.5 px-1">Seen</span>
+        <span className="text-muted-foreground mt-0.5 px-1 text-[10px]">Seen</span>
       )}
     </div>
   )
@@ -241,8 +328,11 @@ function groupByDate(messages: MessageDto[]): Array<{ date: string; messages: Me
   for (const msg of messages) {
     const label = formatMessageDate(msg.sentAt)
     const last = groups[groups.length - 1]
-    if (last?.date === label) { last.messages.push(msg) }
-    else { groups.push({ date: label, messages: [msg] }) }
+    if (last?.date === label) {
+      last.messages.push(msg)
+    } else {
+      groups.push({ date: label, messages: [msg] })
+    }
   }
   return groups
 }
@@ -261,7 +351,9 @@ function useVoiceRecorder() {
       const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
       recorderRef.current = recorder
       chunksRef.current = []
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data)
+      }
       recorder.start(100)
       setRecording(true)
       setDuration(0)
@@ -274,9 +366,16 @@ function useVoiceRecorder() {
 
   const stop = useCallback((): Promise<Blob | null> => {
     return new Promise((resolve) => {
-      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
       const recorder = recorderRef.current
-      if (!recorder || recorder.state === 'inactive') { setRecording(false); resolve(null); return }
+      if (!recorder || recorder.state === 'inactive') {
+        setRecording(false)
+        resolve(null)
+        return
+      }
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
         recorder.stream.getTracks().forEach((t) => t.stop())
@@ -290,7 +389,10 @@ function useVoiceRecorder() {
   }, [])
 
   const cancel = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
     const recorder = recorderRef.current
     if (recorder && recorder.state !== 'inactive') {
       recorder.stream.getTracks().forEach((t) => t.stop())
@@ -391,18 +493,33 @@ export default function DmThreadPage() {
       if (data.userId !== user?.id) setSeenByOther(true)
     }
 
-    const onMessageDeleted = (data: { messageId: string; conversationId: string; deletedAt: string }) => {
+    const onMessageDeleted = (data: {
+      messageId: string
+      conversationId: string
+      deletedAt: string
+    }) => {
       if (data.conversationId !== conversationId) return
-      setMessages((prev) => prev.map((m) =>
-        m.id === data.messageId ? { ...m, deletedAt: data.deletedAt, body: null, mediaUrl: null } : m,
-      ))
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === data.messageId
+            ? { ...m, deletedAt: data.deletedAt, body: null, mediaUrl: null }
+            : m,
+        ),
+      )
     }
 
-    const onMessageEdited = (data: { messageId: string; conversationId: string; body: string; editedAt: string }) => {
+    const onMessageEdited = (data: {
+      messageId: string
+      conversationId: string
+      body: string
+      editedAt: string
+    }) => {
       if (data.conversationId !== conversationId) return
-      setMessages((prev) => prev.map((m) =>
-        m.id === data.messageId ? { ...m, body: data.body, editedAt: data.editedAt } : m,
-      ))
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === data.messageId ? { ...m, body: data.body, editedAt: data.editedAt } : m,
+        ),
+      )
     }
 
     const onConvPinned = (data: PinnedMessage & { conversationId: string }) => {
@@ -458,32 +575,39 @@ export default function DmThreadPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (imagePreview) { void handleSendImage() } else { handleSend() }
+      if (imagePreview) {
+        void handleSendImage()
+      } else {
+        handleSend()
+      }
     }
   }
 
-  const handleTyping = useCallback((value: string) => {
-    setText(value)
-    if (!conversationId) return
-    if (value && !isTypingRef.current) {
-      isTypingRef.current = true
-      socket.emit('typing', { conversationId })
-    }
-    if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
-    typingTimerRef.current = setTimeout(() => {
-      if (isTypingRef.current) {
-        isTypingRef.current = false
-        socket.emit('stopped_typing', { conversationId })
+  const handleTyping = useCallback(
+    (value: string) => {
+      setText(value)
+      if (!conversationId) return
+      if (value && !isTypingRef.current) {
+        isTypingRef.current = true
+        socket.emit('typing', { conversationId })
       }
-    }, 2000)
-    if (!value) {
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
-      if (isTypingRef.current) {
-        isTypingRef.current = false
-        socket.emit('stopped_typing', { conversationId })
+      typingTimerRef.current = setTimeout(() => {
+        if (isTypingRef.current) {
+          isTypingRef.current = false
+          socket.emit('stopped_typing', { conversationId })
+        }
+      }, 2000)
+      if (!value) {
+        if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
+        if (isTypingRef.current) {
+          isTypingRef.current = false
+          socket.emit('stopped_typing', { conversationId })
+        }
       }
-    }
-  }, [conversationId, socket])
+    },
+    [conversationId, socket],
+  )
 
   const handleVoiceTap = async () => {
     if (!conversationId) return
@@ -506,7 +630,9 @@ export default function DmThreadPage() {
       }
     } else {
       const ok = await start()
-      if (!ok) { /* mic denied */ }
+      if (!ok) {
+        /* mic denied */
+      }
     }
   }
 
@@ -544,8 +670,8 @@ export default function DmThreadPage() {
   const fmtDuration = (s: number) => `${s}s`
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="flex h-full items-center justify-center">
+        <div className="border-primary h-7 w-7 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     )
   }
@@ -557,12 +683,12 @@ export default function DmThreadPage() {
   const isMutual = messages.some((m) => m.senderId !== user?.id)
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
+      <div className="border-border flex shrink-0 items-center gap-3 border-b px-4 py-3">
         <button
           onClick={() => router.push('/messages')}
-          className="w-8 h-8 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-8 items-center justify-center rounded-xl transition-colors"
           aria-label="Back"
         >
           <BackIcon />
@@ -570,7 +696,7 @@ export default function DmThreadPage() {
         {otherUser ? (
           <button
             onClick={() => setProfileOpen(true)}
-            className="flex items-center gap-2 flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left transition-opacity hover:opacity-80"
           >
             {otherUser.photoUrl ? (
               <Image
@@ -578,18 +704,18 @@ export default function DmThreadPage() {
                 alt={otherUser.displayName ?? 'User'}
                 width={32}
                 height={32}
-                className="w-8 h-8 rounded-full object-cover shrink-0"
+                className="h-8 w-8 shrink-0 rounded-full object-cover"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-                <span className="text-xs font-semibold text-primary">
+              <div className="bg-primary/15 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+                <span className="text-primary text-xs font-semibold">
                   {(otherUser.displayName ?? '?').slice(0, 2).toUpperCase()}
                 </span>
               </div>
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-1">
-                <span className="text-sm font-semibold text-foreground truncate">
+                <span className="text-foreground truncate text-sm font-semibold">
                   {otherUser.displayName ?? 'User'}
                 </span>
                 {otherUser.verified && <VerifiedIcon />}
@@ -600,30 +726,39 @@ export default function DmThreadPage() {
                     const diffMs = Date.now() - new Date(otherUser.lastActiveAt!).getTime()
                     const isNow = diffMs < 5 * 60 * 1000
                     const mins = Math.floor(diffMs / 60000)
-                    const label = isNow ? 'Active now'
-                      : mins < 60 ? `Active ${mins}m ago`
-                      : mins < 1440 ? `Active ${Math.floor(mins / 60)}h ago`
-                      : `Active ${Math.floor(mins / 1440)}d ago`
+                    const label = isNow
+                      ? 'Active now'
+                      : mins < 60
+                        ? `Active ${mins}m ago`
+                        : mins < 1440
+                          ? `Active ${Math.floor(mins / 60)}h ago`
+                          : `Active ${Math.floor(mins / 1440)}d ago`
                     return (
                       <div className="flex items-center gap-1">
                         {isNow && (
                           <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
                           </span>
                         )}
-                        <p className={`text-[11px] ${isNow ? 'text-emerald-400' : 'text-muted-foreground'}`}>{label}</p>
+                        <p
+                          className={`text-[11px] ${isNow ? 'text-emerald-400' : 'text-muted-foreground'}`}
+                        >
+                          {label}
+                        </p>
                       </div>
                     )
                   })()
                 ) : (
-                  <p className="text-[11px] text-muted-foreground">Tap to view profile</p>
+                  <p className="text-muted-foreground text-[11px]">Tap to view profile</p>
                 )}
                 {otherUser.distanceMiles != null && (
                   <>
-                    <span className="text-[11px] text-muted-foreground/50">·</span>
-                    <p className="text-[11px] text-muted-foreground">
-                      {otherUser.distanceMiles < 0.5 ? '< 1 mi away' : `${otherUser.distanceMiles} mi away`}
+                    <span className="text-muted-foreground/50 text-[11px]">·</span>
+                    <p className="text-muted-foreground text-[11px]">
+                      {otherUser.distanceMiles < 0.5
+                        ? '< 1 mi away'
+                        : `${otherUser.distanceMiles} mi away`}
                     </p>
                   </>
                 )}
@@ -631,31 +766,31 @@ export default function DmThreadPage() {
             </div>
           </button>
         ) : (
-          <p className="text-sm font-semibold text-foreground flex-1">Direct message</p>
+          <p className="text-foreground flex-1 text-sm font-semibold">Direct message</p>
         )}
         {otherUser && (
           <button
             onClick={() => setShowBlockReport(true)}
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-colors"
             aria-label="More options"
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-              <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+            <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+              <circle cx="12" cy="5" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="12" cy="19" r="1.5" />
             </svg>
           </button>
         )}
       </div>
 
       {/* Pinned message banner */}
-      {showPinned && (
-        <PinnedBanner pinned={pinned} onDismiss={() => setPinnedDismissed(true)} />
-      )}
+      {showPinned && <PinnedBanner pinned={pinned} onDismiss={() => setPinnedDismissed(true)} />}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-2">
         {grouped.length === 0 && (
-          <div className="h-full flex items-center justify-center">
-            <p className="text-xs text-muted-foreground">Say hello!</p>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-muted-foreground text-xs">Say hello!</p>
           </div>
         )}
         {grouped.map((group) => (
@@ -668,30 +803,42 @@ export default function DmThreadPage() {
                 const nextMsg = group.messages[idx + 1]
                 const isLastInRun = !nextMsg || nextMsg.senderId !== msg.senderId
                 return (
-                  <div key={msg.id} className={['flex items-end gap-1.5 group', isMine ? 'flex-row-reverse' : 'flex-row'].join(' ')}>
+                  <div
+                    key={msg.id}
+                    className={[
+                      'group flex items-end gap-1.5',
+                      isMine ? 'flex-row-reverse' : 'flex-row',
+                    ].join(' ')}
+                  >
                     {/* Avatar — always first in DOM; flex-row-reverse puts it on the right for sent msgs */}
                     {isMine ? (
                       isLastInRun ? (
-                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mb-4">
-                          <span className="text-[9px] font-bold text-primary">
+                        <div className="bg-primary/20 mb-4 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                          <span className="text-primary text-[9px] font-bold">
                             {(user?.email ?? 'Y').slice(0, 1).toUpperCase()}
                           </span>
                         </div>
-                      ) : <div className="w-6 shrink-0" />
+                      ) : (
+                        <div className="w-6 shrink-0" />
+                      )
+                    ) : isLastInRun ? (
+                      otherUser?.photoUrl ? (
+                        <img
+                          src={otherUser.photoUrl}
+                          alt=""
+                          className="mb-4 h-6 w-6 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="bg-primary/15 mb-4 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                          <span className="text-primary text-[9px] font-semibold">
+                            {(otherUser?.displayName ?? '?').slice(0, 1).toUpperCase()}
+                          </span>
+                        </div>
+                      )
                     ) : (
-                      isLastInRun ? (
-                        otherUser?.photoUrl ? (
-                          <img src={otherUser.photoUrl} alt="" className="w-6 h-6 rounded-full object-cover shrink-0 mb-4" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mb-4">
-                            <span className="text-[9px] font-semibold text-primary">
-                              {(otherUser?.displayName ?? '?').slice(0, 1).toUpperCase()}
-                            </span>
-                          </div>
-                        )
-                      ) : <div className="w-6 shrink-0" />
+                      <div className="w-6 shrink-0" />
                     )}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <MessageBubble
                         msg={msg}
                         isMine={isMine}
@@ -707,20 +854,33 @@ export default function DmThreadPage() {
         ))}
         {/* Typing indicator */}
         {otherUserTyping && (
-          <div className="flex items-end gap-1.5 mt-1">
+          <div className="mt-1 flex items-end gap-1.5">
             {otherUser?.photoUrl ? (
-              <img src={otherUser.photoUrl} alt="" className="w-6 h-6 rounded-full object-cover shrink-0 mb-0.5" />
+              <img
+                src={otherUser.photoUrl}
+                alt=""
+                className="mb-0.5 h-6 w-6 shrink-0 rounded-full object-cover"
+              />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mb-0.5">
-                <span className="text-[9px] font-semibold text-primary">
+              <div className="bg-primary/15 mb-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                <span className="text-primary text-[9px] font-semibold">
                   {(otherUser?.displayName ?? '?').slice(0, 1).toUpperCase()}
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-1 px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-muted dark:bg-white/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="bg-muted flex items-center gap-1 rounded-2xl rounded-bl-sm px-3.5 py-2.5 dark:bg-white/10">
+              <span
+                className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full"
+                style={{ animationDelay: '0ms' }}
+              />
+              <span
+                className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full"
+                style={{ animationDelay: '150ms' }}
+              />
+              <span
+                className="bg-muted-foreground h-1.5 w-1.5 animate-bounce rounded-full"
+                style={{ animationDelay: '300ms' }}
+              />
             </div>
           </div>
         )}
@@ -728,7 +888,7 @@ export default function DmThreadPage() {
       </div>
 
       {/* Input bar */}
-      <div className="shrink-0 border-t border-border px-4 py-3">
+      <div className="border-border shrink-0 border-t px-4 py-3">
         <input
           ref={imageInputRef}
           type="file"
@@ -738,46 +898,61 @@ export default function DmThreadPage() {
         />
         {/* Image preview — shown before sending */}
         {imagePreview && !recording && (
-          <div className="mb-2 relative inline-block">
+          <div className="relative mb-2 inline-block">
             <img
               src={imagePreview.previewUrl}
               alt="Preview"
-              className="h-24 rounded-xl object-cover max-w-[180px] border border-border"
+              className="border-border h-24 max-w-[180px] rounded-xl border object-cover"
             />
             <button
-              onClick={() => { URL.revokeObjectURL(imagePreview.previewUrl); setImagePreview(null) }}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-foreground rounded-full flex items-center justify-center shadow"
+              onClick={() => {
+                URL.revokeObjectURL(imagePreview.previewUrl)
+                setImagePreview(null)
+              }}
+              className="bg-foreground absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
             >
-              <svg viewBox="0 0 14 14" className="w-2.5 h-2.5 stroke-background fill-none" strokeWidth="2.5" strokeLinecap="round">
+              <svg
+                viewBox="0 0 14 14"
+                className="stroke-background h-2.5 w-2.5 fill-none"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
                 <path d="M2 2l10 10M12 2L2 12" />
               </svg>
             </button>
           </div>
         )}
         {sendError && (
-          <div className="mb-2 px-3 py-2 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive leading-snug">
+          <div className="bg-destructive/10 border-destructive/20 text-destructive mb-2 rounded-xl border px-3 py-2 text-xs leading-snug">
             {sendError}
           </div>
         )}
         {recording ? (
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center gap-2 bg-muted rounded-2xl px-4 py-2.5">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-sm text-foreground font-medium">Recording… {fmtDuration(duration)}</span>
+            <div className="bg-muted flex flex-1 items-center gap-2 rounded-2xl px-4 py-2.5">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+              <span className="text-foreground text-sm font-medium">
+                Recording… {fmtDuration(duration)}
+              </span>
             </div>
             <button
               onClick={cancel}
-              className="w-10 h-10 rounded-2xl bg-muted text-destructive flex items-center justify-center hover:bg-destructive/10 transition-colors"
+              className="bg-muted text-destructive hover:bg-destructive/10 flex h-10 w-10 items-center justify-center rounded-2xl transition-colors"
               aria-label="Cancel recording"
             >
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
-                <path d="M18 6L6 18M6 6l12 12"/>
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 fill-none stroke-current"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
             <button
               onClick={() => void handleVoiceTap()}
               disabled={sendingVoice}
-              className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="bg-primary flex h-10 w-10 items-center justify-center rounded-2xl text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               aria-label="Send voice note"
             >
               <SendIcon />
@@ -791,15 +966,15 @@ export default function DmThreadPage() {
               onKeyDown={handleKeyDown}
               placeholder="Message…"
               rows={1}
-              className="flex-1 resize-none bg-muted dark:bg-white/8 border border-border rounded-2xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              className="bg-muted dark:bg-white/8 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring flex-1 resize-none rounded-2xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-1"
               style={{ fieldSizing: 'content' } as React.CSSProperties}
             />
             <button
-              onClick={() => isMutual ? imageInputRef.current?.click() : undefined}
+              onClick={() => (isMutual ? imageInputRef.current?.click() : undefined)}
               disabled={sendingImage}
               title={isMutual ? 'Send image' : 'Images can only be sent after they reply'}
               className={[
-                'w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors',
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors',
                 isMutual
                   ? 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                   : 'bg-muted text-muted-foreground/30 cursor-not-allowed',
@@ -807,9 +982,15 @@ export default function DmThreadPage() {
               aria-label="Send image"
             >
               {sendingImage ? (
-                <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : (
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 fill-none stroke-current"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <path d="M21 15l-5-5L5 21" />
@@ -819,7 +1000,7 @@ export default function DmThreadPage() {
             <button
               onClick={() => void handleVoiceTap()}
               className={[
-                'w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors',
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors',
                 isPremium
                   ? 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                   : 'bg-muted text-muted-foreground/40 cursor-not-allowed',
@@ -832,11 +1013,11 @@ export default function DmThreadPage() {
             <button
               onClick={imagePreview ? () => void handleSendImage() : handleSend}
               disabled={imagePreview ? sendingImage : !text.trim() && !imagePreview}
-              className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shrink-0 hover:opacity-90 disabled:opacity-40 transition-opacity"
+              className="bg-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-white transition-opacity hover:opacity-90 disabled:opacity-40"
               aria-label="Send"
             >
               {sendingImage && imagePreview === null ? (
-                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
                 <SendIcon />
               )}

@@ -103,29 +103,37 @@ export default function VerifyPhonePage(): React.JSX.Element {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="p-7 space-y-6"
+      className="space-y-6 p-7"
     >
       {/* Header */}
-      <div className="text-center space-y-1">
-        <div className="w-12 h-12 rounded-2xl bg-primary/10 dark:bg-primary/15 flex items-center justify-center mx-auto mb-3">
-          <svg viewBox="0 0 24 24" className="w-6 h-6 fill-none stroke-primary" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <div className="space-y-1 text-center">
+        <div className="bg-primary/10 dark:bg-primary/15 mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl">
+          <svg
+            viewBox="0 0 24 24"
+            className="stroke-primary h-6 w-6 fill-none"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold font-display text-foreground dark:text-white tracking-tight">
+        <h1 className="font-display text-foreground text-2xl font-bold tracking-tight dark:text-white">
           Check your phone
         </h1>
-        <p className="text-sm text-muted-foreground dark:text-white/50">
+        <p className="text-muted-foreground text-sm dark:text-white/50">
           We sent a 6-digit code via SMS
         </p>
       </div>
 
       {/* OTP inputs */}
-      <div className="flex gap-2 justify-center" onPaste={handlePaste}>
+      <div className="flex justify-center gap-2" onPaste={handlePaste}>
         {digits.map((digit, i) => (
           <input
             key={i}
-            ref={(el) => { inputRefs.current[i] = el }}
+            ref={(el) => {
+              inputRefs.current[i] = el
+            }}
             type="text"
             inputMode="numeric"
             autoComplete={i === 0 ? 'one-time-code' : 'off'}
@@ -135,12 +143,12 @@ export default function VerifyPhonePage(): React.JSX.Element {
             onKeyDown={(e) => handleKeyDown(i, e)}
             disabled={isSubmitting}
             className={[
-              'w-12 h-14 text-center text-xl font-bold rounded-xl border transition-all outline-none',
-              'bg-black/5 dark:bg-white/8',
+              'h-14 w-12 rounded-xl border text-center text-xl font-bold outline-none transition-all',
+              'dark:bg-white/8 bg-black/5',
               digit
                 ? 'border-primary dark:border-primary/70 text-foreground dark:text-white'
                 : 'border-black/8 dark:border-white/12 text-foreground dark:text-white',
-              'focus:border-primary focus:ring-1 focus:ring-primary/20 dark:focus:ring-primary/30',
+              'focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/30 focus:ring-1',
               'disabled:opacity-40',
             ].join(' ')}
           />
@@ -165,7 +173,7 @@ export default function VerifyPhonePage(): React.JSX.Element {
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-sm text-destructive text-center"
+          className="text-destructive text-center text-sm"
         >
           {error}
         </motion.p>
@@ -174,20 +182,20 @@ export default function VerifyPhonePage(): React.JSX.Element {
       {/* Submitting state */}
       {isSubmitting && (
         <div className="flex justify-center">
-          <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       )}
 
       {/* Resend */}
-      <div className="text-center pt-1">
+      <div className="pt-1 text-center">
         {resendCooldown > 0 ? (
-          <p className="text-sm text-muted-foreground dark:text-white/40">
+          <p className="text-muted-foreground text-sm dark:text-white/40">
             Resend code in <span className="tabular-nums">{resendCooldown}s</span>
           </p>
         ) : (
           <button
             onClick={() => void resend()}
-            className="text-sm font-medium text-primary hover:opacity-80 transition-opacity"
+            className="text-primary text-sm font-medium transition-opacity hover:opacity-80"
           >
             Resend code
           </button>

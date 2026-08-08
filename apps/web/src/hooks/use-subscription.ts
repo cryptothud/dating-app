@@ -10,8 +10,12 @@ export function useSubscription(enabled = true) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!enabled) { setLoading(false); return }
-    billing.getSubscription()
+    if (!enabled) {
+      setLoading(false)
+      return
+    }
+    billing
+      .getSubscription()
       .then(setStatus)
       .catch(() => setStatus(FREE))
       .finally(() => setLoading(false))

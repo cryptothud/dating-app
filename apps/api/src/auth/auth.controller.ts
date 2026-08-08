@@ -79,11 +79,8 @@ export class AuthController {
   @Post('otp/send')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async sendOtp(
-    @Req() req: AuthenticatedRequest,
-    @Ip() ip: string,
-  ): Promise<{ message: string }> {
-    const user = await this.auth.getMe(req.user.id) as { phone: string }
+  async sendOtp(@Req() req: AuthenticatedRequest, @Ip() ip: string): Promise<{ message: string }> {
+    const user = (await this.auth.getMe(req.user.id)) as { phone: string }
     return this.auth.sendOtp(user.phone, ip)
   }
 
@@ -134,5 +131,4 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
     return this.auth.resetPassword(dto.token, dto.password)
   }
-
 }

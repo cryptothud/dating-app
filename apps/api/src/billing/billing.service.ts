@@ -7,7 +7,12 @@ import { PremiumService } from './premium.service'
 import type { Env } from '../config/configuration'
 
 // Stripe SDK v22 changed some field names; access runtime-proven fields via these local types
-type SubPeriod = { id: string; current_period_end: number; cancel_at_period_end: boolean; metadata: Record<string, string> }
+type SubPeriod = {
+  id: string
+  current_period_end: number
+  cancel_at_period_end: boolean
+  metadata: Record<string, string>
+}
 type InvoiceRaw = { subscription: string | null; amount_paid: number | null }
 
 const TIER_NAMES: Record<string, string> = {
@@ -127,9 +132,19 @@ export class BillingService {
     })
     this.premium.invalidateCache(userId)
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    })
     if (user) {
-      void this.email.sendSubscriptionCancelled(user.email, sub.expiresAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))
+      void this.email.sendSubscriptionCancelled(
+        user.email,
+        sub.expiresAt.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+      )
     }
   }
 
@@ -172,7 +187,9 @@ export class BillingService {
     if (!userId || !tier || !session.subscription || !session.customer) return
 
     const stripe = this.getStripe()
-    const stripeSubRaw = await stripe.subscriptions.retrieve(session.subscription as string) as unknown as SubPeriod
+    const stripeSubRaw = (await stripe.subscriptions.retrieve(
+      session.subscription as string,
+    )) as unknown as SubPeriod
     const periodEnd = new Date(stripeSubRaw.current_period_end * 1000)
 
     await this.prisma.subscription.upsert({
@@ -234,7 +251,9 @@ export class BillingService {
     if (!sub) return
 
     const stripe = this.getStripe()
-    const stripeSubRaw = await stripe.subscriptions.retrieve(inv.subscription) as unknown as SubPeriod
+    const stripeSubRaw = (await stripe.subscriptions.retrieve(
+      inv.subscription,
+    )) as unknown as SubPeriod
     const periodEnd = new Date(stripeSubRaw.current_period_end * 1000)
 
     await this.prisma.subscription.update({

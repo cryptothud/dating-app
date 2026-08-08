@@ -15,13 +15,19 @@ const SLOTS = 6
 
 function StarIcon(): React.JSX.Element {
   return (
-    <svg viewBox="0 0 16 16" className="w-3 h-3 fill-white">
+    <svg viewBox="0 0 16 16" className="h-3 w-3 fill-white">
       <path d="M8 1l1.9 3.85L14 5.73l-3 2.92.71 4.14L8 10.65l-3.71 2.14.71-4.14L2 5.73l4.1-.88z" />
     </svg>
   )
 }
 
-export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder }: Props): React.JSX.Element {
+export function PhotoGrid({
+  photos,
+  onUpload,
+  onSetPrimary,
+  onDelete,
+  onReorder,
+}: Props): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [menuId, setMenuId] = useState<string | null>(null)
@@ -33,7 +39,11 @@ export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder 
     e.target.value = ''
     if (!file) return
     setUploading(true)
-    try { await onUpload(file) } finally { setUploading(false) }
+    try {
+      await onUpload(file)
+    } finally {
+      setUploading(false)
+    }
   }
 
   const handleSetPrimary = async (id: string): Promise<void> => {
@@ -58,10 +68,18 @@ export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder 
 
   const handleDrop = (e: React.DragEvent, targetId: string) => {
     e.preventDefault()
-    if (!draggingId || draggingId === targetId) { setDraggingId(null); setDragOverId(null); return }
+    if (!draggingId || draggingId === targetId) {
+      setDraggingId(null)
+      setDragOverId(null)
+      return
+    }
     const fromIdx = photos.findIndex((p) => p.id === draggingId)
     const toIdx = photos.findIndex((p) => p.id === targetId)
-    if (fromIdx === -1 || toIdx === -1) { setDraggingId(null); setDragOverId(null); return }
+    if (fromIdx === -1 || toIdx === -1) {
+      setDraggingId(null)
+      setDragOverId(null)
+      return
+    }
     const next = [...photos]
     const [moved] = next.splice(fromIdx, 1)
     next.splice(toIdx, 0, moved!)
@@ -70,14 +88,23 @@ export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder 
     setDragOverId(null)
   }
 
-  const handleDragEnd = () => { setDraggingId(null); setDragOverId(null) }
+  const handleDragEnd = () => {
+    setDraggingId(null)
+    setDragOverId(null)
+  }
 
   const slots = Array.from({ length: SLOTS }, (_, i) => photos[i] ?? null)
 
   return (
     <div>
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={handleFile} />
-      <div className="grid grid-cols-3 gap-2 max-w-xs">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={handleFile}
+      />
+      <div className="grid max-w-xs grid-cols-3 gap-2">
         {slots.map((photo, i) => {
           const isUploadSlot = i === photos.length && photos.length < SLOTS
           const isEmpty = !photo && !isUploadSlot
@@ -94,49 +121,69 @@ export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder 
                 onDrop={(e) => handleDrop(e, photo.id)}
                 onDragEnd={handleDragEnd}
                 className={[
-                  'aspect-square relative rounded-xl bg-muted cursor-grab active:cursor-grabbing transition-opacity',
-                  isDragging ? 'opacity-40 scale-95' : '',
-                  isDragOver ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : '',
+                  'bg-muted relative aspect-square cursor-grab rounded-xl transition-opacity active:cursor-grabbing',
+                  isDragging ? 'scale-95 opacity-40' : '',
+                  isDragOver ? 'ring-primary ring-offset-background ring-2 ring-offset-1' : '',
                 ].join(' ')}
               >
                 {/* Image — overflow-hidden scoped to avoid clipping the dropdown */}
-                <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
-                  <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
+                  <img src={photo.url} alt="" className="h-full w-full object-cover" />
                 </div>
 
                 {photo.isPrimary && (
-                  <div className="absolute top-1.5 left-1.5 z-10 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow pointer-events-none">
+                  <div className="bg-primary pointer-events-none absolute left-1.5 top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full shadow">
                     <StarIcon />
                   </div>
                 )}
                 {photo.isNsfw && (
-                  <span className="absolute top-1.5 right-8 z-10 px-1.5 py-px bg-black/65 rounded text-[9px] font-bold text-white tracking-wide pointer-events-none">
+                  <span className="pointer-events-none absolute right-8 top-1.5 z-10 rounded bg-black/65 px-1.5 py-px text-[9px] font-bold tracking-wide text-white">
                     18+
                   </span>
                 )}
 
                 {/* 3-dot menu button */}
                 <button
-                  onClick={(e) => { e.stopPropagation(); setMenuId(menuId === photo.id ? null : photo.id) }}
-                  className="absolute bottom-1.5 right-1.5 z-20 w-6 h-6 bg-black/55 hover:bg-black/75 rounded-full flex items-center justify-center transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setMenuId(menuId === photo.id ? null : photo.id)
+                  }}
+                  className="absolute bottom-1.5 right-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-black/55 transition-colors hover:bg-black/75"
                   aria-label="Photo options"
                 >
-                  <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-white"><circle cx="8" cy="3" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="8" cy="13" r="1.2"/></svg>
+                  <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-white">
+                    <circle cx="8" cy="3" r="1.2" />
+                    <circle cx="8" cy="8" r="1.2" />
+                    <circle cx="8" cy="13" r="1.2" />
+                  </svg>
                 </button>
 
                 {/* Dropdown — rendered in outer non-overflow-hidden context */}
                 {menuId === photo.id && (
                   <>
                     <div className="fixed inset-0 z-30" onClick={() => setMenuId(null)} />
-                    <div className="absolute bottom-8 right-0 w-36 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-xl py-1 z-40">
+                    <div className="absolute bottom-8 right-0 z-40 w-36 rounded-xl border border-gray-200 bg-white py-1 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
                       {!photo.isPrimary && (
-                        <button onClick={() => void handleSetPrimary(photo.id)} className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors">
+                        <button
+                          onClick={() => void handleSetPrimary(photo.id)}
+                          className="text-foreground hover:bg-muted flex w-full items-center gap-2 px-3 py-2 text-xs font-medium transition-colors"
+                        >
                           <StarIcon />
                           <span className="text-foreground">Set as main</span>
                         </button>
                       )}
-                      <button onClick={() => void handleDelete(photo.id)} className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/5 transition-colors">
-                        <svg viewBox="0 0 16 16" className="w-3 h-3 fill-none stroke-current" strokeWidth="1.75"><polyline points="1,4 15,4"/><path d="M5 4V2h6v2M6 7v5M10 7v5M2 4l1 9a1 1 0 001 1h8a1 1 0 001-1l1-9"/></svg>
+                      <button
+                        onClick={() => void handleDelete(photo.id)}
+                        className="text-destructive hover:bg-destructive/5 flex w-full items-center gap-2 px-3 py-2 text-xs font-medium transition-colors"
+                      >
+                        <svg
+                          viewBox="0 0 16 16"
+                          className="h-3 w-3 fill-none stroke-current"
+                          strokeWidth="1.75"
+                        >
+                          <polyline points="1,4 15,4" />
+                          <path d="M5 4V2h6v2M6 7v5M10 7v5M2 4l1 9a1 1 0 001 1h8a1 1 0 001-1l1-9" />
+                        </svg>
                         Delete
                       </button>
                     </div>
@@ -148,24 +195,45 @@ export function PhotoGrid({ photos, onUpload, onSetPrimary, onDelete, onReorder 
 
           if (isUploadSlot && uploading) {
             return (
-              <div key="uploading" className="aspect-square rounded-xl border-2 border-primary/30 bg-primary/5 flex items-center justify-center">
-                <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <div
+                key="uploading"
+                className="border-primary/30 bg-primary/5 flex aspect-square items-center justify-center rounded-xl border-2"
+              >
+                <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
               </div>
             )
           }
 
           if (isUploadSlot) {
             return (
-              <button key="upload" onClick={() => inputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-colors flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-6 h-6 text-muted-foreground fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <button
+                key="upload"
+                onClick={() => inputRef.current?.click()}
+                className="border-border hover:border-primary/50 hover:bg-primary/5 flex aspect-square items-center justify-center rounded-xl border-2 border-dashed transition-colors"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="text-muted-foreground h-6 w-6 fill-none stroke-current"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
               </button>
             )
           }
 
-          return <div key={`empty-${i}`} className="aspect-square rounded-xl border-2 border-dashed border-border/30" />
+          return (
+            <div
+              key={`empty-${i}`}
+              className="border-border/30 aspect-square rounded-xl border-2 border-dashed"
+            />
+          )
         })}
       </div>
-      <p className="text-xs text-muted-foreground mt-2">Up to 6 photos. Drag to reorder. JPEG, PNG, or WebP · max 10 MB.</p>
+      <p className="text-muted-foreground mt-2 text-xs">
+        Up to 6 photos. Drag to reorder. JPEG, PNG, or WebP · max 10 MB.
+      </p>
     </div>
   )
 }

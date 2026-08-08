@@ -21,7 +21,8 @@ export function useAuth(): UseAuthResult {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    authApi.me()
+    authApi
+      .me()
       .then((u) => setUser(u as AuthUser))
       .catch(() => setUser(null))
       .finally(() => setIsLoading(false))

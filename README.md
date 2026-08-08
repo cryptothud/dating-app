@@ -9,15 +9,15 @@ than a refresh cycle.
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Web | Next.js (App Router), React, TypeScript, Tailwind, MapLibre GL |
-| API | NestJS, TypeScript |
-| Data | PostgreSQL via Prisma; Redis for query caching and rate-limit counters |
-| Realtime | Socket.IO for map updates and chat |
-| Media | Cloudinary for photo storage and transforms |
-| Auth | JWT with phone verification via Twilio, Turnstile on public forms |
-| Tooling | pnpm workspaces, Turborepo, ESLint, Prettier, Husky, commitlint |
+| Layer    | Choice                                                                 |
+| -------- | ---------------------------------------------------------------------- |
+| Web      | Next.js (App Router), React, TypeScript, Tailwind, MapLibre GL         |
+| API      | NestJS, TypeScript                                                     |
+| Data     | PostgreSQL via Prisma; Redis for query caching and rate-limit counters |
+| Realtime | Socket.IO for map updates and chat                                     |
+| Media    | Cloudinary for photo storage and transforms                            |
+| Auth     | JWT with phone verification via Twilio, Turnstile on public forms      |
+| Tooling  | pnpm workspaces, Turborepo, ESLint, Prettier, Husky, commitlint        |
 
 ## Structure
 
@@ -62,14 +62,14 @@ configuration is needed locally. They are set explicitly in production.
 
 Run from the repo root; Turborepo fans them out across the workspace.
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Web and API in watch mode |
-| `pnpm build` | Build every package in dependency order |
-| `pnpm typecheck` | `tsc --noEmit` across the workspace |
-| `pnpm lint` | ESLint across the workspace |
-| `pnpm test` | Test suites |
-| `pnpm format` | Prettier |
+| Command          | Description                             |
+| ---------------- | --------------------------------------- |
+| `pnpm dev`       | Web and API in watch mode               |
+| `pnpm build`     | Build every package in dependency order |
+| `pnpm typecheck` | `tsc --noEmit` across the workspace     |
+| `pnpm lint`      | ESLint across the workspace             |
+| `pnpm test`      | Test suites                             |
+| `pnpm format`    | Prettier                                |
 
 ## How the live map works
 
@@ -79,7 +79,7 @@ hold up:
 
 ```ts
 const { angle, ratio } = userId
-  ? this.stableFuzz(userId)                                   // deterministic per user
+  ? this.stableFuzz(userId) // deterministic per user
   : { angle: Math.random() * 2 * Math.PI, ratio: Math.sqrt(Math.random()) }
 ```
 

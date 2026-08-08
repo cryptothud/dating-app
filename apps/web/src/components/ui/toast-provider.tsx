@@ -15,7 +15,13 @@ const VARIANT_STYLES: Record<ToastVariant, string> = {
 function VariantIcon({ variant }: { variant: ToastVariant }): React.JSX.Element {
   if (variant === 'error') {
     return (
-      <svg viewBox="0 0 20 20" className="w-4 h-4 fill-none stroke-current flex-shrink-0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 20 20"
+        className="h-4 w-4 flex-shrink-0 fill-none stroke-current"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="10" cy="10" r="8" />
         <path d="M10 6v5M10 14h.01" />
       </svg>
@@ -23,20 +29,38 @@ function VariantIcon({ variant }: { variant: ToastVariant }): React.JSX.Element 
   }
   if (variant === 'success') {
     return (
-      <svg viewBox="0 0 20 20" className="w-4 h-4 fill-none stroke-current flex-shrink-0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 20 20"
+        className="h-4 w-4 flex-shrink-0 fill-none stroke-current"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M4 10l4 4 8-8" />
       </svg>
     )
   }
   if (variant === 'warning') {
     return (
-      <svg viewBox="0 0 20 20" className="w-4 h-4 fill-none stroke-current flex-shrink-0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 20 20"
+        className="h-4 w-4 flex-shrink-0 fill-none stroke-current"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M10 2l8 15H2L10 2zM10 8v4M10 15h.01" />
       </svg>
     )
   }
   return (
-    <svg viewBox="0 0 20 20" className="w-4 h-4 fill-none stroke-current flex-shrink-0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4 flex-shrink-0 fill-none stroke-current"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="10" cy="10" r="8" />
       <path d="M10 9v5M10 6h.01" />
     </svg>
@@ -53,7 +77,12 @@ function DmToastCard({ item }: { item: ToastItem }): React.JSX.Element {
     return () => clearTimeout(t)
   }, [item.id, item.duration])
 
-  const handleClick = item.onClick ? () => { item.onClick!(); toast.dismiss(item.id) } : undefined
+  const handleClick = item.onClick
+    ? () => {
+        item.onClick!()
+        toast.dismiss(item.id)
+      }
+    : undefined
 
   return (
     <motion.div
@@ -63,33 +92,51 @@ function DmToastCard({ item }: { item: ToastItem }): React.JSX.Element {
       transition={{ duration: 0.18 }}
       onClick={handleClick}
       className={[
-        'pointer-events-auto w-full rounded-xl shadow-xl overflow-hidden bg-background border border-primary/30',
-        item.onClick ? 'cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity' : '',
+        'bg-background border-primary/30 pointer-events-auto w-full overflow-hidden rounded-xl border shadow-xl',
+        item.onClick ? 'cursor-pointer transition-opacity hover:opacity-90 active:opacity-80' : '',
       ].join(' ')}
     >
-      <div className="h-[3px] bg-gradient-to-r from-primary to-primary/50" />
+      <div className="from-primary to-primary/50 h-[3px] bg-gradient-to-r" />
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <div className="shrink-0 relative">
+        <div className="relative shrink-0">
           {meta?.avatarUrl ? (
-            <img src={meta.avatarUrl} alt={meta.senderName} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20" />
+            <img
+              src={meta.avatarUrl}
+              alt={meta.senderName}
+              className="ring-primary/20 h-10 w-10 rounded-full object-cover ring-2"
+            />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-primary/15 ring-2 ring-primary/20 flex items-center justify-center">
-              <span className="text-sm font-bold text-primary">{initials}</span>
+            <div className="bg-primary/15 ring-primary/20 flex h-10 w-10 items-center justify-center rounded-full ring-2">
+              <span className="text-primary text-sm font-bold">{initials}</span>
             </div>
           )}
-          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-1 ring-background" />
+          <span className="ring-background absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-1" />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold text-primary uppercase tracking-wider leading-none mb-0.5">New direct message</p>
-          <p className="text-xs font-semibold text-foreground truncate">{meta?.senderName ?? 'Someone'}</p>
-          {meta?.preview && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{meta.preview}</p>}
+        <div className="min-w-0 flex-1">
+          <p className="text-primary mb-0.5 text-[10px] font-semibold uppercase leading-none tracking-wider">
+            New direct message
+          </p>
+          <p className="text-foreground truncate text-xs font-semibold">
+            {meta?.senderName ?? 'Someone'}
+          </p>
+          {meta?.preview && (
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">{meta.preview}</p>
+          )}
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); toast.dismiss(item.id) }}
+          onClick={(e) => {
+            e.stopPropagation()
+            toast.dismiss(item.id)
+          }}
           aria-label="Dismiss"
-          className="shrink-0 text-muted-foreground hover:text-foreground transition-colors outline-none"
+          className="text-muted-foreground hover:text-foreground shrink-0 outline-none transition-colors"
         >
-          <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round">
+          <svg
+            viewBox="0 0 16 16"
+            className="h-3.5 w-3.5 fill-none stroke-current"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+          >
             <path d="M4 4l8 8M12 4l-8 8" />
           </svg>
         </button>
@@ -105,10 +152,12 @@ function StandardToastCard({ item }: { item: ToastItem }): React.JSX.Element {
     return () => clearTimeout(t)
   }, [item.id, item.duration])
 
-  const handleClick = item.onClick ? () => {
-    item.onClick!()
-    toast.dismiss(item.id)
-  } : undefined
+  const handleClick = item.onClick
+    ? () => {
+        item.onClick!()
+        toast.dismiss(item.id)
+      }
+    : undefined
 
   return (
     <motion.div
@@ -118,19 +167,30 @@ function StandardToastCard({ item }: { item: ToastItem }): React.JSX.Element {
       transition={{ duration: 0.18 }}
       onClick={handleClick}
       className={[
-        'pointer-events-auto flex items-start gap-2.5 w-full px-3.5 py-3 rounded-xl shadow-xl',
-        'bg-background border', VARIANT_STYLES[item.variant],
-        item.onClick ? 'cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity' : '',
+        'pointer-events-auto flex w-full items-start gap-2.5 rounded-xl px-3.5 py-3 shadow-xl',
+        'bg-background border',
+        VARIANT_STYLES[item.variant],
+        item.onClick ? 'cursor-pointer transition-opacity hover:opacity-90 active:opacity-80' : '',
       ].join(' ')}
     >
       <VariantIcon variant={item.variant} />
-      <p className="flex-1 text-xs font-medium leading-snug text-foreground break-words">{item.message}</p>
+      <p className="text-foreground flex-1 break-words text-xs font-medium leading-snug">
+        {item.message}
+      </p>
       <button
-        onClick={(e) => { e.stopPropagation(); toast.dismiss(item.id) }}
+        onClick={(e) => {
+          e.stopPropagation()
+          toast.dismiss(item.id)
+        }}
         aria-label="Dismiss"
-        className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors outline-none"
+        className="text-muted-foreground hover:text-foreground flex-shrink-0 outline-none transition-colors"
       >
-        <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round">
+        <svg
+          viewBox="0 0 16 16"
+          className="h-3.5 w-3.5 fill-none stroke-current"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        >
           <path d="M4 4l8 8M12 4l-8 8" />
         </svg>
       </button>
@@ -166,7 +226,7 @@ export function ToastProvider(): React.JSX.Element | null {
 
   return createPortal(
     <div
-      className="fixed z-[9999] flex flex-col gap-2 pointer-events-none"
+      className="pointer-events-none fixed z-[9999] flex flex-col gap-2"
       style={{
         bottom: 'calc(4rem + 0.75rem + env(safe-area-inset-bottom))',
         right: '1rem',
@@ -174,7 +234,9 @@ export function ToastProvider(): React.JSX.Element | null {
       }}
     >
       <AnimatePresence initial={false}>
-        {items.map((item) => <ToastCard key={item.id} item={item} />)}
+        {items.map((item) => (
+          <ToastCard key={item.id} item={item} />
+        ))}
       </AnimatePresence>
     </div>,
     portalRef.current,

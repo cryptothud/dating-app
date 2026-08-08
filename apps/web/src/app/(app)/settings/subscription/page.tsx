@@ -22,7 +22,8 @@ function SubscriptionContent() {
   const billingSuccess = params.get('billing') === 'success'
 
   useEffect(() => {
-    billing.getSubscription()
+    billing
+      .getSubscription()
       .then(setSub)
       .catch(() => setSub({ active: false, tier: null, expiresAt: null, cancelledAt: null }))
       .finally(() => setLoading(false))
@@ -45,7 +46,7 @@ function SubscriptionContent() {
     setError('')
     try {
       await billing.cancel()
-      setSub((prev) => prev ? { ...prev, cancelledAt: new Date().toISOString() } : prev)
+      setSub((prev) => (prev ? { ...prev, cancelledAt: new Date().toISOString() } : prev))
       setCancelStep('idle')
     } catch {
       setError('Failed to cancel. Please try again or contact support.')
@@ -55,58 +56,73 @@ function SubscriptionContent() {
 
   if (loading) {
     return (
-      <div className="p-5 flex justify-center py-12">
-        <div className="w-6 h-6 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
+      <div className="flex justify-center p-5 py-12">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
       </div>
     )
   }
 
   const tierLabel = sub?.tier ? (TIER_LABELS[sub.tier] ?? sub.tier) : null
   const expiresFormatted = sub?.expiresAt
-    ? new Date(sub.expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    ? new Date(sub.expiresAt).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
     : null
 
   return (
-    <div className="p-5 space-y-5 overflow-y-auto h-full">
+    <div className="h-full space-y-5 overflow-y-auto p-5">
       <div className="flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-muted-foreground hover:text-foreground transition-colors">
-          <svg viewBox="0 0 16 16" className="w-5 h-5 fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          onClick={() => router.back()}
+          className="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            className="h-5 w-5 fill-none stroke-current"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M10 4L6 8l4 4" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold font-display text-foreground">Subscription</h1>
+        <h1 className="font-display text-foreground text-xl font-bold">Subscription</h1>
       </div>
 
       {billingSuccess && (
-        <div className="rounded-xl bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-400">
+        <div className="rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-400">
           Payment successful! Your subscription is now active.
         </div>
       )}
 
       {error && (
-        <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
           {error}
         </div>
       )}
 
       {/* Current plan card */}
-      <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+      <div className="bg-card border-border space-y-4 rounded-2xl border p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Current plan</p>
-            <p className="text-lg font-display font-bold text-foreground mt-0.5">
+            <p className="text-muted-foreground text-xs font-medium uppercase tracking-widest">
+              Current plan
+            </p>
+            <p className="font-display text-foreground mt-0.5 text-lg font-bold">
               {sub?.active && tierLabel ? tierLabel : 'Free'}
             </p>
           </div>
           {sub?.active && (
-            <span className="text-xs font-semibold bg-purple-500/15 text-purple-400 rounded-full px-3 py-1">
+            <span className="rounded-full bg-purple-500/15 px-3 py-1 text-xs font-semibold text-purple-400">
               Active
             </span>
           )}
         </div>
 
         {sub?.active && expiresFormatted && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {sub.cancelledAt
               ? `Access until ${expiresFormatted} — subscription cancelled`
               : `Renews ${expiresFormatted}`}
@@ -114,7 +130,7 @@ function SubscriptionContent() {
         )}
 
         {!sub?.active && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Upgrade to unlock group chats, voice notes, profile boosts, and more.
           </p>
         )}
@@ -126,7 +142,7 @@ function SubscriptionContent() {
           <button
             onClick={() => void openPortal()}
             disabled={portalLoading}
-            className="w-full h-11 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 disabled:opacity-60 transition-colors"
+            className="h-11 w-full rounded-xl bg-purple-600 text-sm font-semibold text-white transition-colors hover:bg-purple-700 disabled:opacity-60"
           >
             {portalLoading ? 'Opening…' : 'Manage Billing'}
           </button>
@@ -134,30 +150,31 @@ function SubscriptionContent() {
           {!sub.cancelledAt && cancelStep === 'idle' && (
             <button
               onClick={() => setCancelStep('confirm')}
-              className="w-full h-11 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+              className="border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 h-11 w-full rounded-xl border text-sm font-medium transition-colors"
             >
               Cancel subscription
             </button>
           )}
 
           {!sub.cancelledAt && cancelStep === 'confirm' && (
-            <div className="rounded-2xl bg-card border border-destructive/30 p-5 space-y-3">
-              <p className="text-sm text-foreground font-medium">Cancel your subscription?</p>
-              <p className="text-sm text-muted-foreground">
-                You'll keep access until {expiresFormatted ?? 'your billing date'}. No further charges.
+            <div className="bg-card border-destructive/30 space-y-3 rounded-2xl border p-5">
+              <p className="text-foreground text-sm font-medium">Cancel your subscription?</p>
+              <p className="text-muted-foreground text-sm">
+                You'll keep access until {expiresFormatted ?? 'your billing date'}. No further
+                charges.
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setCancelStep('idle')}
                   disabled={cancelLoading}
-                  className="flex-1 h-10 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="border-border text-muted-foreground hover:text-foreground h-10 flex-1 rounded-xl border text-sm font-medium transition-colors"
                 >
                   Keep plan
                 </button>
                 <button
                   onClick={() => void confirmCancel()}
                   disabled={cancelLoading}
-                  className="flex-1 h-10 rounded-xl bg-destructive text-white text-sm font-semibold hover:bg-destructive/90 disabled:opacity-60 transition-colors"
+                  className="bg-destructive hover:bg-destructive/90 h-10 flex-1 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60"
                 >
                   {cancelLoading ? 'Cancelling…' : 'Yes, cancel'}
                 </button>
@@ -168,14 +185,17 @@ function SubscriptionContent() {
       ) : (
         <Link
           href="/upgrade"
-          className="block w-full h-11 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center"
+          className="block flex h-11 w-full items-center justify-center rounded-xl bg-purple-600 text-sm font-semibold text-white transition-colors hover:bg-purple-700"
         >
           Upgrade to Premium
         </Link>
       )}
 
-      <p className="text-xs text-muted-foreground text-center">
-        Questions? <a href="mailto:support@crush.app" className="text-purple-400 hover:underline">Contact support</a>
+      <p className="text-muted-foreground text-center text-xs">
+        Questions?{' '}
+        <a href="mailto:support@crush.app" className="text-purple-400 hover:underline">
+          Contact support
+        </a>
       </p>
     </div>
   )

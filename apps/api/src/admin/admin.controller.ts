@@ -1,5 +1,17 @@
 import {
-  Controller, Get, Post, Patch, Delete, Param, Body, Query, Req, Res, UseGuards, HttpCode, HttpStatus,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator'
 import { Request, Response } from 'express'
@@ -7,9 +19,16 @@ import { AdminGuard } from './admin.guard'
 import { ModeratorGuard } from './moderator.guard'
 import { AdminService } from './admin.service'
 import {
-  ReasonDto, TicketReplyDto, TicketStatusDto, MaintenanceModeDto,
-  FlushCacheDto, UpdateFlagDto, BroadcastPushDto, PaginationDto,
-  TimeoutDto, SetRoleDto,
+  ReasonDto,
+  TicketReplyDto,
+  TicketStatusDto,
+  MaintenanceModeDto,
+  FlushCacheDto,
+  UpdateFlagDto,
+  BroadcastPushDto,
+  PaginationDto,
+  TimeoutDto,
+  SetRoleDto,
 } from './dto/admin-action.dto'
 
 class AdminLoginDto {
@@ -17,7 +36,9 @@ class AdminLoginDto {
   @IsString() @MinLength(1) @MaxLength(200) password!: string
 }
 
-interface AdminRequest extends Request { user: { id: string; role: string } }
+interface AdminRequest extends Request {
+  user: { id: string; role: string }
+}
 
 // ── Public endpoints — no auth guard (work during maintenance) ────────
 @Controller('admin')
@@ -165,13 +186,21 @@ export class AdminController {
 
   @Post('support/:id/reply')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async replyToTicket(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: TicketReplyDto) {
+  async replyToTicket(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: TicketReplyDto,
+  ) {
     await this.admin.replyToTicket(req.user.id, id, dto.body)
   }
 
   @Patch('support/:id/status')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateTicketStatus(@Req() req: AdminRequest, @Param('id') id: string, @Body() dto: TicketStatusDto) {
+  async updateTicketStatus(
+    @Req() req: AdminRequest,
+    @Param('id') id: string,
+    @Body() dto: TicketStatusDto,
+  ) {
     await this.admin.updateTicketStatus(req.user.id, id, dto.status)
   }
 
@@ -204,7 +233,11 @@ export class AdminController {
 
   @Patch('flags/:key')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateFlag(@Req() req: AdminRequest, @Param('key') key: string, @Body() dto: UpdateFlagDto) {
+  async updateFlag(
+    @Req() req: AdminRequest,
+    @Param('key') key: string,
+    @Body() dto: UpdateFlagDto,
+  ) {
     await this.admin.updateFlag(req.user.id, key, dto.enabled, dto.description)
   }
 

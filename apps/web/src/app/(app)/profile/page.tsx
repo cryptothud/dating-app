@@ -10,10 +10,18 @@ import { ApiRequestError, api } from '@/lib/api'
 import { useAuth } from '@/hooks/use-auth'
 import { useSubscription } from '@/hooks/use-subscription'
 
-function Section({ title, children }: { title: string; children: React.ReactNode }): React.JSX.Element {
+function Section({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}): React.JSX.Element {
   return (
     <section className="space-y-3">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">{title}</h2>
+      <h2 className="text-muted-foreground px-1 text-xs font-semibold uppercase tracking-widest">
+        {title}
+      </h2>
       {children}
     </section>
   )
@@ -21,8 +29,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function VerifiedBadge(): React.JSX.Element {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-      <svg viewBox="0 0 16 16" className="w-3 h-3 fill-primary"><path d="M8 1l1.48 3.01 3.32.48-2.4 2.34.57 3.3L8 8.57 5.03 10.13l.57-3.3-2.4-2.34 3.32-.48z"/></svg>
+    <span className="bg-primary/10 border-primary/20 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold">
+      <svg viewBox="0 0 16 16" className="fill-primary h-3 w-3">
+        <path d="M8 1l1.48 3.01 3.32.48-2.4 2.34.57 3.3L8 8.57 5.03 10.13l.57-3.3-2.4-2.34 3.32-.48z" />
+      </svg>
       Verified
     </span>
   )
@@ -47,18 +57,25 @@ export default function ProfilePage(): React.JSX.Element {
   const [boostMsg, setBoostMsg] = useState('')
 
   const handleBoost = async (): Promise<void> => {
-    setBoosting(true); setBoostMsg('')
+    setBoosting(true)
+    setBoostMsg('')
     try {
       const res = await api.post<{ boostedUntil: string }>('/location/boost')
-      const until = new Date(res.boostedUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const until = new Date(res.boostedUntil).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
       setBoostMsg(`Boosted until ${until}!`)
     } catch (e) {
       setBoostMsg(e instanceof ApiRequestError ? e.message : 'Boost unavailable')
-    } finally { setBoosting(false) }
+    } finally {
+      setBoosting(false)
+    }
   }
 
   useEffect(() => {
-    profileApi.getMe()
+    profileApi
+      .getMe()
       .then((p) => {
         setProfile(p)
         setDisplayName(p.displayName ?? '')
@@ -90,7 +107,11 @@ export default function ProfilePage(): React.JSX.Element {
       setProfile(updated)
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
-    } catch { /* noop */ } finally { setSaving(false) }
+    } catch {
+      /* noop */
+    } finally {
+      setSaving(false)
+    }
   }
 
   const LOOKING_FOR_OPTIONS = [
@@ -124,13 +145,30 @@ export default function ProfilePage(): React.JSX.Element {
   ]
 
   const INTERESTS_OPTIONS = [
-    'Hiking', 'Gaming', 'Cooking', 'Travel', 'Music', 'Art', 'Fitness',
-    'Reading', 'Movies', 'Photography', 'Dancing', 'Yoga', 'Sports', 'Tech',
-    'Fashion', 'Foodies', 'Outdoors', 'Nightlife', 'Pets', 'Wellness',
+    'Hiking',
+    'Gaming',
+    'Cooking',
+    'Travel',
+    'Music',
+    'Art',
+    'Fitness',
+    'Reading',
+    'Movies',
+    'Photography',
+    'Dancing',
+    'Yoga',
+    'Sports',
+    'Tech',
+    'Fashion',
+    'Foodies',
+    'Outdoors',
+    'Nightlife',
+    'Pets',
+    'Wellness',
   ]
 
   function toggleLookingFor(val: string) {
-    setLookingFor((prev) => prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val])
+    setLookingFor((prev) => (prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]))
   }
 
   function toggleInterest(val: string) {
@@ -144,34 +182,40 @@ export default function ProfilePage(): React.JSX.Element {
     const photo = await profileApi.uploadPhoto(file)
     if (isFirst) {
       await profileApi.updatePhoto(photo.id, { isPrimary: true })
-      setProfile((p) => p ? { ...p, photos: [{ ...photo, isPrimary: true }] } : p)
+      setProfile((p) => (p ? { ...p, photos: [{ ...photo, isPrimary: true }] } : p))
     } else {
-      setProfile((p) => p ? { ...p, photos: [...p.photos, photo] } : p)
+      setProfile((p) => (p ? { ...p, photos: [...p.photos, photo] } : p))
     }
   }
 
   const handleSetPrimary = async (id: string): Promise<void> => {
     await profileApi.updatePhoto(id, { isPrimary: true })
-    setProfile((p) => p ? { ...p, photos: p.photos.map((ph) => ({ ...ph, isPrimary: ph.id === id })) } : p)
+    setProfile((p) =>
+      p ? { ...p, photos: p.photos.map((ph) => ({ ...ph, isPrimary: ph.id === id })) } : p,
+    )
   }
 
   const handleDeletePhoto = async (id: string): Promise<void> => {
     await profileApi.deletePhoto(id)
-    setProfile((p) => p ? { ...p, photos: p.photos.filter((ph) => ph.id !== id) } : p)
+    setProfile((p) => (p ? { ...p, photos: p.photos.filter((ph) => ph.id !== id) } : p))
   }
 
   const handleReorderPhotos = (newOrder: UserProfile['photos']): void => {
-    setProfile((p) => p ? { ...p, photos: newOrder } : p)
+    setProfile((p) => (p ? { ...p, photos: newOrder } : p))
     void Promise.all(newOrder.map((ph, idx) => profileApi.updatePhoto(ph.id, { order: idx })))
   }
 
-  const handleUpsertPrompt = async (promptKey: string, answer: string, order: number): Promise<void> => {
+  const handleUpsertPrompt = async (
+    promptKey: string,
+    answer: string,
+    order: number,
+  ): Promise<void> => {
     const updated = await profileApi.upsertPrompt({ promptKey, answer, order })
     setProfile((p) => {
       if (!p) return p
       const exists = p.prompts.find((pr) => pr.promptKey === promptKey)
       const prompts = exists
-        ? p.prompts.map((pr) => pr.promptKey === promptKey ? updated : pr)
+        ? p.prompts.map((pr) => (pr.promptKey === promptKey ? updated : pr))
         : [...p.prompts, updated]
       return { ...p, prompts }
     })
@@ -179,65 +223,72 @@ export default function ProfilePage(): React.JSX.Element {
 
   const handleDeletePrompt = async (id: string): Promise<void> => {
     await profileApi.deletePrompt(id)
-    setProfile((p) => p ? { ...p, prompts: p.prompts.filter((pr) => pr.id !== id) } : p)
+    setProfile((p) => (p ? { ...p, prompts: p.prompts.filter((pr) => pr.id !== id) } : p))
   }
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="flex h-full items-center justify-center">
+        <div className="border-primary h-7 w-7 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     )
   }
 
   if (error || !profile) {
     return (
-      <div className="h-full flex items-center justify-center p-6 text-center">
-        <p className="text-sm text-muted-foreground">{error ?? 'Something went wrong'}</p>
+      <div className="flex h-full items-center justify-center p-6 text-center">
+        <p className="text-muted-foreground text-sm">{error ?? 'Something went wrong'}</p>
       </div>
     )
   }
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-4 space-y-6 pb-8">
+      <div className="space-y-6 p-4 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold font-display text-foreground">My Profile</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted-foreground">Trust score: {profile.trustScore}</span>
+            <h1 className="font-display text-foreground text-xl font-bold">My Profile</h1>
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-muted-foreground text-xs">
+                Trust score: {profile.trustScore}
+              </span>
               {profile.verified && <VerifiedBadge />}
             </div>
           </div>
           {!profile.verified && (
-            <a href="/settings/verify" className="text-xs font-medium text-primary hover:underline">
+            <a href="/settings/verify" className="text-primary text-xs font-medium hover:underline">
               Get verified →
             </a>
           )}
         </div>
 
         {/* Boost */}
-        <div className="rounded-2xl bg-card border border-border p-4 flex items-center justify-between gap-3">
+        <div className="bg-card border-border flex items-center justify-between gap-3 rounded-2xl border p-4">
           <div>
-            <p className="text-sm font-semibold text-foreground">Map Boost</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-foreground text-sm font-semibold">Map Boost</p>
+            <p className="text-muted-foreground mt-0.5 text-xs">
               {isPremium
-                ? isPremiumPlus ? '3 boosts/week — appear at top of map for 30 min' : '1 boost/week — appear at top of map for 30 min'
+                ? isPremiumPlus
+                  ? '3 boosts/week — appear at top of map for 30 min'
+                  : '1 boost/week — appear at top of map for 30 min'
                 : 'Premium — appear at top of map for 30 min'}
             </p>
-            {boostMsg && <p className="text-xs text-purple-400 mt-1">{boostMsg}</p>}
+            {boostMsg && <p className="mt-1 text-xs text-purple-400">{boostMsg}</p>}
           </div>
           {isPremium ? (
             <button
               onClick={() => void handleBoost()}
               disabled={boosting}
-              className="shrink-0 rounded-xl bg-purple-600 text-white text-xs font-semibold px-4 py-2 hover:bg-purple-700 disabled:opacity-60 transition-colors"
+              className="shrink-0 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-purple-700 disabled:opacity-60"
             >
               {boosting ? '…' : '⚡ Boost'}
             </button>
           ) : (
-            <Link href="/upgrade" className="shrink-0 rounded-xl border border-purple-500 text-purple-500 dark:text-purple-400 dark:border-purple-400 text-xs font-semibold px-4 py-2 hover:bg-purple-500/10 transition-colors">
+            <Link
+              href="/upgrade"
+              className="shrink-0 rounded-xl border border-purple-500 px-4 py-2 text-xs font-semibold text-purple-500 transition-colors hover:bg-purple-500/10 dark:border-purple-400 dark:text-purple-400"
+            >
               Upgrade
             </Link>
           )}
@@ -258,20 +309,22 @@ export default function ProfilePage(): React.JSX.Element {
         <Section title="About you">
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">Display name</label>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                Display name
+              </label>
               <input
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 maxLength={30}
                 placeholder="Your name"
-                className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-sm text-foreground dark:text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all"
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
                 Age
                 {profile.age === null && (
-                  <span className="ml-1.5 text-[10px] text-muted-foreground/60 font-normal normal-case tracking-normal">
+                  <span className="text-muted-foreground/60 ml-1.5 text-[10px] font-normal normal-case tracking-normal">
                     (set once — derived from your date of birth for new accounts)
                   </span>
                 )}
@@ -285,13 +338,17 @@ export default function ProfilePage(): React.JSX.Element {
                 inputMode="numeric"
                 maxLength={3}
                 className={[
-                  'w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-sm text-foreground dark:text-white placeholder:text-muted-foreground focus:outline-none transition-all',
-                  profile.age !== null ? 'cursor-default select-none' : 'focus:ring-1 focus:ring-ring',
+                  'dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none dark:text-white',
+                  profile.age !== null
+                    ? 'cursor-default select-none'
+                    : 'focus:ring-ring focus:ring-1',
                 ].join(' ')}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">I&apos;m looking for</label>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                I&apos;m looking for
+              </label>
               <div className="flex flex-wrap gap-2">
                 {LOOKING_FOR_OPTIONS.map((opt) => (
                   <button
@@ -299,10 +356,10 @@ export default function ProfilePage(): React.JSX.Element {
                     type="button"
                     onClick={() => toggleLookingFor(opt.value)}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                       lookingFor.includes(opt.value)
                         ? 'bg-primary border-primary text-white'
-                        : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
+                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-transparent',
                     ].join(' ')}
                   >
                     {opt.label}
@@ -311,18 +368,20 @@ export default function ProfilePage(): React.JSX.Element {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">My body type</label>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                My body type
+              </label>
               <div className="flex flex-wrap gap-2">
                 {BODY_TYPE_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setBodyType((prev) => prev === opt.value ? '' : opt.value)}
+                    onClick={() => setBodyType((prev) => (prev === opt.value ? '' : opt.value))}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                       bodyType === opt.value
                         ? 'bg-primary border-primary text-white'
-                        : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
+                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-transparent',
                     ].join(' ')}
                   >
                     {opt.label}
@@ -332,18 +391,20 @@ export default function ProfilePage(): React.JSX.Element {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">My sexuality</label>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                My sexuality
+              </label>
               <div className="flex flex-wrap gap-2">
                 {SEXUALITY_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setSexuality((prev) => prev === opt.value ? '' : opt.value)}
+                    onClick={() => setSexuality((prev) => (prev === opt.value ? '' : opt.value))}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                       sexuality === opt.value
                         ? 'bg-primary border-primary text-white'
-                        : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
+                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-transparent',
                     ].join(' ')}
                   >
                     {opt.label}
@@ -353,8 +414,9 @@ export default function ProfilePage(): React.JSX.Element {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-                My interests <span className="text-muted-foreground/50">({interests.length}/10)</span>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                My interests{' '}
+                <span className="text-muted-foreground/50">({interests.length}/10)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {INTERESTS_OPTIONS.map((opt) => (
@@ -363,10 +425,10 @@ export default function ProfilePage(): React.JSX.Element {
                     type="button"
                     onClick={() => toggleInterest(opt)}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                       interests.includes(opt)
                         ? 'bg-primary border-primary text-white'
-                        : 'bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/30',
+                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-transparent',
                     ].join(' ')}
                   >
                     {opt}
@@ -376,21 +438,23 @@ export default function ProfilePage(): React.JSX.Element {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">Bio</label>
+              <label className="text-muted-foreground mb-1.5 block text-xs font-medium">Bio</label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 maxLength={500}
                 rows={3}
                 placeholder="Tell people a little about yourself…"
-                className="w-full px-4 py-3 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-sm text-foreground dark:text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring transition-all"
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-4 py-3 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
               />
-              <p className="text-right text-[11px] text-muted-foreground/60 mt-1">{bio.length}/500</p>
+              <p className="text-muted-foreground/60 mt-1 text-right text-[11px]">
+                {bio.length}/500
+              </p>
             </div>
             <button
               onClick={handleSaveInfo}
               disabled={saving}
-              className="w-full h-11 bg-primary rounded-xl text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="bg-primary h-11 w-full rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save'}
             </button>
@@ -405,7 +469,6 @@ export default function ProfilePage(): React.JSX.Element {
             onDelete={handleDeletePrompt}
           />
         </Section>
-
       </div>
     </div>
   )

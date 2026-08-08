@@ -36,7 +36,13 @@ export interface AdminReport {
   status: string
   createdAt: string
   reporter: { id: string; email: string; profile: { displayName: string | null } | null }
-  reported: { id: string; email: string; profile: { displayName: string | null } | null; suspended: boolean; banned: boolean }
+  reported: {
+    id: string
+    email: string
+    profile: { displayName: string | null } | null
+    suspended: boolean
+    banned: boolean
+  }
 }
 
 export interface SupportTicket {
@@ -48,7 +54,12 @@ export interface SupportTicket {
   adminNotes: string | null
   createdAt: string
   updatedAt: string
-  user: { id: string; suspended: boolean; banned: boolean; _count: { reportsReceived: number } } | null
+  user: {
+    id: string
+    suspended: boolean
+    banned: boolean
+    _count: { reportsReceived: number }
+  } | null
   _count: { replies: number }
 }
 
@@ -86,8 +97,13 @@ export const adminApi = {
 
   // Users
   searchUsers: (q: string, limit = 20, offset = 0) =>
-    api.get<{ total: number; users: AdminUser[] }>(`/admin/users?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`),
-  getUser: (id: string) => api.get<AdminUser & { reportsReceived: AdminReport[]; auditLogsTargeted: AuditEntry[] }>(`/admin/users/${id}`),
+    api.get<{ total: number; users: AdminUser[] }>(
+      `/admin/users?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`,
+    ),
+  getUser: (id: string) =>
+    api.get<AdminUser & { reportsReceived: AdminReport[]; auditLogsTargeted: AuditEntry[] }>(
+      `/admin/users/${id}`,
+    ),
   warn: (id: string, reason: string) => api.post(`/admin/users/${id}/warn`, { reason }),
   suspend: (id: string, reason: string) => api.post(`/admin/users/${id}/suspend`, { reason }),
   unsuspend: (id: string) => api.post(`/admin/users/${id}/unsuspend`),
@@ -99,30 +115,44 @@ export const adminApi = {
   setRole: (id: string, role: 'user' | 'moderator' | 'admin') =>
     api.post(`/admin/users/${id}/set-role`, { role }),
   getElevatedUsers: () =>
-    api.get<{ id: string; email: string; role: string; profile: { displayName: string | null } | null }[]>('/admin/users/elevated'),
+    api.get<
+      { id: string; email: string; role: string; profile: { displayName: string | null } | null }[]
+    >('/admin/users/elevated'),
 
   // Reports
   getReports: (status = 'open', limit = 20, offset = 0) =>
-    api.get<{ total: number; reports: AdminReport[] }>(`/admin/reports?status=${status}&limit=${limit}&offset=${offset}`),
-  resolveReport: (id: string, reason: string) => api.post(`/admin/reports/${id}/resolve`, { reason }),
+    api.get<{ total: number; reports: AdminReport[] }>(
+      `/admin/reports?status=${status}&limit=${limit}&offset=${offset}`,
+    ),
+  resolveReport: (id: string, reason: string) =>
+    api.post(`/admin/reports/${id}/resolve`, { reason }),
 
   // Support
   getTickets: (status = 'open', limit = 20, offset = 0) =>
-    api.get<{ total: number; tickets: SupportTicket[] }>(`/admin/support?status=${status}&limit=${limit}&offset=${offset}`),
+    api.get<{ total: number; tickets: SupportTicket[] }>(
+      `/admin/support?status=${status}&limit=${limit}&offset=${offset}`,
+    ),
   getTicket: (id: string) =>
     api.get<SupportTicket & { replies: TicketReply[] }>(`/admin/support/${id}`),
   replyToTicket: (id: string, body: string) => api.post(`/admin/support/${id}/reply`, { body }),
-  updateTicketStatus: (id: string, status: string) => api.patch(`/admin/support/${id}/status`, { status }),
+  updateTicketStatus: (id: string, status: string) =>
+    api.patch(`/admin/support/${id}/status`, { status }),
 
   // System
   getSystem: () => api.get<{ maintenanceMode: boolean; flags: FeatureFlag[] }>('/admin/system'),
   setMaintenance: (enabled: boolean) => api.post('/admin/system/maintenance', { enabled }),
   flushCache: (pattern: string) => api.post('/admin/system/flush-cache', { pattern }),
-  broadcastPush: (title: string, body: string, url?: string) => api.post('/admin/system/broadcast-push', { title, body, url }),
+  broadcastPush: (title: string, body: string, url?: string) =>
+    api.post('/admin/system/broadcast-push', { title, body, url }),
   updateFlag: (key: string, enabled: boolean) => api.patch(`/admin/flags/${key}`, { enabled }),
 
   // Audit
-  getAuditLog: (params: { limit?: number; offset?: number; action?: string; targetUserId?: string }) => {
+  getAuditLog: (params: {
+    limit?: number
+    offset?: number
+    action?: string
+    targetUserId?: string
+  }) => {
     const q = new URLSearchParams()
     if (params.limit) q.set('limit', String(params.limit))
     if (params.offset) q.set('offset', String(params.offset))

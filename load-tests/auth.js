@@ -95,7 +95,8 @@ function testSignupRateLimit() {
   )
 
   check(res, {
-    'signup throttled or processed': (r) => r.status === 409 || r.status === 201 || r.status === 429,
+    'signup throttled or processed': (r) =>
+      r.status === 409 || r.status === 201 || r.status === 429,
     'no server error': (r) => r.status < 500,
   })
 

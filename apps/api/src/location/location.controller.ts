@@ -67,7 +67,8 @@ export class LocationController {
     @Query() query: MapQueryDto,
     @Req() req: Request,
   ): Promise<Array<{ lat: number; lng: number; count: number }>> {
-    const ip = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ?? req.ip
+    const ip =
+      (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ?? req.ip
     return this.location.getClusterData(query, ip)
   }
 
@@ -80,7 +81,8 @@ export class LocationController {
     @Query() query: MapQueryDto,
     @Req() req: Request,
   ): Promise<MapUser[]> {
-    const ip = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ?? req.ip
+    const ip =
+      (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ?? req.ip
     return this.location.getMapUsers(user?.id ?? null, query, ip)
   }
 
@@ -104,9 +106,7 @@ export class LocationController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMyLocation(
-    @CurrentUser() user: AuthUser,
-  ): Promise<{ lat: number; lng: number } | null> {
+  async getMyLocation(@CurrentUser() user: AuthUser): Promise<{ lat: number; lng: number } | null> {
     return this.location.getMyLocation(user.id)
   }
 
@@ -123,10 +123,7 @@ export class LocationController {
   @Patch('travel-mode')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async setTravelMode(
-    @CurrentUser() user: AuthUser,
-    @Body() dto: TravelModeDto,
-  ): Promise<void> {
+  async setTravelMode(@CurrentUser() user: AuthUser, @Body() dto: TravelModeDto): Promise<void> {
     await this.premium.requirePremiumPlus(user.id)
     await this.location.setTravelMode(user.id, dto.enabled, dto.lat, dto.lng)
   }

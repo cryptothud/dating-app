@@ -38,7 +38,9 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
     window.location.href = '/'
   }
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggle = (): void => {
     if (!open && buttonRef.current) {
@@ -76,7 +78,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -4 }}
           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-          className="fixed w-52 bg-white/70 dark:bg-black/60 border border-black/8 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden py-1.5"
+          className="border-black/8 fixed w-52 overflow-hidden rounded-2xl border bg-white/70 py-1.5 shadow-2xl dark:border-white/10 dark:bg-black/60"
           style={{
             top: pos.top,
             right: pos.right,
@@ -92,7 +94,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="flex items-center px-4 py-2 text-sm text-foreground/70 dark:text-white/65 hover:text-foreground dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8 transition-colors"
+              className="text-foreground/70 hover:text-foreground dark:hover:bg-white/8 flex items-center px-4 py-2 text-sm transition-colors hover:bg-black/5 dark:text-white/65 dark:hover:text-white"
             >
               {label}
             </Link>
@@ -101,10 +103,12 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
           {/* Sign out — auth only */}
           {isAuthenticated && (
             <>
-              <div className="h-px bg-black/15 dark:bg-white/20 mx-3 my-1.5" />
+              <div className="mx-3 my-1.5 h-px bg-black/15 dark:bg-white/20" />
               <button
-                onClick={() => { void handleSignOut() }}
-                className="flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-black/5 dark:hover:bg-white/8 transition-colors"
+                onClick={() => {
+                  void handleSignOut()
+                }}
+                className="text-destructive dark:hover:bg-white/8 flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-black/5"
               >
                 Sign out
               </button>
@@ -112,16 +116,18 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
           )}
 
           {/* Legal */}
-          <div className="h-px bg-black/15 dark:bg-white/20 mx-3 my-1.5" />
+          <div className="mx-3 my-1.5 h-px bg-black/15 dark:bg-white/20" />
           <div className="px-4 pb-2 pt-1">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-black/30 dark:text-white/30 mb-1.5">Legal</p>
+            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-widest text-black/30 dark:text-white/30">
+              Legal
+            </p>
             <div className="grid grid-cols-2 gap-x-2 gap-y-1">
               {LEGAL_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="text-[10px] text-black/35 dark:text-white/30 hover:text-black/60 dark:hover:text-white/55 transition-colors truncate"
+                  className="truncate text-[10px] text-black/35 transition-colors hover:text-black/60 dark:text-white/30 dark:hover:text-white/55"
                 >
                   {label}
                 </Link>
@@ -140,14 +146,14 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
         onClick={toggle}
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
-        className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
       >
         <AnimatePresence mode="wait" initial={false}>
           {open ? (
             <motion.svg
               key="x"
               viewBox="0 0 24 24"
-              className="w-5 h-5 fill-none stroke-current"
+              className="h-5 w-5 fill-none stroke-current"
               strokeWidth="2"
               strokeLinecap="round"
               initial={{ rotate: -45, opacity: 0 }}
@@ -161,7 +167,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
             <motion.svg
               key="menu"
               viewBox="0 0 24 24"
-              className="w-5 h-5 fill-none stroke-current"
+              className="h-5 w-5 fill-none stroke-current"
               strokeWidth="2"
               strokeLinecap="round"
               initial={{ opacity: 0 }}

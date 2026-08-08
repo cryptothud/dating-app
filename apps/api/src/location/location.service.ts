@@ -38,7 +38,8 @@ export class LocationService {
     await this.enforceRateLimit(`rl:loc:${userId}`, 600, 3600)
     // If travel mode is active, keep the travel coordinates instead of GPS
     const existing = await this.prisma.userLocation.findUnique({ where: { userId } })
-    const useTravelCoords = existing?.travelMode && existing.travelLat !== null && existing.travelLng !== null
+    const useTravelCoords =
+      existing?.travelMode && existing.travelLat !== null && existing.travelLng !== null
     const lat = useTravelCoords ? existing!.travelLat! : dto.latitude
     const lng = useTravelCoords ? existing!.travelLng! : dto.longitude
 
@@ -65,9 +66,12 @@ export class LocationService {
     }
 
     // Skip cache when filters are active (filter combos are too numerous to cache individually)
-    const hasFilters = query.ageMin !== undefined || query.ageMax !== undefined ||
+    const hasFilters =
+      query.ageMin !== undefined ||
+      query.ageMax !== undefined ||
       (query.lookingFor && query.lookingFor.length > 0) ||
-      query.activelyOnly || query.bodyType ||
+      query.activelyOnly ||
+      query.bodyType ||
       (query.interests && query.interests.length > 0)
 
     if (!hasFilters) {
@@ -94,34 +98,46 @@ export class LocationService {
   }
 
   private async queryMapUsers(userId: string | null, query: MapQueryDto): Promise<RawMapRow[]> {
-    const { swLat, swLng, neLat, neLng, ageMin, ageMax, lookingFor, activelyOnly, bodyType, interests } = query
+    const {
+      swLat,
+      swLng,
+      neLat,
+      neLng,
+      ageMin,
+      ageMax,
+      lookingFor,
+      activelyOnly,
+      bodyType,
+      interests,
+    } = query
     const limit = this.zoomLimit(query.zoom)
 
-    const ageFilter = (ageMin !== undefined && ageMax !== undefined)
-      ? Prisma.sql`AND p.age BETWEEN ${ageMin} AND ${ageMax}`
-      : ageMin !== undefined
-        ? Prisma.sql`AND p.age >= ${ageMin}`
-        : ageMax !== undefined
-          ? Prisma.sql`AND p.age <= ${ageMax}`
-          : Prisma.empty
+    const ageFilter =
+      ageMin !== undefined && ageMax !== undefined
+        ? Prisma.sql`AND p.age BETWEEN ${ageMin} AND ${ageMax}`
+        : ageMin !== undefined
+          ? Prisma.sql`AND p.age >= ${ageMin}`
+          : ageMax !== undefined
+            ? Prisma.sql`AND p.age <= ${ageMax}`
+            : Prisma.empty
 
     const activeFilter = activelyOnly
       ? Prisma.sql`AND p.actively_looking = true AND (p.actively_looking_expires_at IS NULL OR p.actively_looking_expires_at > NOW())`
       : Prisma.empty
 
-    const bodyTypeFilter = bodyType
-      ? Prisma.sql`AND p.body_type = ${bodyType}`
-      : Prisma.empty
+    const bodyTypeFilter = bodyType ? Prisma.sql`AND p.body_type = ${bodyType}` : Prisma.empty
 
     // lookingFor: user must have at least one of the requested tags
-    const lookingForFilter = (lookingFor && lookingFor.length > 0)
-      ? Prisma.sql`AND p.looking_for && ${lookingFor}::text[]`
-      : Prisma.empty
+    const lookingForFilter =
+      lookingFor && lookingFor.length > 0
+        ? Prisma.sql`AND p.looking_for && ${lookingFor}::text[]`
+        : Prisma.empty
 
     // interests: user must share at least one of the requested interests
-    const interestsFilter = (interests && interests.length > 0)
-      ? Prisma.sql`AND p.interests && ${interests}::text[]`
-      : Prisma.empty
+    const interestsFilter =
+      interests && interests.length > 0
+        ? Prisma.sql`AND p.interests && ${interests}::text[]`
+        : Prisma.empty
 
     const SELECT_COLS = Prisma.sql`
       ul.user_id                                                AS id,
@@ -234,7 +250,10 @@ export class LocationService {
     })
   }
 
-  async getClusterData(query: MapQueryDto, ip?: string): Promise<Array<{ lat: number; lng: number; count: number }>> {
+  async getClusterData(
+    query: MapQueryDto,
+    ip?: string,
+  ): Promise<Array<{ lat: number; lng: number; count: number }>> {
     if (ip) await this.enforceRateLimit(`rl:map:anon:${ip}`, 60, 60)
     const { swLat, swLng, neLat, neLng } = query
     const zoom = query.zoom ?? 0
@@ -265,7 +284,9 @@ export class LocationService {
     return rows.map((r) => ({ lat: Number(r.lat), lng: Number(r.lng), count: Number(r.count) }))
   }
 
-  async getMyLocation(userId: string): Promise<{ lat: number; lng: number; fuzzRadius: number } | null> {
+  async getMyLocation(
+    userId: string,
+  ): Promise<{ lat: number; lng: number; fuzzRadius: number } | null> {
     const loc = await this.prisma.userLocation.findUnique({ where: { userId } })
     if (!loc) return null
     const { lat, lng } = this.fuzzCoordinates(loc.latitude, loc.longitude, loc.fuzzRadius)
@@ -296,8 +317,19 @@ export class LocationService {
     }
     await this.prisma.userLocation.upsert({
       where: { userId },
-      create: { userId, latitude: lat ?? 0, longitude: lng ?? 0, travelMode: enabled, travelLat: lat, travelLng: lng },
-      update: { travelMode: enabled, travelLat: enabled ? lat : null, travelLng: enabled ? lng : null },
+      create: {
+        userId,
+        latitude: lat ?? 0,
+        longitude: lng ?? 0,
+        travelMode: enabled,
+        travelLat: lat,
+        travelLng: lng,
+      },
+      update: {
+        travelMode: enabled,
+        travelLat: enabled ? lat : null,
+        travelLng: enabled ? lng : null,
+      },
     })
   }
 
@@ -312,13 +344,16 @@ export class LocationService {
     return { boostedUntil: boostedUntil.toISOString() }
   }
 
-  async getActivelyLookingStatus(userId: string): Promise<{ enabled: boolean; expiresAt: Date | null }> {
+  async getActivelyLookingStatus(
+    userId: string,
+  ): Promise<{ enabled: boolean; expiresAt: Date | null }> {
     const profile = await this.prisma.profile.findUnique({
       where: { userId },
       select: { activelyLooking: true, activelyLookingExpiresAt: true },
     })
     if (!profile) return { enabled: false, expiresAt: null }
-    const isExpired = profile.activelyLookingExpiresAt && profile.activelyLookingExpiresAt < new Date()
+    const isExpired =
+      profile.activelyLookingExpiresAt && profile.activelyLookingExpiresAt < new Date()
     const enabled = profile.activelyLooking && !isExpired
     return { enabled, expiresAt: enabled ? profile.activelyLookingExpiresAt : null }
   }
@@ -335,7 +370,12 @@ export class LocationService {
     return { angle, ratio }
   }
 
-  private fuzzCoordinates(lat: number, lng: number, radiusMeters: number, userId?: string): { lat: number; lng: number } {
+  private fuzzCoordinates(
+    lat: number,
+    lng: number,
+    radiusMeters: number,
+    userId?: string,
+  ): { lat: number; lng: number } {
     const radiusDeg = radiusMeters / 111320
     const { angle, ratio } = userId
       ? this.stableFuzz(userId)
@@ -348,13 +388,17 @@ export class LocationService {
 
   private viewportKey(q: MapQueryDto): string {
     const zoom = q.zoom ?? 14
-    return [q.swLat, q.swLng, q.neLat, q.neLng].map((n) => Math.round(n * 100)).join(':') + `:z${zoom}`
+    return (
+      [q.swLat, q.swLng, q.neLat, q.neLng].map((n) => Math.round(n * 100)).join(':') + `:z${zoom}`
+    )
   }
 
   private currentWeekKey(): string {
     const now = new Date()
     const year = now.getUTCFullYear()
-    const weekNum = Math.floor((now.getTime() - new Date(year, 0, 1).getTime()) / (7 * 24 * 3600 * 1000))
+    const weekNum = Math.floor(
+      (now.getTime() - new Date(year, 0, 1).getTime()) / (7 * 24 * 3600 * 1000),
+    )
     return `${year}w${weekNum}`
   }
 

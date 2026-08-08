@@ -81,9 +81,7 @@ export class AuthService {
     const attempts = await this.redis.get(attemptKey)
     if (attempts && parseInt(attempts) >= MAX_LOGIN_ATTEMPTS) {
       const ttl = await this.redis.ttl(attemptKey)
-      throw new ForbiddenException(
-        `Account locked. Try again in ${Math.ceil(ttl / 60)} minutes.`,
-      )
+      throw new ForbiddenException(`Account locked. Try again in ${Math.ceil(ttl / 60)} minutes.`)
     }
 
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } })
@@ -114,11 +112,7 @@ export class AuthService {
     return { message: 'Logged out' }
   }
 
-  async refresh(
-    userId: string,
-    family: string,
-    res: Response,
-  ): Promise<{ message: string }> {
+  async refresh(userId: string, family: string, res: Response): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!user) throw new UnauthorizedException()
 
@@ -135,7 +129,9 @@ export class AuthService {
 
       const phoneCount = await this.redis.incr(phoneKey, 3600)
       if (phoneCount > 3) {
-        throw new BadRequestException('Too many OTP requests for this phone number. Try again later.')
+        throw new BadRequestException(
+          'Too many OTP requests for this phone number. Try again later.',
+        )
       }
 
       const ipCount = await this.redis.incr(ipKey, 60)
@@ -148,7 +144,12 @@ export class AuthService {
     return { message: 'Verification code sent' }
   }
 
-  async verifyOtp(userId: string, phone: string, code: string, res: Response): Promise<{ message: string }> {
+  async verifyOtp(
+    userId: string,
+    phone: string,
+    code: string,
+    res: Response,
+  ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!user) throw new UnauthorizedException()
     if (user.phone !== phone) throw new BadRequestException('Phone number does not match account')
@@ -171,7 +172,11 @@ export class AuthService {
     return { message: 'Phone verified successfully' }
   }
 
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } })
     if (!user.passwordHash) throw new BadRequestException('No password set on this account')
     const valid = await bcrypt.compare(currentPassword, user.passwordHash)
@@ -179,7 +184,11 @@ export class AuthService {
     const hash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS)
     await this.prisma.user.update({ where: { id: userId }, data: { passwordHash: hash } })
     // Invalidate all active sessions so stolen refresh tokens can't be reused after a password change
-    await this.redis.set(`sessions:invalidated_before:${userId}`, Date.now().toString(), 60 * 60 * 24 * 8)
+    await this.redis.set(
+      `sessions:invalidated_before:${userId}`,
+      Date.now().toString(),
+      60 * 60 * 24 * 8,
+    )
     return { message: 'Password updated successfully' }
   }
 
@@ -205,16 +214,23 @@ export class AuthService {
     await this.redis.del(pwResetKey(token))
 
     // Invalidate all active sessions so old refresh tokens can't be reused after a reset
-    await this.redis.set(`sessions:invalidated_before:${userId}`, Date.now().toString(), 60 * 60 * 24 * 8)
+    await this.redis.set(
+      `sessions:invalidated_before:${userId}`,
+      Date.now().toString(),
+      60 * 60 * 24 * 8,
+    )
 
     return { message: 'Password updated successfully' }
   }
 
   async getSocketToken(userId: string): Promise<{ token: string }> {
-    const token = await this.jwt.signAsync({ sub: userId }, {
-      secret: this.config.get('JWT_SECRET'),
-      expiresIn: '60s',
-    })
+    const token = await this.jwt.signAsync(
+      { sub: userId },
+      {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: '60s',
+      },
+    )
     return { token }
   }
 
@@ -285,6 +301,11 @@ export class AuthService {
   private clearAuthCookies(res: Response): void {
     const isProd = this.config.get('NODE_ENV') === 'production'
     res.clearCookie('access_token', { httpOnly: true, secure: isProd, sameSite: 'lax' })
-    res.clearCookie('refresh_token', { httpOnly: true, secure: isProd, sameSite: 'lax', path: '/api/auth' })
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/api/auth',
+    })
   }
 }

@@ -1,6 +1,18 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors,
-  UploadedFile, BadRequestException, HttpCode, HttpStatus,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { Throttle } from '@nestjs/throttler'
@@ -105,15 +117,26 @@ export class ChatController {
     @Body('body') body?: string,
   ) {
     if (!file) throw new BadRequestException('No image provided')
-    if (!IMAGE_MIME.has(file.mimetype)) throw new BadRequestException('Only JPEG, PNG, WebP, and GIF are accepted')
-    const msg = await this.chat.uploadImageMessage(user.id, conversationId, file.buffer, file.mimetype, body)
+    if (!IMAGE_MIME.has(file.mimetype))
+      throw new BadRequestException('Only JPEG, PNG, WebP, and GIF are accepted')
+    const msg = await this.chat.uploadImageMessage(
+      user.id,
+      conversationId,
+      file.buffer,
+      file.mimetype,
+      body,
+    )
     this.gateway.broadcastToRoom(conversationId, 'new_message', msg)
     const preview = body?.trim() ? `📷 ${body.trim().slice(0, 80)}` : '📷 Image'
     await this.notifyDmRecipients(user.id, conversationId, preview)
     return msg
   }
 
-  private async notifyDmRecipients(senderId: string, conversationId: string, preview: string): Promise<void> {
+  private async notifyDmRecipients(
+    senderId: string,
+    conversationId: string,
+    preview: string,
+  ): Promise<void> {
     const [recipients, sender] = await Promise.all([
       this.chat.getOtherParticipantIds(senderId, conversationId),
       this.chat.getSenderProfile(senderId),
@@ -168,7 +191,10 @@ export class ChatController {
     @Body('durationMinutes') durationMinutes: number,
   ) {
     const pinned = await this.chat.pinMessage(conversationId, messageId, durationMinutes)
-    this.gateway.broadcastToRoom(conversationId, 'conversation_pinned', { conversationId, ...pinned })
+    this.gateway.broadcastToRoom(conversationId, 'conversation_pinned', {
+      conversationId,
+      ...pinned,
+    })
     return pinned
   }
 
@@ -201,7 +227,12 @@ export class ChatController {
     @Body('body') body: string,
     @Body('senderName') senderName: string,
   ) {
-    const pinned = await this.globalChat.pinGlobalMessage(messageId, body, senderName, durationMinutes)
+    const pinned = await this.globalChat.pinGlobalMessage(
+      messageId,
+      body,
+      senderName,
+      durationMinutes,
+    )
     this.gateway.broadcastToRoom('global', 'global_pinned', pinned)
     return pinned
   }
@@ -213,14 +244,22 @@ export class ChatController {
   @Post('mod/users/:userId/timeout')
   @UseGuards(ModeratorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async timeoutFromChat(@CurrentUser() user: AuthUser, @Param('userId') userId: string, @Body() dto: TimeoutDto) {
+  async timeoutFromChat(
+    @CurrentUser() user: AuthUser,
+    @Param('userId') userId: string,
+    @Body() dto: TimeoutDto,
+  ) {
     await this.adminService.timeoutUser(user.id, userId, dto.durationMinutes, dto.reason)
   }
 
   @Post('mod/users/:userId/ban')
   @UseGuards(ModeratorGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async banFromChat(@CurrentUser() user: AuthUser, @Param('userId') userId: string, @Body('reason') reason: string | undefined) {
+  async banFromChat(
+    @CurrentUser() user: AuthUser,
+    @Param('userId') userId: string,
+    @Body('reason') reason: string | undefined,
+  ) {
     await this.adminService.banUser(user.id, userId, reason ?? 'Banned by moderator')
     await this.globalChat.deleteUserMessages(userId)
     this.gateway.broadcastToRoom('global', 'global_user_banned', { userId })

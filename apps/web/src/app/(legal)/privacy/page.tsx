@@ -12,10 +12,10 @@ export default function PrivacyPage(): React.JSX.Element {
       <LegalHeader badge="Legal" title="Privacy Policy" effectiveDate={EFFECTIVE} draft />
 
       <LegalArticle>
-
         <p>
           This Privacy Policy explains how Crush Inc. (&quot;CRUSH,&quot; &quot;we,&quot; or
-          &quot;us&quot;) collects, uses, and protects your information when you use the CRUSH platform.
+          &quot;us&quot;) collects, uses, and protects your information when you use the CRUSH
+          platform.
         </p>
 
         <h2>1. Information We Collect</h2>
@@ -32,8 +32,8 @@ export default function PrivacyPage(): React.JSX.Element {
         <h3>Information collected automatically</h3>
         <ul>
           <li>
-            <strong>Location data</strong> — GPS coordinates collected when you use the map.
-            Your exact coordinates are never stored in plaintext. Coordinates are fuzzed server-side
+            <strong>Location data</strong> — GPS coordinates collected when you use the map. Your
+            exact coordinates are never stored in plaintext. Coordinates are fuzzed server-side
             within your chosen radius (minimum 200 m) before any client receives them.
           </li>
           <li>Device type, browser, operating system, and IP address</li>
@@ -71,14 +71,31 @@ export default function PrivacyPage(): React.JSX.Element {
         <h2>4. Sharing Your Information</h2>
         <p>We do not sell your personal data. We share data only with:</p>
         <ul>
-          <li><strong>Other users</strong> — fuzzed location, public profile info, and messages you send</li>
-          <li><strong>Stripe</strong> — payment processing</li>
-          <li><strong>Cloudinary / Cloudflare R2</strong> — photo storage and delivery</li>
-          <li><strong>Twilio</strong> — phone OTP delivery</li>
-          <li><strong>Resend</strong> — transactional email delivery</li>
-          <li><strong>Sentry</strong> — error monitoring (no PII in error payloads)</li>
-          <li><strong>NCMEC</strong> — mandatory reporting of CSAM under 18 U.S.C. § 2258A</li>
-          <li><strong>Law enforcement</strong> — when legally compelled by valid process</li>
+          <li>
+            <strong>Other users</strong> — fuzzed location, public profile info, and messages you
+            send
+          </li>
+          <li>
+            <strong>Stripe</strong> — payment processing
+          </li>
+          <li>
+            <strong>Cloudinary / Cloudflare R2</strong> — photo storage and delivery
+          </li>
+          <li>
+            <strong>Twilio</strong> — phone OTP delivery
+          </li>
+          <li>
+            <strong>Resend</strong> — transactional email delivery
+          </li>
+          <li>
+            <strong>Sentry</strong> — error monitoring (no PII in error payloads)
+          </li>
+          <li>
+            <strong>NCMEC</strong> — mandatory reporting of CSAM under 18 U.S.C. § 2258A
+          </li>
+          <li>
+            <strong>Law enforcement</strong> — when legally compelled by valid process
+          </li>
         </ul>
 
         <h2>5. Data Retention</h2>
@@ -115,14 +132,15 @@ export default function PrivacyPage(): React.JSX.Element {
         <h2>8. Children</h2>
         <p>
           CRUSH is strictly for users 18 and older. We do not knowingly collect data from anyone
-          under 18. If we discover a user is under 18, the account is terminated immediately. Contact{' '}
-          <a href="mailto:safety@crush.app">safety@crush.app</a> to report a suspected minor.
+          under 18. If we discover a user is under 18, the account is terminated immediately.
+          Contact <a href="mailto:safety@crush.app">safety@crush.app</a> to report a suspected
+          minor.
         </p>
 
         <h2>9. Contact</h2>
         <p>
-          Privacy questions: <a href="mailto:privacy@crush.app">privacy@crush.app</a> ·
-          Crush Inc., Delaware, USA.
+          Privacy questions: <a href="mailto:privacy@crush.app">privacy@crush.app</a> · Crush Inc.,
+          Delaware, USA.
         </p>
       </LegalArticle>
     </div>

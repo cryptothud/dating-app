@@ -44,10 +44,7 @@ export class PhotosController {
   }
 
   @Delete(':id')
-  async remove(
-    @CurrentUser() user: AuthUser,
-    @Param('id') photoId: string,
-  ): Promise<{ ok: true }> {
+  async remove(@CurrentUser() user: AuthUser, @Param('id') photoId: string): Promise<{ ok: true }> {
     await this.photos.remove(user, photoId)
     return { ok: true }
   }

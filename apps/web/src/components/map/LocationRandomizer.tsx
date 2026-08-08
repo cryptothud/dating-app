@@ -20,11 +20,14 @@ export function LocationRandomizer(): React.JSX.Element {
   const saveDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    api.get<{ fuzzRadius: number } | null>('/location/me')
+    api
+      .get<{ fuzzRadius: number } | null>('/location/me')
       .then((loc) => {
         if (loc?.fuzzRadius) setRadius(Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, loc.fuzzRadius)))
       })
-      .catch(() => { /* non-fatal */ })
+      .catch(() => {
+        /* non-fatal */
+      })
       .finally(() => setLoaded(true))
   }, [])
 
@@ -40,7 +43,9 @@ export function LocationRandomizer(): React.JSX.Element {
         await api.patch('/location/fuzz-radius', { fuzzRadius: val })
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
-      } catch { /* non-fatal */ } finally {
+      } catch {
+        /* non-fatal */
+      } finally {
         setSaving(false)
       }
     }, 600)
@@ -49,27 +54,33 @@ export function LocationRandomizer(): React.JSX.Element {
   const pct = ((radius - MIN_RADIUS) / (MAX_RADIUS - MIN_RADIUS)) * 100
 
   return (
-    <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+    <div className="bg-card border-border space-y-4 rounded-2xl border p-5">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 text-primary fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-xl">
+          <svg
+            viewBox="0 0 24 24"
+            className="text-primary h-5 w-5 fill-none stroke-current"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
         </div>
         <div>
           <p className="text-sm font-semibold">Location Randomizer</p>
-          <p className="text-xs text-muted-foreground">How much to blur your position on the map</p>
+          <p className="text-muted-foreground text-xs">How much to blur your position on the map</p>
         </div>
         {saving && (
-          <div className="ml-auto w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <div className="border-primary ml-auto h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
         )}
         {saved && !saving && (
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="ml-auto text-xs text-emerald-500 font-medium"
+            className="ml-auto text-xs font-medium text-emerald-500"
           >
             Saved
           </motion.span>
@@ -77,9 +88,9 @@ export function LocationRandomizer(): React.JSX.Element {
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between items-center text-xs text-muted-foreground font-medium">
+        <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
           <span>less</span>
-          <span className="text-foreground font-semibold text-sm">{metersToLabel(radius)}</span>
+          <span className="text-foreground text-sm font-semibold">{metersToLabel(radius)}</span>
           <span>more</span>
         </div>
 
@@ -92,15 +103,16 @@ export function LocationRandomizer(): React.JSX.Element {
             value={radius}
             onChange={handleChange}
             disabled={!loaded}
-            className="w-full h-2 rounded-full appearance-none cursor-pointer disabled:opacity-50"
+            className="h-2 w-full cursor-pointer appearance-none rounded-full disabled:opacity-50"
             style={{
               background: `linear-gradient(to right, hsl(var(--primary)) ${pct}%, hsl(var(--muted)) ${pct}%)`,
             }}
           />
         </div>
 
-        <p className="text-xs text-muted-foreground text-center">
-          Others see you within a ~{metersToLabel(radius)} radius · minimum {metersToLabel(MIN_RADIUS)}
+        <p className="text-muted-foreground text-center text-xs">
+          Others see you within a ~{metersToLabel(radius)} radius · minimum{' '}
+          {metersToLabel(MIN_RADIUS)}
         </p>
       </div>
     </div>

@@ -15,7 +15,7 @@ export function LegalNav(): React.JSX.Element {
   const pathname = usePathname()
 
   return (
-    <nav className="hidden sm:flex items-center gap-5 sm:mr-2">
+    <nav className="hidden items-center gap-5 sm:mr-2 sm:flex">
       {LINKS.map(({ href, label }) => {
         const active = pathname === href
         return (
@@ -24,13 +24,15 @@ export function LegalNav(): React.JSX.Element {
             href={href}
             className={[
               'relative pb-0.5 text-sm transition-colors',
-              active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
+              active
+                ? 'text-foreground font-medium'
+                : 'text-muted-foreground hover:text-foreground',
             ].join(' ')}
           >
             {label}
             {active && (
               <motion.span
-                className="absolute bottom-0 -left-[5%] right-0 h-px bg-foreground rounded-full block w-[110%]"
+                className="bg-foreground absolute -left-[5%] bottom-0 right-0 block h-px w-[110%] rounded-full"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 18 }}

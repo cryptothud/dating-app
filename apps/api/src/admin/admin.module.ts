@@ -10,7 +10,14 @@ import { AdminController, AdminPublicController } from './admin.controller'
 import { AuditService } from './audit.service'
 
 @Module({
-  imports: [PrismaModule, RedisModule, EmailModule, PushModule, WarnBusModule, JwtModule.register({})],
+  imports: [
+    PrismaModule,
+    RedisModule,
+    EmailModule,
+    PushModule,
+    WarnBusModule,
+    JwtModule.register({}),
+  ],
   controllers: [AdminPublicController, AdminController],
   providers: [AdminService, AuditService],
   exports: [AuditService, AdminService],

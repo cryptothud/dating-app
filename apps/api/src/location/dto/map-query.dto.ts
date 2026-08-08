@@ -1,4 +1,14 @@
-import { IsNumber, Min, Max, IsOptional, IsBoolean, IsArray, IsString, IsInt, IsIn } from 'class-validator'
+import {
+  IsNumber,
+  Min,
+  Max,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  IsString,
+  IsInt,
+  IsIn,
+} from 'class-validator'
 import { Type, Transform } from 'class-transformer'
 
 export class MapQueryDto {
@@ -43,7 +53,7 @@ export class MapQueryDto {
   // Query params arrive as string or string[] depending on the client
   @IsOptional()
   @Transform(({ value }: { value: unknown }) =>
-    Array.isArray(value) ? value : (value ? [String(value)] : undefined),
+    Array.isArray(value) ? value : value ? [String(value)] : undefined,
   )
   @IsArray()
   @IsString({ each: true })
@@ -60,7 +70,7 @@ export class MapQueryDto {
 
   @IsOptional()
   @Transform(({ value }: { value: unknown }) =>
-    Array.isArray(value) ? value : (value ? [String(value)] : undefined),
+    Array.isArray(value) ? value : value ? [String(value)] : undefined,
   )
   @IsArray()
   @IsString({ each: true })

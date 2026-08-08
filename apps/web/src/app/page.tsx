@@ -40,9 +40,9 @@ export default function HomePage(): React.JSX.Element {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
       {/* Base background */}
-      <div className="absolute inset-0 bg-background dark:bg-[hsl(260_30%_4%)]" />
+      <div className="bg-background absolute inset-0 dark:bg-[hsl(260_30%_4%)]" />
 
       {/* Light-mode gradient */}
       <div
@@ -63,8 +63,8 @@ export default function HomePage(): React.JSX.Element {
       />
 
       {/* Theme toggle */}
-      <div className="absolute top-5 right-5 z-10">
-        <ThemeToggle className="dark:bg-white/10 dark:hover:bg-white/20 dark:text-white/60 dark:hover:text-white" />
+      <div className="absolute right-5 top-5 z-10">
+        <ThemeToggle className="dark:bg-white/10 dark:text-white/60 dark:hover:bg-white/20 dark:hover:text-white" />
       </div>
 
       {/* Card */}
@@ -72,13 +72,15 @@ export default function HomePage(): React.JSX.Element {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="relative z-10 w-full max-w-sm mx-5 bg-card dark:bg-black/45 dark:backdrop-blur-2xl rounded-3xl border border-border dark:border-white/10 shadow-xl dark:shadow-2xl overflow-hidden"
+        className="bg-card border-border relative z-10 mx-5 w-full max-w-sm overflow-hidden rounded-3xl border shadow-xl dark:border-white/10 dark:bg-black/45 dark:shadow-2xl dark:backdrop-blur-2xl"
       >
-        <div className="p-7 space-y-5">
+        <div className="space-y-5 p-7">
           {/* Logo + tagline */}
-          <div className="text-center space-y-1 pb-1">
-            <h1 className="font-display font-bold text-3xl text-primary tracking-tight">CRUSH</h1>
-            <p className="text-sm text-muted-foreground dark:text-white/45">Meet people near you, right now.</p>
+          <div className="space-y-1 pb-1 text-center">
+            <h1 className="font-display text-primary text-3xl font-bold tracking-tight">CRUSH</h1>
+            <p className="text-muted-foreground text-sm dark:text-white/45">
+              Meet people near you, right now.
+            </p>
           </div>
 
           {/* Login form */}
@@ -89,9 +91,11 @@ export default function HomePage(): React.JSX.Element {
                 type="email"
                 autoComplete="email"
                 placeholder="Email"
-                className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-white/35 text-sm focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent transition-all"
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
               />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -99,43 +103,48 @@ export default function HomePage(): React.JSX.Element {
                 {...register('password')}
                 autoComplete="current-password"
                 placeholder="Password"
-                className="w-full h-11 px-4 rounded-xl bg-black/5 dark:bg-white/8 border border-black/8 dark:border-white/12 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-white/35 text-sm focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent transition-all"
+                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
               />
-              {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-destructive mt-1 text-xs">{errors.password.message}</p>
+              )}
             </div>
 
-            <div className="text-right -mt-1">
+            <div className="-mt-1 text-right">
               <Link
                 href="/forgot-password"
-                className="text-xs text-muted-foreground dark:text-white/40 hover:text-foreground dark:hover:text-white/65 transition-colors"
+                className="text-muted-foreground hover:text-foreground text-xs transition-colors dark:text-white/40 dark:hover:text-white/65"
               >
                 Forgot password?
               </Link>
             </div>
 
-            {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+            {serverError && <p className="text-destructive text-sm">{serverError}</p>}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-11 bg-primary rounded-xl text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="bg-primary h-11 w-full rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {isSubmitting ? 'Signing in…' : 'Login'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground dark:text-white/45">
+          <p className="text-muted-foreground text-center text-sm dark:text-white/45">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-foreground dark:text-white font-semibold hover:text-primary transition-colors">
+            <Link
+              href="/signup"
+              className="text-foreground hover:text-primary font-semibold transition-colors dark:text-white"
+            >
               Sign up
             </Link>
           </p>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-border dark:bg-white/10" />
-            <span className="text-xs text-muted-foreground dark:text-white/35 font-medium">or</span>
-            <div className="flex-1 h-px bg-border dark:bg-white/10" />
+            <div className="bg-border h-px flex-1 dark:bg-white/10" />
+            <span className="text-muted-foreground text-xs font-medium dark:text-white/35">or</span>
+            <div className="bg-border h-px flex-1 dark:bg-white/10" />
           </div>
 
           {/* Anonymous */}
@@ -145,9 +154,15 @@ export default function HomePage(): React.JSX.Element {
               sessionStorage.setItem('crush_anon_intent', '1')
               router.push('/map')
             }}
-            className="flex items-center justify-center gap-2.5 w-full h-11 rounded-xl border border-border dark:border-white/15 text-muted-foreground dark:text-white/70 text-sm font-medium hover:bg-muted dark:hover:bg-white/5 hover:text-foreground dark:hover:text-white transition-all"
+            className="border-border text-muted-foreground hover:bg-muted hover:text-foreground flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border text-sm font-medium transition-all dark:border-white/15 dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white"
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 fill-none stroke-current"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
@@ -158,7 +173,7 @@ export default function HomePage(): React.JSX.Element {
           <p className="text-center">
             <Link
               href="/about"
-              className="text-sm text-muted-foreground dark:text-white/50 hover:text-foreground dark:hover:text-white/75 transition-colors font-medium underline underline-offset-2"
+              className="text-muted-foreground hover:text-foreground text-sm font-medium underline underline-offset-2 transition-colors dark:text-white/50 dark:hover:text-white/75"
             >
               About CRUSH
             </Link>
@@ -166,22 +181,43 @@ export default function HomePage(): React.JSX.Element {
 
           {/* Legal */}
           <div className="space-y-2 pt-1">
-            <p className="text-center text-[11px] text-muted-foreground/70 dark:text-white/30 leading-relaxed">
+            <p className="text-muted-foreground/70 text-center text-[11px] leading-relaxed dark:text-white/30">
               By entering, you agree to our{' '}
-              <Link href="/terms" className="underline hover:text-foreground dark:hover:text-white/50">Terms of Use</Link>
+              <Link
+                href="/terms"
+                className="hover:text-foreground underline dark:hover:text-white/50"
+              >
+                Terms of Use
+              </Link>
               {', '}
-              <Link href="/takedown" className="underline hover:text-foreground dark:hover:text-white/50">TAKE IT DOWN Act Policy</Link>
+              <Link
+                href="/takedown"
+                className="hover:text-foreground underline dark:hover:text-white/50"
+              >
+                TAKE IT DOWN Act Policy
+              </Link>
               {' and '}
-              <Link href="/safety" className="underline hover:text-foreground dark:hover:text-white/50">Safety Policy</Link>.
-              You must be 18 or older to enter.
+              <Link
+                href="/safety"
+                className="hover:text-foreground underline dark:hover:text-white/50"
+              >
+                Safety Policy
+              </Link>
+              . You must be 18 or older to enter.
             </p>
-            <div className="flex items-center justify-center gap-3 text-[11px] text-muted-foreground/50 dark:text-white/25">
-              <Link href="/content-removal" className="underline hover:text-foreground dark:hover:text-white/45">
+            <div className="text-muted-foreground/50 flex items-center justify-center gap-3 text-[11px] dark:text-white/25">
+              <Link
+                href="/content-removal"
+                className="hover:text-foreground underline dark:hover:text-white/45"
+              >
                 Report or Request Removal of Content
               </Link>
             </div>
             <div className="text-center">
-              <Link href="/2257" className="text-[11px] text-muted-foreground/50 dark:text-white/25 underline hover:text-foreground dark:hover:text-white/45">
+              <Link
+                href="/2257"
+                className="text-muted-foreground/50 hover:text-foreground text-[11px] underline dark:text-white/25 dark:hover:text-white/45"
+              >
                 18 U.S.C. § 2257 Statement
               </Link>
             </div>

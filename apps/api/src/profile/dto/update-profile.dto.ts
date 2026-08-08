@@ -1,9 +1,31 @@
-import { IsString, IsOptional, IsBoolean, IsArray, MaxLength, IsIn, ArrayMaxSize, IsInt, Min, Max } from 'class-validator'
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  MaxLength,
+  IsIn,
+  ArrayMaxSize,
+  IsInt,
+  Min,
+  Max,
+} from 'class-validator'
 import { Type } from 'class-transformer'
 
 const VALID_LOOKING_FOR = ['casual', 'dating', 'friendship', 'hookup', 'relationship'] as const
 const VALID_BODY_TYPES = ['slim', 'athletic', 'average', 'muscular', 'curvy', 'full'] as const
-const VALID_SEXUALITY = ['straight', 'gay', 'lesbian', 'bisexual', 'pansexual', 'queer', 'curious', 'trans', 'asexual', 'other'] as const
+const VALID_SEXUALITY = [
+  'straight',
+  'gay',
+  'lesbian',
+  'bisexual',
+  'pansexual',
+  'queer',
+  'curious',
+  'trans',
+  'asexual',
+  'other',
+] as const
 
 export class UpdateProfileDto {
   @IsOptional()

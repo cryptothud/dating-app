@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ConflictException, ForbiddenException, UnauthorizedException, BadRequestException } from '@nestjs/common'
+import {
+  ConflictException,
+  ForbiddenException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { AuthService } from '../auth.service'
 
@@ -69,12 +74,14 @@ function cookieCalls(res: import('express').Response): CookieCall[] {
   return vi.mocked(res.cookie).mock.calls as unknown as CookieCall[]
 }
 
-function buildService(overrides: {
-  prisma?: ReturnType<typeof makePrisma>
-  redis?: ReturnType<typeof makeRedis>
-  twilio?: ReturnType<typeof makeTwilio>
-  email?: ReturnType<typeof makeEmail>
-} = {}) {
+function buildService(
+  overrides: {
+    prisma?: ReturnType<typeof makePrisma>
+    redis?: ReturnType<typeof makeRedis>
+    twilio?: ReturnType<typeof makeTwilio>
+    email?: ReturnType<typeof makeEmail>
+  } = {},
+) {
   const prisma = overrides.prisma ?? makePrisma()
   const redis = overrides.redis ?? makeRedis()
   const twilio = overrides.twilio ?? makeTwilio()
@@ -108,7 +115,12 @@ describe('AuthService.signup', () => {
     const { service } = buildService()
     const dob = new Date()
     dob.setFullYear(dob.getFullYear() - 17)
-    const dto = { email: 'teen@test.com', phone: '+15550002222', password: 'Password1!', dateOfBirth: dob.toISOString() }
+    const dto = {
+      email: 'teen@test.com',
+      phone: '+15550002222',
+      password: 'Password1!',
+      dateOfBirth: dob.toISOString(),
+    }
     await expect(service.signup(dto, makeRes(), '1.2.3.4')).rejects.toThrow(ForbiddenException)
   })
 
@@ -119,7 +131,12 @@ describe('AuthService.signup', () => {
 
     const dob = new Date()
     dob.setFullYear(dob.getFullYear() - 25)
-    const dto = { email: 'existing@test.com', phone: '+15550003333', password: 'Password1!', dateOfBirth: dob.toISOString() }
+    const dto = {
+      email: 'existing@test.com',
+      phone: '+15550003333',
+      password: 'Password1!',
+      dateOfBirth: dob.toISOString(),
+    }
     await expect(service.signup(dto, makeRes(), '1.2.3.4')).rejects.toThrow(ConflictException)
   })
 
@@ -132,7 +149,12 @@ describe('AuthService.signup', () => {
 
     const dob = new Date()
     dob.setFullYear(dob.getFullYear() - 25)
-    const dto = { email: 'new@test.com', phone: '+15550004444', password: 'Password1!', dateOfBirth: dob.toISOString() }
+    const dto = {
+      email: 'new@test.com',
+      phone: '+15550004444',
+      password: 'Password1!',
+      dateOfBirth: dob.toISOString(),
+    }
     const result = await service.signup(dto, makeRes(), '1.2.3.4')
 
     expect(result.message).toContain('verify')
@@ -149,7 +171,9 @@ describe('AuthService.login', () => {
     redis.ttl.mockResolvedValue(600)
     const { service } = buildService({ redis })
 
-    await expect(service.login({ email: 'locked@test.com', password: 'pw' }, makeRes())).rejects.toThrow(ForbiddenException)
+    await expect(
+      service.login({ email: 'locked@test.com', password: 'pw' }, makeRes()),
+    ).rejects.toThrow(ForbiddenException)
   })
 
   it('throws UnauthorizedException when user not found', async () => {
@@ -157,7 +181,9 @@ describe('AuthService.login', () => {
     prisma.user.findUnique.mockResolvedValue(null)
     const { service } = buildService({ prisma })
 
-    await expect(service.login({ email: 'nobody@test.com', password: 'pw' }, makeRes())).rejects.toThrow(UnauthorizedException)
+    await expect(
+      service.login({ email: 'nobody@test.com', password: 'pw' }, makeRes()),
+    ).rejects.toThrow(UnauthorizedException)
   })
 
   it('increments Redis counter on wrong password', async () => {
@@ -167,14 +193,24 @@ describe('AuthService.login', () => {
     const redis = makeRedis()
     const { service } = buildService({ prisma, redis })
 
-    await expect(service.login({ email: 'user@test.com', password: 'wrong' }, makeRes())).rejects.toThrow(UnauthorizedException)
-    expect(redis.incr).toHaveBeenCalledWith(expect.stringContaining('login:attempts'), expect.any(Number))
+    await expect(
+      service.login({ email: 'user@test.com', password: 'wrong' }, makeRes()),
+    ).rejects.toThrow(UnauthorizedException)
+    expect(redis.incr).toHaveBeenCalledWith(
+      expect.stringContaining('login:attempts'),
+      expect.any(Number),
+    )
   })
 
   it('clears failed attempt counter on successful login', async () => {
     const hash = await bcrypt.hash('correct', 10)
     const prisma = makePrisma()
-    prisma.user.findUnique.mockResolvedValue({ id: '1', email: 'u@test.com', passwordHash: hash, verified: true } as never)
+    prisma.user.findUnique.mockResolvedValue({
+      id: '1',
+      email: 'u@test.com',
+      passwordHash: hash,
+      verified: true,
+    } as never)
     prisma.user.update.mockResolvedValue({} as never)
     const redis = makeRedis()
     const { service } = buildService({ prisma, redis })
@@ -193,7 +229,11 @@ describe('AuthService.forgotPassword', () => {
     const { service: s1 } = buildService({ prisma })
     const noUser = await s1.forgotPassword('nobody@test.com')
 
-    prisma.user.findUnique.mockResolvedValue({ id: '1', email: 'real@test.com', passwordHash: 'hash' } as never)
+    prisma.user.findUnique.mockResolvedValue({
+      id: '1',
+      email: 'real@test.com',
+      passwordHash: 'hash',
+    } as never)
     const { service: s2 } = buildService({ prisma })
     const withUser = await s2.forgotPassword('real@test.com')
 
@@ -207,7 +247,9 @@ describe('AuthService.resetPassword', () => {
     redis.get.mockResolvedValue(null)
     const { service } = buildService({ redis })
 
-    await expect(service.resetPassword('bad-token', 'NewPass1!')).rejects.toThrow(BadRequestException)
+    await expect(service.resetPassword('bad-token', 'NewPass1!')).rejects.toThrow(
+      BadRequestException,
+    )
   })
 
   it('updates password and invalidates all sessions on valid token', async () => {
@@ -240,7 +282,9 @@ describe('AuthService.changePassword', () => {
     prisma.user.findUniqueOrThrow.mockResolvedValue({ id: '1', passwordHash: hash } as never)
     const { service } = buildService({ prisma })
 
-    await expect(service.changePassword('1', 'wrong-password', 'NewPass1!')).rejects.toThrow(UnauthorizedException)
+    await expect(service.changePassword('1', 'wrong-password', 'NewPass1!')).rejects.toThrow(
+      UnauthorizedException,
+    )
   })
 
   it('hashes and saves new password when current is correct', async () => {
@@ -263,7 +307,12 @@ describe('AuthService cookie security', () => {
   it('sets refresh_token scoped to /api/auth/refresh', async () => {
     const hash = await bcrypt.hash('password', 10)
     const prisma = makePrisma()
-    prisma.user.findUnique.mockResolvedValue({ id: '1', email: 'u@test.com', passwordHash: hash, verified: true } as never)
+    prisma.user.findUnique.mockResolvedValue({
+      id: '1',
+      email: 'u@test.com',
+      passwordHash: hash,
+      verified: true,
+    } as never)
     prisma.user.update.mockResolvedValue({} as never)
     const { service } = buildService({ prisma })
 
@@ -278,7 +327,12 @@ describe('AuthService cookie security', () => {
   it('sets access_token without path restriction', async () => {
     const hash = await bcrypt.hash('password', 10)
     const prisma = makePrisma()
-    prisma.user.findUnique.mockResolvedValue({ id: '1', email: 'u@test.com', passwordHash: hash, verified: true } as never)
+    prisma.user.findUnique.mockResolvedValue({
+      id: '1',
+      email: 'u@test.com',
+      passwordHash: hash,
+      verified: true,
+    } as never)
     prisma.user.update.mockResolvedValue({} as never)
     const { service } = buildService({ prisma })
 

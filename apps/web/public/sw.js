@@ -1,7 +1,11 @@
 self.addEventListener('push', (event) => {
   if (!event.data) return
   let data
-  try { data = event.data.json() } catch { return }
+  try {
+    data = event.data.json()
+  } catch {
+    return
+  }
 
   const { title = 'CRUSH', body = '', url = '/' } = data
   event.waitUntil(

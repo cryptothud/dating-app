@@ -2,7 +2,5 @@
   "version": 2,
   "installCommand": "cd ../.. && pnpm install",
   "buildCommand": "cd ../.. && pnpm --filter @dating-app/db exec prisma generate && pnpm --filter @dating-app/api run build",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
 }

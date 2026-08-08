@@ -14,7 +14,17 @@ import { ChatGateway } from './chat.gateway'
 import { GlobalChatService } from './global-chat.service'
 
 @Module({
-  imports: [PrismaModule, RedisModule, EmailModule, PushModule, BillingModule, ModerationModule, AdminModule, WarnBusModule, JwtModule.register({})],
+  imports: [
+    PrismaModule,
+    RedisModule,
+    EmailModule,
+    PushModule,
+    BillingModule,
+    ModerationModule,
+    AdminModule,
+    WarnBusModule,
+    JwtModule.register({}),
+  ],
   controllers: [ChatController],
   providers: [ChatService, ChatGateway, GlobalChatService],
 })

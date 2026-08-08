@@ -27,12 +27,14 @@ async function createHandler(): Promise<(req: IncomingMessage, res: ServerRespon
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   })
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    transformOptions: { enableImplicitConversion: false },
-  }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: false },
+    }),
+  )
 
   app.setGlobalPrefix('api')
   app.getHttpAdapter().get('/api/health', (_req: unknown, res: { json: (o: object) => void }) => {

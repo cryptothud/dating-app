@@ -76,7 +76,13 @@ export class IdentityService {
     await this.prisma.$transaction([
       this.prisma.verification.update({
         where: { userId },
-        data: { stripeStatus: 'verified', status: 'approved', reviewedAt: new Date(), verifiedDob, verifiedName },
+        data: {
+          stripeStatus: 'verified',
+          status: 'approved',
+          reviewedAt: new Date(),
+          verifiedDob,
+          verifiedName,
+        },
       }),
       this.prisma.user.update({ where: { id: userId }, data: { verified: true } }),
     ])
@@ -87,7 +93,10 @@ export class IdentityService {
   private async handleRequiresInput(session: Stripe.Identity.VerificationSession): Promise<void> {
     const userId = session.metadata?.userId
     if (!userId) return
-    await this.prisma.verification.update({ where: { userId }, data: { stripeStatus: 'requires_input' } })
+    await this.prisma.verification.update({
+      where: { userId },
+      data: { stripeStatus: 'requires_input' },
+    })
   }
 
   private async extractVerifiedData(

@@ -28,10 +28,12 @@ function makeRedis() {
   }
 }
 
-function buildService(overrides: {
-  prisma?: ReturnType<typeof makePrisma>
-  redis?: ReturnType<typeof makeRedis>
-} = {}) {
+function buildService(
+  overrides: {
+    prisma?: ReturnType<typeof makePrisma>
+    redis?: ReturnType<typeof makeRedis>
+  } = {},
+) {
   const prisma = overrides.prisma ?? makePrisma()
   const redis = overrides.redis ?? makeRedis()
   const service = new LocationService(prisma as never, redis as never)
@@ -44,7 +46,7 @@ describe('LocationService fuzz coordinates', () => {
   it('keeps fuzzed point within the specified radius', () => {
     const { service } = buildService()
     const lat = 33.4484
-    const lng = -112.0740
+    const lng = -112.074
     const radiusMeters = 500
 
     type Fuzz = (lat: number, lng: number, r: number) => { lat: number; lng: number }
@@ -71,8 +73,9 @@ describe('LocationService fuzz coordinates', () => {
     type Fuzz = (lat: number, lng: number, r: number) => { lat: number; lng: number }
     const fuzz = (service as unknown as { fuzzCoordinates: Fuzz }).fuzzCoordinates.bind(service)
 
-    const exact = Array.from({ length: 50 }, () => fuzz(lat, lng, 150))
-      .filter((r) => r.lat === lat && r.lng === lng)
+    const exact = Array.from({ length: 50 }, () => fuzz(lat, lng, 150)).filter(
+      (r) => r.lat === lat && r.lng === lng,
+    )
     expect(exact.length).toBe(0)
   })
 })
@@ -86,7 +89,7 @@ describe('LocationService viewportKey', () => {
     const { service } = buildService()
     const vk = (service as unknown as { viewportKey: VK }).viewportKey.bind(service)
 
-    const k1 = vk({ swLat: 33.44840, swLng: -112.07400, neLat: 33.50010, neLng: -112.00010 })
+    const k1 = vk({ swLat: 33.4484, swLng: -112.074, neLat: 33.5001, neLng: -112.0001 })
     const k2 = vk({ swLat: 33.44845, swLng: -112.07395, neLat: 33.50014, neLng: -112.00005 })
     expect(k1).toBe(k2)
   })
@@ -95,8 +98,8 @@ describe('LocationService viewportKey', () => {
     const { service } = buildService()
     const vk = (service as unknown as { viewportKey: VK }).viewportKey.bind(service)
 
-    const phoenix = vk({ swLat: 33.44, swLng: -112.07, neLat: 33.50, neLng: -112.00 })
-    const nyc = vk({ swLat: 40.70, swLng: -74.01, neLat: 40.75, neLng: -73.96 })
+    const phoenix = vk({ swLat: 33.44, swLng: -112.07, neLat: 33.5, neLng: -112.0 })
+    const nyc = vk({ swLat: 40.7, swLng: -74.01, neLat: 40.75, neLng: -73.96 })
     expect(phoenix).not.toBe(nyc)
   })
 })
@@ -108,22 +111,34 @@ describe('LocationService.updateLocation', () => {
     const redis = makeRedis()
     redis.incr.mockResolvedValue(601)
     const prisma = makePrisma()
-    prisma.userLocation.findUnique.mockResolvedValue({ travelMode: false, travelLat: null, travelLng: null } as never)
+    prisma.userLocation.findUnique.mockResolvedValue({
+      travelMode: false,
+      travelLat: null,
+      travelLng: null,
+    } as never)
     const { service } = buildService({ prisma, redis })
 
-    await expect(service.updateLocation('user-1', { latitude: 33.44, longitude: -112.07 })).rejects.toThrow()
+    await expect(
+      service.updateLocation('user-1', { latitude: 33.44, longitude: -112.07 }),
+    ).rejects.toThrow()
   })
 
   it('uses travel coordinates when travel mode is active', async () => {
     const redis = makeRedis()
     redis.incr.mockResolvedValue(1)
     const prisma = makePrisma()
-    prisma.userLocation.findUnique.mockResolvedValue({ travelMode: true, travelLat: 40.7128, travelLng: -74.006 } as never)
+    prisma.userLocation.findUnique.mockResolvedValue({
+      travelMode: true,
+      travelLat: 40.7128,
+      travelLng: -74.006,
+    } as never)
     const { service } = buildService({ prisma, redis })
 
     await service.updateLocation('user-1', { latitude: 33.44, longitude: -112.07 })
 
-    const upsertArg = prisma.userLocation.upsert.mock.calls[0]?.[0] as { update: { latitude: number; longitude: number } }
+    const upsertArg = prisma.userLocation.upsert.mock.calls[0]?.[0] as {
+      update: { latitude: number; longitude: number }
+    }
     expect(upsertArg?.update?.latitude).toBe(40.7128)
     expect(upsertArg?.update?.longitude).toBe(-74.006)
   })

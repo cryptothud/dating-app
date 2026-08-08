@@ -1,4 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common'
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common'
 import { Request, Response } from 'express'
 
 @Catch()
@@ -15,7 +22,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const message =
       exception instanceof HttpException
-        ? (exception.getResponse() as { message?: string }).message ?? exception.message
+        ? ((exception.getResponse() as { message?: string }).message ?? exception.message)
         : 'Internal server error'
 
     if (status >= 500) {
@@ -30,9 +37,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // can read structured fields like validation errors, maintenance flags, etc.
     if (exception instanceof HttpException && status < 500) {
       const body = exception.getResponse()
-      const responseBody = typeof body === 'string'
-        ? { statusCode: status, message: body }
-        : { statusCode: status, ...(body as object) }
+      const responseBody =
+        typeof body === 'string'
+          ? { statusCode: status, message: body }
+          : { statusCode: status, ...(body as object) }
       res.status(status).json(responseBody)
       return
     }

@@ -31,18 +31,25 @@ export class CloudinaryService {
     this.configured = true
   }
 
-  async upload(buffer: Buffer, folder: string, resourceType: 'image' | 'video' = 'image'): Promise<CloudinaryResult> {
+  async upload(
+    buffer: Buffer,
+    folder: string,
+    resourceType: 'image' | 'video' = 'image',
+  ): Promise<CloudinaryResult> {
     this.ensureConfigured()
 
     if (!this.configured) {
       // Dev fallback — return a placeholder so uploads don't hard-fail without credentials
       const mockId = `${folder}/mock_${Date.now()}`
-      this.logger.warn(`[MOCK UPLOAD] Cloudinary not configured — returning placeholder for ${mockId}`)
+      this.logger.warn(
+        `[MOCK UPLOAD] Cloudinary not configured — returning placeholder for ${mockId}`,
+      )
       return {
         publicId: mockId,
-        secureUrl: resourceType === 'video'
-          ? `https://example.com/mock-audio-${Date.now()}.webm`
-          : `https://placehold.co/800x800/1a1a2e/ffffff?text=Photo`,
+        secureUrl:
+          resourceType === 'video'
+            ? `https://example.com/mock-audio-${Date.now()}.webm`
+            : `https://placehold.co/800x800/1a1a2e/ffffff?text=Photo`,
         moderationStatus: 'approved',
         isNsfw: false,
         nsfwScore: 0,

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt.guard'
 import { CurrentUser, type AuthUser } from '../common/decorators/current-user.decorator'
@@ -12,19 +23,13 @@ export class EventsController {
 
   @Get('map')
   @UseGuards(OptionalJwtAuthGuard)
-  getMapEvents(
-    @Query() query: MapEventsQueryDto,
-    @CurrentUser() user: AuthUser | null,
-  ) {
+  getMapEvents(@Query() query: MapEventsQueryDto, @CurrentUser() user: AuthUser | null) {
     return this.events.getMapEvents(query, user?.id)
   }
 
   @Get(':id')
   @UseGuards(OptionalJwtAuthGuard)
-  getEvent(
-    @Param('id') id: string,
-    @CurrentUser() user: AuthUser | null,
-  ) {
+  getEvent(@Param('id') id: string, @CurrentUser() user: AuthUser | null) {
     return this.events.getEvent(id, user?.id)
   }
 

@@ -13,7 +13,13 @@ interface Props {
   onCreated: (event: EventSummary) => void
 }
 
-export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: Props): React.JSX.Element {
+export function CreateEventModal({
+  lat,
+  lng,
+  displayArea,
+  onClose,
+  onCreated,
+}: Props): React.JSX.Element {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
@@ -28,11 +34,20 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
     e.preventDefault()
     setError(null)
 
-    if (!title.trim()) { setError('Title is required'); return }
-    if (!date || !time) { setError('Date and time are required'); return }
+    if (!title.trim()) {
+      setError('Title is required')
+      return
+    }
+    if (!date || !time) {
+      setError('Date and time are required')
+      return
+    }
 
     const scheduledAt = new Date(`${date}T${time}`).toISOString()
-    if (new Date(scheduledAt) <= new Date()) { setError('Event must be in the future'); return }
+    if (new Date(scheduledAt) <= new Date()) {
+      setError('Event must be in the future')
+      return
+    }
 
     setSubmitting(true)
     try {
@@ -55,7 +70,7 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
 
   return (
     <AnimatePresence>
-      <div className="absolute inset-0 z-40 flex items-end sm:items-center justify-center">
+      <div className="absolute inset-0 z-40 flex items-end justify-center sm:items-center">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -71,29 +86,34 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 32, stiffness: 350 }}
-          className="relative z-50 w-full sm:max-w-md bg-background border border-border rounded-t-2xl sm:rounded-2xl shadow-2xl"
+          className="bg-background border-border relative z-50 w-full rounded-t-2xl border shadow-2xl sm:max-w-md sm:rounded-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Drag handle (mobile) */}
-          <div className="flex justify-center pt-3 pb-1 sm:hidden">
-            <div className="w-9 h-1 rounded-full bg-border" />
+          <div className="flex justify-center pb-1 pt-3 sm:hidden">
+            <div className="bg-border h-1 w-9 rounded-full" />
           </div>
 
-          <div className="px-5 pt-4 pb-6 sm:pt-5">
+          <div className="px-5 pb-6 pt-4 sm:pt-5">
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="mb-5 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold font-display text-foreground">Create Event</h2>
+                <h2 className="font-display text-foreground text-base font-bold">Create Event</h2>
                 {displayArea && (
-                  <p className="text-xs text-muted-foreground mt-0.5">Near {displayArea}</p>
+                  <p className="text-muted-foreground mt-0.5 text-xs">Near {displayArea}</p>
                 )}
               </div>
               <button
                 onClick={onClose}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/60 flex h-7 w-7 items-center justify-center rounded-lg transition-colors"
                 aria-label="Close"
               >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4 fill-none stroke-current"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
@@ -102,7 +122,7 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-xs font-semibold text-foreground mb-1.5">
+                <label className="text-foreground mb-1.5 block text-xs font-semibold">
                   Title <span className="text-destructive">*</span>
                 </label>
                 <input
@@ -111,27 +131,29 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="What's happening?"
                   maxLength={80}
-                  className="w-full h-10 px-3 rounded-xl bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="bg-muted/60 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 w-full rounded-xl border px-3 text-sm focus:outline-none focus:ring-1"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold text-foreground mb-1.5">Description</label>
+                <label className="text-foreground mb-1.5 block text-xs font-semibold">
+                  Description
+                </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tell people more about this event…"
                   maxLength={500}
                   rows={3}
-                  className="w-full px-3 py-2 rounded-xl bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
+                  className="bg-muted/60 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-1"
                 />
               </div>
 
               {/* Date + Time */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1.5">
+                  <label className="text-foreground mb-1.5 block text-xs font-semibold">
                     Date <span className="text-destructive">*</span>
                   </label>
                   <input
@@ -139,26 +161,27 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
                     value={date}
                     min={minDatetime.slice(0, 10)}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-muted/60 border border-border text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="bg-muted/60 border-border text-foreground focus:ring-ring h-10 w-full rounded-xl border px-3 text-sm focus:outline-none focus:ring-1"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1.5">
+                  <label className="text-foreground mb-1.5 block text-xs font-semibold">
                     Time <span className="text-destructive">*</span>
                   </label>
                   <input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-muted/60 border border-border text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="bg-muted/60 border-border text-foreground focus:ring-ring h-10 w-full rounded-xl border px-3 text-sm focus:outline-none focus:ring-1"
                   />
                 </div>
               </div>
 
               {/* Max attendees */}
               <div>
-                <label className="block text-xs font-semibold text-foreground mb-1.5">
-                  Max attendees <span className="text-muted-foreground font-normal">(optional)</span>
+                <label className="text-foreground mb-1.5 block text-xs font-semibold">
+                  Max attendees{' '}
+                  <span className="text-muted-foreground font-normal">(optional)</span>
                 </label>
                 <input
                   type="number"
@@ -167,26 +190,24 @@ export function CreateEventModal({ lat, lng, displayArea, onClose, onCreated }: 
                   value={maxAttendees}
                   onChange={(e) => setMaxAttendees(e.target.value)}
                   placeholder="No limit"
-                  className="w-full h-10 px-3 rounded-xl bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="bg-muted/60 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 w-full rounded-xl border px-3 text-sm focus:outline-none focus:ring-1"
                 />
               </div>
 
-              {error && (
-                <p className="text-xs text-destructive font-medium">{error}</p>
-              )}
+              {error && <p className="text-destructive text-xs font-medium">{error}</p>}
 
               <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 h-11 rounded-2xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  className="border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 h-11 flex-1 rounded-2xl border text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 h-11 rounded-2xl bg-primary text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="bg-primary h-11 flex-1 rounded-2xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {submitting ? 'Creating…' : 'Create Event'}
                 </button>

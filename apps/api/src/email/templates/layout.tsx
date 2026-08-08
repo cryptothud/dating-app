@@ -1,6 +1,14 @@
 import React from 'react'
 import {
-  Html, Head, Preview, Body, Container, Section, Text, Link, Hr,
+  Html,
+  Head,
+  Preview,
+  Body,
+  Container,
+  Section,
+  Text,
+  Link,
+  Hr,
 } from '@react-email/components'
 import type { ReactNode } from 'react'
 
@@ -60,8 +68,10 @@ export function Layout({ preview, children }: LayoutProps) {
             <Hr style={hr} />
             <Text style={footerText}>
               You received this because you have a CRUSH account.{' '}
-              <Link href="{{UNSUBSCRIBE_URL}}" style={footerLink}>Unsubscribe</Link>
-              {' '}from marketing emails.
+              <Link href="{{UNSUBSCRIBE_URL}}" style={footerLink}>
+                Unsubscribe
+              </Link>{' '}
+              from marketing emails.
             </Text>
             <Text style={footerText}>© 2025 CRUSH LLC · San Francisco, CA 94105</Text>
           </Section>

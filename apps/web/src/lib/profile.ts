@@ -5,10 +5,21 @@ export const profileApi = {
   getMe: () => api.get<UserProfile>('/profile/me'),
   getUser: (userId: string) => api.get<UserProfile>(`/profile/${userId}`),
 
-  update: (data: { displayName?: string; bio?: string; nsfwEnabled?: boolean; lookingFor?: string[]; bodyType?: string; sexuality?: string; interests?: string[]; age?: number }) =>
-    api.patch<UserProfile>('/profile', data),
+  update: (data: {
+    displayName?: string
+    bio?: string
+    nsfwEnabled?: boolean
+    lookingFor?: string[]
+    bodyType?: string
+    sexuality?: string
+    interests?: string[]
+    age?: number
+  }) => api.patch<UserProfile>('/profile', data),
 
-  getViewers: () => api.get<{ id: string; displayName: string | null; photoUrl: string | null; viewedAt: string }[]>('/profile/me/viewers'),
+  getViewers: () =>
+    api.get<
+      { id: string; displayName: string | null; photoUrl: string | null; viewedAt: string }[]
+    >('/profile/me/viewers'),
 
   upsertPrompt: (data: { promptKey: string; answer: string; order?: number }) =>
     api.post<ProfilePrompt>('/profile/prompts', data),

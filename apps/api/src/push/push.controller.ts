@@ -1,10 +1,22 @@
-import { Controller, Post, Delete, Get, Body, Req, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Delete,
+  Get,
+  Body,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common'
 import { Request } from 'express'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PushService } from './push.service'
 import { PushSubscribeDto } from './dto/push-subscribe.dto'
 
-interface AuthRequest extends Request { user: { id: string } }
+interface AuthRequest extends Request {
+  user: { id: string }
+}
 
 @Controller('push')
 export class PushController {

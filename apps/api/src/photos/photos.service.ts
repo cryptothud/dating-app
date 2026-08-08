@@ -34,7 +34,8 @@ export class PhotosService {
   ) {}
 
   private validateFile(file: Express.Multer.File): void {
-    if (!ALLOWED_MIME.has(file.mimetype)) throw new BadRequestException('Only JPEG, PNG, and WebP are accepted')
+    if (!ALLOWED_MIME.has(file.mimetype))
+      throw new BadRequestException('Only JPEG, PNG, and WebP are accepted')
     if (file.size > MAX_BYTES) throw new BadRequestException('File must be under 10 MB')
   }
 
@@ -74,14 +75,17 @@ export class PhotosService {
     }
 
     // Violence is never allowed regardless of NSFW setting
-    const violenceFlagged = (azure?.violenceSeverity ?? 0) >= 4 || (google?.flagged && (google.violence === 'LIKELY' || google.violence === 'VERY_LIKELY'))
+    const violenceFlagged =
+      (azure?.violenceSeverity ?? 0) >= 4 ||
+      (google?.flagged && (google.violence === 'LIKELY' || google.violence === 'VERY_LIKELY'))
     if (violenceFlagged) {
       await this.cdn.destroy(cdn.publicId)
       throw new ForbiddenException('Image flagged for violent content')
     }
 
     const allowNsfw = this.config.get('ALLOW_NSFW_CONTENT')
-    const isNsfw = cdn.isNsfw || (azure?.sexualSeverity ?? 0) >= 4 || (google?.adultScore ?? 0) > 0.7
+    const isNsfw =
+      cdn.isNsfw || (azure?.sexualSeverity ?? 0) >= 4 || (google?.adultScore ?? 0) > 0.7
     if (isNsfw && !allowNsfw) {
       await this.cdn.destroy(cdn.publicId)
       throw new ForbiddenException('Adult content is not permitted on this platform')
@@ -119,17 +123,26 @@ export class PhotosService {
   }
 
   async remove(user: AuthUser, photoId: string): Promise<void> {
-    const photo = await this.prisma.photo.findUnique({ where: { id: photoId }, include: { profile: true } })
+    const photo = await this.prisma.photo.findUnique({
+      where: { id: photoId },
+      include: { profile: true },
+    })
     if (!photo || photo.profile.userId !== user.id) throw new ForbiddenException()
     if (photo.cloudinaryPublicId) await this.cdn.destroy(photo.cloudinaryPublicId)
     await this.prisma.photo.delete({ where: { id: photoId } })
   }
 
   async update(user: AuthUser, photoId: string, dto: UpdatePhotoDto): Promise<void> {
-    const photo = await this.prisma.photo.findUnique({ where: { id: photoId }, include: { profile: true } })
+    const photo = await this.prisma.photo.findUnique({
+      where: { id: photoId },
+      include: { profile: true },
+    })
     if (!photo || photo.profile.userId !== user.id) throw new ForbiddenException()
     if (dto.isPrimary) {
-      await this.prisma.photo.updateMany({ where: { profileId: photo.profileId }, data: { isPrimary: false } })
+      await this.prisma.photo.updateMany({
+        where: { profileId: photo.profileId },
+        data: { isPrimary: false },
+      })
     }
     await this.prisma.photo.update({
       where: { id: photoId },

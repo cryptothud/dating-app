@@ -14,9 +14,7 @@ export class MaintenanceMiddleware implements NestMiddleware {
   async use(req: Request, _res: Response, next: NextFunction): Promise<void> {
     // req.path is always '/' when mounted via forRoutes('*') — use originalUrl instead.
     const url = (req.originalUrl ?? req.url ?? '').split('?')[0] ?? ''
-    const isAllowed = ALLOWED_PREFIXES.some(
-      (p) => url.startsWith(p) || url.startsWith('/api' + p),
-    )
+    const isAllowed = ALLOWED_PREFIXES.some((p) => url.startsWith(p) || url.startsWith('/api' + p))
     if (isAllowed) {
       next()
       return

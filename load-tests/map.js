@@ -20,21 +20,21 @@ const API_URL = __ENV.API_URL || 'http://localhost:4000'
 
 // Phoenix, AZ bounding box — a realistic starting viewport
 const VIEWPORTS = [
-  { swLat: 33.40, swLng: -112.12, neLat: 33.50, neLng: -112.00 },
-  { swLat: 33.42, swLng: -112.10, neLat: 33.52, neLng: -111.98 },
+  { swLat: 33.4, swLng: -112.12, neLat: 33.5, neLng: -112.0 },
+  { swLat: 33.42, swLng: -112.1, neLat: 33.52, neLng: -111.98 },
   { swLat: 33.44, swLng: -112.08, neLat: 33.54, neLng: -111.96 },
   { swLat: 33.46, swLng: -112.06, neLat: 33.56, neLng: -111.94 },
   // NYC — second city test
-  { swLat: 40.70, swLng: -74.02, neLat: 40.75, neLng: -73.96 },
-  { swLat: 40.72, swLng: -74.00, neLat: 40.77, neLng: -73.94 },
+  { swLat: 40.7, swLng: -74.02, neLat: 40.75, neLng: -73.96 },
+  { swLat: 40.72, swLng: -74.0, neLat: 40.77, neLng: -73.94 },
 ]
 
 export const options = {
   stages: [
-    { duration: '30s', target: 50 },   // ramp up
-    { duration: '2m', target: 200 },   // sustained load
-    { duration: '1m', target: 400 },   // spike
-    { duration: '30s', target: 0 },    // ramp down
+    { duration: '30s', target: 50 }, // ramp up
+    { duration: '2m', target: 200 }, // sustained load
+    { duration: '1m', target: 400 }, // spike
+    { duration: '30s', target: 0 }, // ramp down
   ],
   thresholds: {
     http_req_duration: ['p(95)<500'],
