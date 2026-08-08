@@ -9,7 +9,8 @@ allowBuilds:
   bcrypt: true
   esbuild: true
   prisma: true
-  sharp: set this to true or false
+  sharp: true
+  unrs-resolver: true
 
 # Transitive pins. These arrive through bcrypt, the Nest CLI and glob, so they cannot be
 # raised from any direct dependency.
