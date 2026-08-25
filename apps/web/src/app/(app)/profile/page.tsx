@@ -317,7 +317,7 @@ export default function ProfilePage(): React.JSX.Element {
                 onChange={(e) => setDisplayName(e.target.value)}
                 maxLength={30}
                 placeholder="Your name"
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
               />
             </div>
             <div>
@@ -338,7 +338,7 @@ export default function ProfilePage(): React.JSX.Element {
                 inputMode="numeric"
                 maxLength={3}
                 className={[
-                  'dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none dark:text-white',
+                  'dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:outline-none dark:text-white',
                   profile.age !== null
                     ? 'cursor-default select-none'
                     : 'focus:ring-ring focus:ring-1',
@@ -445,7 +445,7 @@ export default function ProfilePage(): React.JSX.Element {
                 maxLength={500}
                 rows={3}
                 placeholder="Tell people a little about yourself…"
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-4 py-3 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-4 py-3 text-sm transition-all focus:outline-none focus:ring-1 dark:text-white"
               />
               <p className="text-muted-foreground/60 mt-1 text-right text-[11px]">
                 {bio.length}/500

@@ -66,7 +66,7 @@ export default function ModerationPage() {
         ))}
       </div>
 
-      <div className="border-white/8 overflow-hidden rounded-2xl border bg-[#0d0a16]">
+      <div className="border-white/[0.08] overflow-hidden rounded-2xl border bg-[#0d0a16]">
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />

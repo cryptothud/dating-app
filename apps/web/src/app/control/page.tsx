@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="border-white/8 rounded-2xl border bg-[#0d0a16] p-5">
+    <div className="border-white/[0.08] rounded-2xl border bg-[#0d0a16] p-5">
       <p className="mb-1 text-xs text-white/40">{label}</p>
       <p className="font-display text-2xl font-bold text-white">
         {typeof value === 'number' ? value.toLocaleString() : value}
@@ -68,7 +68,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="border-white/8 rounded-2xl border bg-[#0d0a16] p-5">
+        <div className="border-white/[0.08] rounded-2xl border bg-[#0d0a16] p-5">
           <h2 className="mb-3 text-sm font-semibold text-white">Quick Actions</h2>
           <div className="space-y-2">
             <Link

@@ -503,7 +503,7 @@ export function GlobalChatPanel({
 
         {/* Pinned banner */}
         {showPinned && (
-          <div className="bg-primary/8 border-primary/20 relative z-10 flex shrink-0 items-center gap-2 border-b px-4 py-2">
+          <div className="bg-primary/[0.08] border-primary/20 relative z-10 flex shrink-0 items-center gap-2 border-b px-4 py-2">
             <svg viewBox="0 0 16 16" className="fill-primary h-3.5 w-3.5 shrink-0">
               <path d="M10.667 2a.667.667 0 0 1 .471.195l2.667 2.667a.667.667 0 0 1-.688 1.099L11.333 5.49V9.333a.667.667 0 0 1-.369.597l-2.666 1.333a.667.667 0 0 1-.894-.298L6.667 9.745l-2.37 2.37a.667.667 0 0 1-.942-.942L5.724 8.8 4.505 8.07a.667.667 0 0 1-.298-.894l1.333-2.667A.667.667 0 0 1 6.137 4h3.843l.446-1.789A.667.667 0 0 1 10.667 2z" />
             </svg>
@@ -740,7 +740,7 @@ export function GlobalChatPanel({
                 onKeyDown={handleKeyDown}
                 placeholder="Post a message…"
                 maxLength={500}
-                className="bg-muted/70 dark:bg-white/8 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1"
+                className="bg-muted/70 dark:bg-white/[0.08] border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1"
               />
               <button
                 onClick={handleSend}

@@ -175,7 +175,7 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                   setBirthMonth(Number(e.target.value))
                   setBirthDay(0)
                 }}
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
               >
                 <option value="">Month</option>
                 {MONTHS.map((m, i) => (
@@ -188,7 +188,7 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                 value={birthDay || ''}
                 onChange={(e) => setBirthDay(Number(e.target.value))}
                 disabled={!birthMonth}
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
               >
                 <option value="">Day</option>
                 {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (

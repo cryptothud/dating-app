@@ -144,7 +144,7 @@ export default function SignupPage(): React.JSX.Element {
                   setBirthMonth(Number(e.target.value))
                   setBirthDay(0)
                 }}
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
               >
                 <option value="">Month</option>
                 {MONTHS.map((m, i) => (
@@ -158,7 +158,7 @@ export default function SignupPage(): React.JSX.Element {
                 value={birthDay || ''}
                 onChange={(e) => setBirthDay(Number(e.target.value))}
                 disabled={!birthMonth}
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
               >
                 <option value="">Day</option>
                 {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
@@ -178,7 +178,7 @@ export default function SignupPage(): React.JSX.Element {
             <div className="flex gap-3">
               <button
                 onClick={() => router.push('/map')}
-                className="border-border text-muted-foreground hover:bg-muted dark:hover:bg-white/8 h-11 flex-1 rounded-xl border text-sm font-medium transition-colors dark:text-white/50"
+                className="border-border text-muted-foreground hover:bg-muted dark:hover:bg-white/[0.08] h-11 flex-1 rounded-xl border text-sm font-medium transition-colors dark:text-white/50"
               >
                 Go back
               </button>
@@ -232,7 +232,7 @@ export default function SignupPage(): React.JSX.Element {
                   autoComplete="email"
                   aria-label="Email"
                   placeholder="Email"
-                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
+                  className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
                 {errors.email && (
                   <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
@@ -250,7 +250,7 @@ export default function SignupPage(): React.JSX.Element {
                     const formatted = formatPhone(e.target.value)
                     setValue('phone', formatted, { shouldValidate: true })
                   }}
-                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
+                  className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
                 {errors.phone ? (
                   <p className="text-destructive mt-1 text-xs">{errors.phone.message}</p>
@@ -267,7 +267,7 @@ export default function SignupPage(): React.JSX.Element {
                   autoComplete="new-password"
                   aria-label="Password"
                   placeholder="Password"
-                  className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
+                  className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring dark:focus:ring-primary/60 h-11 w-full rounded-xl border bg-black/5 px-4 text-sm transition-all focus:border-transparent focus:outline-none focus:ring-1 dark:text-white dark:placeholder:text-white/35"
                 />
                 {passwordValue.length > 0 && (
                   <div className="mt-2 space-y-1.5">

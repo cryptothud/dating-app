@@ -151,10 +151,10 @@ export default function VerifyPhonePage(): React.JSX.Element {
             disabled={isSubmitting}
             className={[
               'h-14 w-12 rounded-xl border text-center text-xl font-bold outline-none transition-all',
-              'dark:bg-white/8 bg-black/5',
+              'dark:bg-white/[0.08] bg-black/5',
               digit
                 ? 'border-primary dark:border-primary/70 text-foreground dark:text-white'
-                : 'border-black/8 dark:border-white/12 text-foreground dark:text-white',
+                : 'border-black/[0.08] dark:border-white/[0.12] text-foreground dark:text-white',
               'focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/30 focus:ring-1',
               'disabled:opacity-40',
             ].join(' ')}

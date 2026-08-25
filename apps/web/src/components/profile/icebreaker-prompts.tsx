@@ -105,7 +105,7 @@ export function IcebreakerPrompts({ prompts, onSave, onDelete }: Props): React.J
                 onChange={(e) => setEditAnswer(e.target.value)}
                 maxLength={200}
                 rows={2}
-                className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-3 py-2 text-sm focus:outline-none focus:ring-1 dark:text-white"
+                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-3 py-2 text-sm focus:outline-none focus:ring-1 dark:text-white"
               />
               <div className="flex gap-2">
                 <button
@@ -153,7 +153,7 @@ export function IcebreakerPrompts({ prompts, onSave, onDelete }: Props): React.J
             <button
               type="button"
               onClick={() => setPickerOpen((o) => !o)}
-              className="dark:bg-white/8 border-black/8 dark:border-white/12 focus:ring-ring flex h-10 w-full items-center justify-between gap-2 rounded-xl border bg-black/5 px-3 text-left text-sm transition-colors focus:outline-none focus:ring-1"
+              className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] focus:ring-ring flex h-10 w-full items-center justify-between gap-2 rounded-xl border bg-black/5 px-3 text-left text-sm transition-colors focus:outline-none focus:ring-1"
             >
               <span
                 className={newKey ? 'text-foreground dark:text-white' : 'text-muted-foreground'}
@@ -206,7 +206,7 @@ export function IcebreakerPrompts({ prompts, onSave, onDelete }: Props): React.J
             placeholder="Your answer…"
             maxLength={200}
             rows={2}
-            className="dark:bg-white/8 border-black/8 dark:border-white/12 text-foreground placeholder:text-muted-foreground/60 focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-3 py-2 text-sm focus:outline-none focus:ring-1 dark:text-white"
+            className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground placeholder:text-muted-foreground/60 focus:ring-ring w-full resize-none rounded-xl border bg-black/5 px-3 py-2 text-sm focus:outline-none focus:ring-1 dark:text-white"
           />
           <div className="flex gap-2">
             <button

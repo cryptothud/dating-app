@@ -59,7 +59,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Account info */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Account</h2>
         <div className="grid grid-cols-2 gap-3 text-sm">
           {[
@@ -89,7 +89,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Actions */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Actions</h2>
         {error && <p className="text-sm text-red-400">{error}</p>}
 
@@ -193,7 +193,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Reports received */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">
           Reports received ({user.reportsReceived?.length ?? 0})
         </h2>
@@ -202,7 +202,7 @@ export default function UserDetailPage() {
         ) : (
           <div className="space-y-2">
             {(user.reportsReceived ?? []).map((r) => (
-              <div key={r.id} className="bg-white/3 rounded-lg px-3 py-2 text-sm">
+              <div key={r.id} className="bg-white/[0.03] rounded-lg px-3 py-2 text-sm">
                 <span className="font-medium text-white/70">{r.reason}</span>
                 <span className="ml-2 text-xs text-white/30">
                   {new Date(r.createdAt).toLocaleDateString()}
@@ -215,7 +215,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Audit history */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Admin action history</h2>
         {(user.auditLogsTargeted ?? []).length === 0 ? (
           <p className="text-xs text-white/30">No admin actions recorded</p>

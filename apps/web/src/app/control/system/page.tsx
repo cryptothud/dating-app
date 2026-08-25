@@ -145,7 +145,7 @@ export default function SystemPage() {
       )}
 
       {/* Maintenance Mode */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Maintenance Mode</h2>
         <p className="text-xs text-white/40">
           When enabled, all non-admin routes return 503. Admin panel stays accessible.
@@ -168,7 +168,7 @@ export default function SystemPage() {
       </div>
 
       {/* Feature Flags */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Feature Flags</h2>
         {flags.length === 0 ? (
           <p className="text-xs text-white/30">No feature flags configured yet.</p>
@@ -195,7 +195,7 @@ export default function SystemPage() {
       </div>
 
       {/* Cache Flush */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Flush Cache</h2>
         <p className="text-xs text-white/40">
           Enter a key pattern to clear from Redis (e.g.{' '}
@@ -219,7 +219,7 @@ export default function SystemPage() {
       </div>
 
       {/* Role Management */}
-      <div className="border-white/8 space-y-4 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-4 rounded-2xl border bg-[#0d0a16] p-5">
         <div>
           <h2 className="text-sm font-semibold text-white">Role Management</h2>
           <p className="mt-0.5 text-xs text-white/40">
@@ -233,7 +233,7 @@ export default function SystemPage() {
             {elevatedUsers.map((u) => (
               <div
                 key={u.id}
-                className="bg-white/4 border-white/6 flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5"
+                className="bg-white/[0.04] border-white/[0.06] flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5"
               >
                 <div className="min-w-0">
                   {u.profile?.displayName && (
@@ -305,7 +305,7 @@ export default function SystemPage() {
       </div>
 
       {/* Broadcast Push */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Broadcast Push Notification</h2>
         <p className="text-xs text-white/40">Send a push notification to all subscribed users.</p>
         <input

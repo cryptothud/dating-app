@@ -144,7 +144,7 @@ export default function AboutPage(): React.JSX.Element {
     <div className="space-y-14 sm:space-y-20">
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative -mx-5 -mt-8 overflow-hidden px-5 pb-12 pt-10 text-center sm:-mt-12 sm:pb-16 sm:pt-14">
-        <div className="from-primary/8 via-primary/4 pointer-events-none absolute inset-0 bg-gradient-to-b to-transparent" />
+        <div className="from-primary/[0.08] via-primary/[0.04] pointer-events-none absolute inset-0 bg-gradient-to-b to-transparent" />
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -153,7 +153,7 @@ export default function AboutPage(): React.JSX.Element {
           }}
         />
         <div className="relative z-10 mx-auto max-w-xl space-y-6">
-          <div className="border-primary/20 bg-primary/8 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+          <div className="border-primary/20 bg-primary/[0.08] text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
             <span className="bg-primary h-1.5 w-1.5 animate-pulse rounded-full" />
             Real-time · US launch
           </div>
@@ -397,7 +397,7 @@ export default function AboutPage(): React.JSX.Element {
             <a
               key={c.email}
               href={`mailto:${c.email}`}
-              className="border-border bg-card hover:border-primary/30 hover:bg-primary/3 group flex flex-col gap-0.5 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-0"
+              className="border-border bg-card hover:border-primary/30 hover:bg-primary/[0.03] group flex flex-col gap-0.5 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-0"
             >
               <span className="text-foreground text-sm font-medium">{c.label}</span>
               <span className="text-muted-foreground group-hover:text-primary text-xs transition-colors sm:text-sm">

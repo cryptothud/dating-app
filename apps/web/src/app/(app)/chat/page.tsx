@@ -216,7 +216,7 @@ export default function CityChatPage(): React.JSX.Element {
             onKeyDown={handleKeyDown}
             placeholder="Say something to the city…"
             maxLength={500}
-            className="bg-muted dark:bg-white/8 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1"
+            className="bg-muted dark:bg-white/[0.08] border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-11 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1"
           />
           <button
             onClick={handleSend}

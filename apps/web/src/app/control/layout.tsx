@@ -63,7 +63,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <form
           onSubmit={(e) => void handleSubmit(e)}
-          className="border-white/8 space-y-4 rounded-2xl border bg-[#0d0a16] p-6"
+          className="border-white/[0.08] space-y-4 rounded-2xl border bg-[#0d0a16] p-6"
         >
           {error && (
             <div className="rounded-xl border border-red-500/20 bg-red-600/10 px-3.5 py-2.5 text-xs text-red-400">
@@ -181,12 +181,12 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
     <div className="flex min-h-[100dvh] bg-[#080613]">
       <aside
         className={[
-          'border-white/8 fixed inset-y-0 left-0 z-40 flex w-56 flex-col border-r bg-[#0d0a16] transition-transform duration-200',
+          'border-white/[0.08] fixed inset-y-0 left-0 z-40 flex w-56 flex-col border-r bg-[#0d0a16] transition-transform duration-200',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           'md:static md:flex md:translate-x-0',
         ].join(' ')}
       >
-        <div className="border-white/8 flex h-14 items-center gap-2 border-b px-5">
+        <div className="border-white/[0.08] flex h-14 items-center gap-2 border-b px-5">
           <span className="font-display text-lg font-bold text-purple-400">CRUSH</span>
           <span className="font-mono text-xs text-white/30">admin</span>
         </div>
@@ -212,7 +212,7 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
             )
           })}
         </nav>
-        <div className="border-white/8 border-t px-4 py-4">
+        <div className="border-white/[0.08] border-t px-4 py-4">
           <p className="truncate text-xs text-white/30">{user?.email}</p>
         </div>
       </aside>
@@ -225,7 +225,7 @@ export default function ControlLayout({ children }: { children: React.ReactNode 
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="border-white/8 flex h-14 items-center gap-3 border-b bg-[#0d0a16] px-5 md:hidden">
+        <header className="border-white/[0.08] flex h-14 items-center gap-3 border-b bg-[#0d0a16] px-5 md:hidden">
           <button onClick={() => setSidebarOpen(true)} className="text-white/50 hover:text-white">
             <svg
               viewBox="0 0 24 24"

@@ -120,7 +120,7 @@ export default function ContentRemovalPage(): React.JSX.Element {
             <a
               key={c.email}
               href={`mailto:${c.email}`}
-              className="border-border bg-card hover:border-primary/30 hover:bg-primary/3 group flex items-center justify-between rounded-xl border px-4 py-3 no-underline transition-colors"
+              className="border-border bg-card hover:border-primary/30 hover:bg-primary/[0.03] group flex items-center justify-between rounded-xl border px-4 py-3 no-underline transition-colors"
             >
               <span className="text-foreground text-sm font-medium">{c.label}</span>
               <span className="text-muted-foreground group-hover:text-primary text-sm transition-colors">

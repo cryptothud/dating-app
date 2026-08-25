@@ -60,7 +60,7 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <div className="border-white/8 overflow-hidden rounded-2xl border bg-[#0d0a16]">
+      <div className="border-white/[0.08] overflow-hidden rounded-2xl border bg-[#0d0a16]">
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
@@ -72,7 +72,7 @@ export default function SupportPage() {
             {tickets.map((t) => (
               <div
                 key={t.id}
-                className="hover:bg-white/3 flex items-center gap-4 px-5 py-4 transition-colors"
+                className="hover:bg-white/[0.03] flex items-center gap-4 px-5 py-4 transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-white">{t.subject}</p>

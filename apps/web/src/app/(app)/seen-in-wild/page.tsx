@@ -196,7 +196,7 @@ export default function SeenInWildPage(): React.JSX.Element {
 
         {/* Premium upsell if any are blurred */}
         {sightings.some((s) => s.otherUser.blurred) && (
-          <div className="bg-primary/8 border-primary/20 mt-4 rounded-2xl border p-4">
+          <div className="bg-primary/[0.08] border-primary/20 mt-4 rounded-2xl border p-4">
             <p className="text-foreground mb-1 text-sm font-semibold">
               Unlock full reveals with Premium
             </p>

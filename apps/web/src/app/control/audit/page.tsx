@@ -69,7 +69,7 @@ export default function AuditPage() {
         </button>
       </form>
 
-      <div className="border-white/8 overflow-hidden rounded-2xl border bg-[#0d0a16]">
+      <div className="border-white/[0.08] overflow-hidden rounded-2xl border bg-[#0d0a16]">
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
@@ -79,7 +79,7 @@ export default function AuditPage() {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-white/8 border-b">
+              <tr className="border-white/[0.08] border-b">
                 {['Action', 'Target', 'Details', 'Time'].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-medium text-white/40">
                     {h}
@@ -91,7 +91,7 @@ export default function AuditPage() {
               {logs.map((log) => (
                 <tr
                   key={log.id}
-                  className="hover:bg-white/3 border-b border-white/5 transition-colors"
+                  className="hover:bg-white/[0.03] border-b border-white/5 transition-colors"
                 >
                   <td className="px-4 py-2.5">
                     <span className={`font-mono text-xs ${actionColor(log.action)}`}>

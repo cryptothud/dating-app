@@ -108,7 +108,7 @@ export function YearPicker({
   }, [snapToNearest])
 
   return (
-    <div className="border-border/60 dark:border-white/12 mx-auto w-52 overflow-hidden rounded-xl border bg-black/[0.04] dark:bg-white/[0.04]">
+    <div className="border-border/60 dark:border-white/[0.12] mx-auto w-52 overflow-hidden rounded-xl border bg-black/[0.04] dark:bg-white/[0.04]">
       <div
         className="relative"
         style={{

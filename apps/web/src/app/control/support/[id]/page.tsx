@@ -76,7 +76,7 @@ export default function TicketPage() {
       </div>
 
       {/* Ticket meta */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm text-white/50">
             From: <span className="text-white">{ticket.email}</span>
@@ -112,7 +112,7 @@ export default function TicketPage() {
         </div>
 
         {/* Original message */}
-        <div className="bg-white/3 whitespace-pre-wrap rounded-xl px-4 py-3 text-sm text-white/70">
+        <div className="bg-white/[0.03] whitespace-pre-wrap rounded-xl px-4 py-3 text-sm text-white/70">
           {ticket.body}
         </div>
 
@@ -135,7 +135,7 @@ export default function TicketPage() {
       </div>
 
       {/* Reply box */}
-      <div className="border-white/8 space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
+      <div className="border-white/[0.08] space-y-3 rounded-2xl border bg-[#0d0a16] p-5">
         <h2 className="text-sm font-semibold text-white">Reply</h2>
         <textarea
           value={reply}

@@ -78,7 +78,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -4 }}
           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-          className="border-black/8 fixed w-52 overflow-hidden rounded-2xl border bg-white/70 py-1.5 shadow-2xl dark:border-white/10 dark:bg-black/60"
+          className="border-black/[0.08] fixed w-52 overflow-hidden rounded-2xl border bg-white/70 py-1.5 shadow-2xl dark:border-white/10 dark:bg-black/60"
           style={{
             top: pos.top,
             right: pos.right,
@@ -94,7 +94,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="text-foreground/70 hover:text-foreground dark:hover:bg-white/8 flex items-center px-4 py-2 text-sm transition-colors hover:bg-black/5 dark:text-white/65 dark:hover:text-white"
+              className="text-foreground/70 hover:text-foreground dark:hover:bg-white/[0.08] flex items-center px-4 py-2 text-sm transition-colors hover:bg-black/5 dark:text-white/65 dark:hover:text-white"
             >
               {label}
             </Link>
@@ -108,7 +108,7 @@ export function HamburgerMenu({ className }: Props): React.JSX.Element {
                 onClick={() => {
                   void handleSignOut()
                 }}
-                className="text-destructive dark:hover:bg-white/8 flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-black/5"
+                className="text-destructive dark:hover:bg-white/[0.08] flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-black/5"
               >
                 Sign out
               </button>

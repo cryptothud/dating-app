@@ -61,7 +61,7 @@ export function EventPanel({
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 32, stiffness: 350 }}
-      className="bg-background/97 border-border absolute inset-x-0 bottom-0 z-30 rounded-t-2xl border-t backdrop-blur-xl dark:bg-[hsl(260_28%_5%/0.98)]"
+      className="bg-background/[0.97] border-border absolute inset-x-0 bottom-0 z-30 rounded-t-2xl border-t backdrop-blur-xl dark:bg-[hsl(260_28%_5%/0.98)]"
       style={{ maxHeight: '60%' }}
     >
       {/* Drag handle */}
@@ -191,7 +191,7 @@ export function EventPanel({
           </>
         ) : (
           /* Non-premium gate */
-          <div className="bg-amber-500/8 flex flex-col gap-3 rounded-xl border border-amber-500/20 px-4 py-3.5">
+          <div className="bg-amber-500/[0.08] flex flex-col gap-3 rounded-xl border border-amber-500/20 px-4 py-3.5">
             <div className="flex items-start gap-2.5">
               <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0 fill-amber-400">
                 <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
