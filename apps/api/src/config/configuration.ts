@@ -18,6 +18,14 @@ const envSchema = z.object({
     .string()
     .transform((v): boolean => v === 'true')
     .default('true'),
+  // Seeded demo users stop moving once the seed run finishes, so their location row
+  // ages out of the map's freshness window after three days and they vanish. While
+  // this is on they are exempt from that window; set it to 'false' to make them
+  // subject to the same recency rule as real users.
+  SHOW_SEEDED_ALWAYS: z
+    .string()
+    .transform((v): boolean => v === 'true')
+    .default('true'),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),

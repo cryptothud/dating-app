@@ -28,16 +28,22 @@ function makeRedis() {
   }
 }
 
+function makeConfig(showSeededAlways = true) {
+  return { get: vi.fn().mockReturnValue(showSeededAlways) }
+}
+
 function buildService(
   overrides: {
     prisma?: ReturnType<typeof makePrisma>
     redis?: ReturnType<typeof makeRedis>
+    config?: ReturnType<typeof makeConfig>
   } = {},
 ) {
   const prisma = overrides.prisma ?? makePrisma()
   const redis = overrides.redis ?? makeRedis()
-  const service = new LocationService(prisma as never, redis as never)
-  return { service, prisma, redis }
+  const config = overrides.config ?? makeConfig()
+  const service = new LocationService(prisma as never, redis as never, config as never)
+  return { service, prisma, redis, config }
 }
 
 // ─── fuzzCoordinates ────────────────────────────────────────────────────────
@@ -155,5 +161,32 @@ describe('LocationService.setTravelMode', () => {
   it('does not throw when enabling with valid coordinates', async () => {
     const { service } = buildService()
     await expect(service.setTravelMode('user-1', true, 40.7128, -74.006)).resolves.not.toThrow()
+  })
+})
+
+// ─── seeded-user visibility window ──────────────────────────────────────────
+
+describe('LocationService seeded-user visibility', () => {
+  const viewport = { swLat: 33.4, swLng: -112.1, neLat: 33.5, neLng: -112.0 } as never
+
+  function sqlTextFrom(prisma: ReturnType<typeof makePrisma>): string {
+    const arg = prisma.$queryRaw.mock.calls[0]?.[0] as { strings?: string[] } | undefined
+    return (arg?.strings ?? []).join(' ')
+  }
+
+  it('exempts seeded users from the recency window when the flag is on', async () => {
+    const { service, prisma } = buildService({ config: makeConfig(true) })
+    await service.getMapUsers(null, viewport)
+    const sql = sqlTextFrom(prisma)
+    expect(sql).toContain('u.is_seeded OR')
+    expect(sql).toContain("INTERVAL '3 days'")
+  })
+
+  it('applies the recency window to everyone when the flag is off', async () => {
+    const { service, prisma } = buildService({ config: makeConfig(false) })
+    await service.getMapUsers(null, viewport)
+    const sql = sqlTextFrom(prisma)
+    expect(sql).not.toContain('u.is_seeded OR')
+    expect(sql).toContain("INTERVAL '3 days'")
   })
 })

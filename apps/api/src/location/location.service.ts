@@ -1,5 +1,7 @@
 import { Injectable, HttpException, HttpStatus, BadRequestException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { ConfigService } from '@nestjs/config'
+import type { Env } from '../config/configuration'
 import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
 import type { MapUser, MapUserStatus } from '@dating-app/types'
@@ -32,7 +34,21 @@ export class LocationService {
   constructor(
     private prisma: PrismaService,
     private redis: RedisService,
+    private config: ConfigService<Env, true>,
   ) {}
+
+  /**
+   * Map rows are gated on how recently the location row was touched. Seeded demo users
+   * never move after the seed run, so they drop off the map three days later. When
+   * SHOW_SEEDED_ALWAYS is on they bypass that window — every other filter (age, interests,
+   * blocks, visibility) still applies, so they behave like normal users otherwise.
+   */
+  private freshnessFilter(): Prisma.Sql {
+    const recent = Prisma.sql`ul.updated_at > NOW() - INTERVAL '3 days'`
+    return this.config.get('SHOW_SEEDED_ALWAYS', { infer: true })
+      ? Prisma.sql`AND (u.is_seeded OR ${recent})`
+      : Prisma.sql`AND ${recent}`
+  }
 
   async updateLocation(userId: string, dto: UpdateLocationDto): Promise<void> {
     await this.enforceRateLimit(`rl:loc:${userId}`, 600, 3600)
@@ -175,7 +191,7 @@ export class LocationService {
         WHERE
           ul.latitude  BETWEEN ${swLat}::float8 AND ${neLat}::float8
           AND ul.longitude BETWEEN ${swLng}::float8 AND ${neLng}::float8
-          AND ul.updated_at > NOW() - INTERVAL '3 days'
+          ${this.freshnessFilter()}
           AND u.verified = true
           AND u.incognito = false
           AND p.visibility != 'private'
@@ -202,7 +218,7 @@ export class LocationService {
       WHERE
         ul.latitude  BETWEEN ${swLat}::float8 AND ${neLat}::float8
         AND ul.longitude BETWEEN ${swLng}::float8 AND ${neLng}::float8
-        AND ul.updated_at > NOW() - INTERVAL '3 days'
+        ${this.freshnessFilter()}
         AND u.verified = true
         AND u.incognito = false
         AND p.visibility != 'private'
@@ -270,7 +286,7 @@ export class LocationService {
       WHERE
         ul.latitude  BETWEEN ${swLat}::float8 AND ${neLat}::float8
         AND ul.longitude BETWEEN ${swLng}::float8 AND ${neLng}::float8
-        AND ul.updated_at > NOW() - INTERVAL '3 days'
+        ${this.freshnessFilter()}
         AND u.verified = true
         AND u.incognito = false
         AND u.banned = false
