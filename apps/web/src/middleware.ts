@@ -78,5 +78,9 @@ export function middleware(req: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
+  // Anything containing a dot is a static asset — icon.svg, og.png, manifest.json,
+  // sw.js, favicon.ico, apple-touch-icon.png. Browsers and link-preview crawlers
+  // fetch those with no auth cookie, so matching them here 307'd every one of them
+  // to '/' and served HTML where an image was expected: no favicon, no OG banner.
+  matcher: ['/((?!_next/static|_next/image|api|.*\\.).*)'],
 }

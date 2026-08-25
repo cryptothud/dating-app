@@ -19,7 +19,19 @@ const syne = Syne({
   weight: ['700', '800'],
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_WEB_URL ?? 'https://crushapp.co'
+// Vercel injects these as bare hostnames: VERCEL_PROJECT_PRODUCTION_URL is the
+// project's production domain, VERCEL_URL the individual deployment. Preferring the
+// production domain keeps og:image absolute across preview deploys. The previous
+// hard-coded crushapp.co fallback pointed og:image at a host that doesn't resolve,
+// so every link preview fetched a dead URL. Set NEXT_PUBLIC_WEB_URL to override.
+function resolveSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_WEB_URL) return process.env.NEXT_PUBLIC_WEB_URL
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL
+  if (vercelHost) return `https://${vercelHost}`
+  return 'http://localhost:3000'
+}
+
+const SITE_URL = resolveSiteUrl()
 const DESCRIPTION =
   "CRUSH is a map-first dating app that lets you see who's near you right now. Browse in real time, start a conversation, and make a real connection."
 
@@ -48,9 +60,10 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/og.svg',
+        url: '/og.png',
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: 'CRUSH — Meet people near you in real time',
       },
     ],
@@ -59,7 +72,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'CRUSH — Meet People Near You',
     description: DESCRIPTION,
-    images: ['/og.svg'],
+    images: ['/og.png'],
   },
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'CRUSH' },
