@@ -58,6 +58,17 @@
     @apply border-border;
   }
 
+  /* Native <select> popup. Chrome renders the option list with the author's own
+     colours as soon as the select carries a background-color, on a light canvas —
+     color-scheme alone does not reach it. The options here inherited the select's
+     white text over a transparent background, so the list came out white on white.
+     Pin both ends to opaque theme colours; this tracks light and dark via the vars. */
+  select option,
+  select optgroup {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+  }
+
   /* Kill native outlines everywhere — at the element level (not just :focus)
      so transition-all can never animate an outline into view even for 1 frame. */
   input, button, select, textarea, a, [tabindex] {
