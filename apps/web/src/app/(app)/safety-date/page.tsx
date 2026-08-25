@@ -128,7 +128,7 @@ export default function SafetyPage() {
   const isActive = session && !session.endedAt
 
   return (
-    <div className="bg-background min-h-full overflow-y-auto">
+    <div className="bg-background h-full overflow-y-auto">
       <div className="mx-auto max-w-lg space-y-6 px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-3">
