@@ -1,0 +1,28 @@
+# Never ship the host's install into the build context; the image runs its own
+# pnpm install and a copied node_modules would shadow it with the wrong platform
+# binaries (prisma engines, bcrypt, sharp).
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build outputs are produced inside the image by `turbo build`.
+dist
+**/dist
+.next
+**/.next
+.turbo
+**/.turbo
+*.tsbuildinfo
+
+.git
+.github
+.husky
+.vercel
+coverage
+**/coverage
+load-tests
+
+.env
+.env.local
+.env.*.local
+*.log
