@@ -13,6 +13,23 @@ async function bootstrap(): Promise<void> {
   const config = app.get(ConfigService<Env, true>)
   const isProd = config.get('NODE_ENV', { infer: true }) === 'production'
 
+  // ThrottlerGuard keys on req.ip. In production every browser request reaches this app
+  // through the Vercel rewrite, so without trusting the forwarding chain Express reports
+  // the proxy's address for all of them and every visitor shares one rate-limit bucket —
+  // three signups a minute across the whole site, not per person. Trusting it makes
+  // req.ip the leftmost X-Forwarded-For entry, which is the real client.
+  //
+  // This is abuse mitigation, not a security boundary. The Railway origin is publicly
+  // reachable, so a caller that skips Vercel can supply its own X-Forwarded-For. A hop
+  // count would not prevent that — Railway's own proxy always occupies the first hop —
+  // so the fix for spoofing is restricting the origin to Vercel at the network level.
+  if (isProd) {
+    const expressApp = app.getHttpAdapter().getInstance() as {
+      set: (key: string, value: unknown) => void
+    }
+    expressApp.set('trust proxy', true)
+  }
+
   // Security headers — CSP enabled in all environments; COEP only in prod (dev tools break otherwise)
   app.use(
     helmet({
