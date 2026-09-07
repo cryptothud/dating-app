@@ -45,6 +45,10 @@ const envSchema = z.object({
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
   VAPID_EMAIL: z.string().default('mailto:support@crush.app'),
+  // Cloudflare Turnstile server-side key, used to validate age-gate tokens against
+  // /siteverify. Optional so local dev runs without it; when it is missing the API
+  // refuses to verify in production rather than waving the challenge through.
+  TURNSTILE_SECRET_KEY: z.string().optional(),
 })
 
 export type Env = z.infer<typeof envSchema>

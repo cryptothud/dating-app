@@ -1,18 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { YearPicker, CURRENT_YEAR, DEFAULT_YEAR } from '@/components/ui/year-picker'
-
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (container: string | HTMLElement, options: Record<string, unknown>) => string
-      reset: (widgetId: string) => void
-      remove: (widgetId: string) => void
-    }
-  }
-}
+import { TurnstileWidget } from './TurnstileWidget'
+import { api, ApiRequestError } from '@/lib/api'
 
 const MIN_AGE = 18
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -29,8 +21,10 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
   const [step, setStep] = useState<'age' | 'captcha'>('age')
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [turnstileError, setTurnstileError] = useState(false)
-  const [widgetId, setWidgetId] = useState<string | null>(null)
-  const turnstileRef = useRef<HTMLDivElement>(null)
+  // Bumping this remounts the widget, which is how a challenge gets reset.
+  const [widgetNonce, setWidgetNonce] = useState(0)
+  const [verifying, setVerifying] = useState(false)
+  const [verifyError, setVerifyError] = useState<string | null>(null)
 
   const SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -58,84 +52,35 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
     }
   }
 
+  // With no sitekey there is no challenge to solve. The API applies the same bypass in
+  // development and refuses it in production, so this cannot open the gate in prod.
   useEffect(() => {
-    if (step !== 'captcha') return
-    if (!SITEKEY) {
-      setTurnstileToken('dev-bypass')
-      return
-    }
-
-    let mounted = true
-    let currentWidgetId: string | undefined
-
-    const doRender = (): void => {
-      if (!mounted || !turnstileRef.current || !window.turnstile) return
-      // Clear any leftover widget markup from a previous render
-      turnstileRef.current.innerHTML = ''
-      setTurnstileError(false)
-      currentWidgetId = window.turnstile.render(turnstileRef.current, {
-        sitekey: SITEKEY,
-        theme: 'auto',
-        callback: (token: string) => {
-          if (mounted) {
-            setTurnstileToken(token)
-            setTurnstileError(false)
-          }
-        },
-        'error-callback': () => {
-          if (mounted) {
-            setTurnstileToken(null)
-            setTurnstileError(true)
-          }
-        },
-        'expired-callback': () => {
-          if (mounted) setTurnstileToken(null)
-        },
-      })
-      if (currentWidgetId !== undefined) setWidgetId(currentWidgetId)
-    }
-
-    if (window.turnstile) {
-      doRender()
-    } else {
-      // Use Cloudflare's recommended onload pattern — guarantees window.turnstile is ready
-      const cbName = `_ts_${Math.random().toString(36).slice(2)}`
-      ;(window as unknown as Record<string, unknown>)[cbName] = () => {
-        delete (window as unknown as Record<string, unknown>)[cbName]
-        doRender()
-      }
-      const existing = document.querySelector('script[data-cf-turnstile]')
-      if (existing) {
-        // Script already injected but not yet loaded — poll
-        const poll = setInterval(() => {
-          if (window.turnstile) {
-            clearInterval(poll)
-            doRender()
-          }
-        }, 50)
-        return () => {
-          mounted = false
-          clearInterval(poll)
-        }
-      }
-      const script = document.createElement('script')
-      script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=${cbName}&render=explicit`
-      script.async = true
-      script.dataset.cfTurnstile = '1'
-      document.head.appendChild(script)
-    }
-
-    return () => {
-      mounted = false
-      if (currentWidgetId !== undefined && window.turnstile?.remove) {
-        try {
-          window.turnstile.remove(currentWidgetId)
-        } catch {
-          // The widget may already be torn down by the time cleanup runs.
-        }
-      }
-    }
+    if (step === 'captcha' && !SITEKEY) setTurnstileToken('dev-bypass')
   }, [step, SITEKEY])
+
+  const resetChallenge = (): void => {
+    setTurnstileToken(null)
+    setTurnstileError(false)
+    setWidgetNonce((n) => n + 1)
+  }
+
+  const handleEnter = async (): Promise<void> => {
+    if (!turnstileToken || verifying) return
+    setVerifying(true)
+    setVerifyError(null)
+    try {
+      await api.post('/age-gate/verify', { token: turnstileToken })
+      onVerified()
+    } catch (err) {
+      setVerifyError(
+        err instanceof ApiRequestError ? err.message : 'Verification failed. Please try again.',
+      )
+      // Turnstile tokens are single-use, so a rejected attempt needs a fresh challenge.
+      resetChallenge()
+    } finally {
+      setVerifying(false)
+    }
+  }
 
   return (
     <motion.div
@@ -175,7 +120,7 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                   setBirthMonth(Number(e.target.value))
                   setBirthDay(0)
                 }}
-                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:text-white"
+                className="text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 flex-1 rounded-xl border border-black/[0.08] bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 dark:border-white/[0.12] dark:bg-white/[0.08] dark:text-white"
               >
                 <option value="">Month</option>
                 {MONTHS.map((m, i) => (
@@ -188,7 +133,7 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                 value={birthDay || ''}
                 onChange={(e) => setBirthDay(Number(e.target.value))}
                 disabled={!birthMonth}
-                className="dark:bg-white/[0.08] border-black/[0.08] dark:border-white/[0.12] text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:text-white"
+                className="text-foreground focus:ring-ring dark:focus:ring-primary/60 h-10 w-24 rounded-xl border border-black/[0.08] bg-black/5 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-1 disabled:opacity-40 dark:border-white/[0.12] dark:bg-white/[0.08] dark:text-white"
               >
                 <option value="">Day</option>
                 {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
@@ -264,20 +209,25 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                 </div>
               ) : (
                 <>
-                  <div ref={turnstileRef} />
+                  <TurnstileWidget
+                    key={widgetNonce}
+                    sitekey={SITEKEY}
+                    onToken={(token) => {
+                      setTurnstileToken(token)
+                      setTurnstileError(false)
+                    }}
+                    onError={() => {
+                      setTurnstileToken(null)
+                      setTurnstileError(true)
+                    }}
+                    onExpire={() => setTurnstileToken(null)}
+                  />
                   {turnstileError && (
                     <div className="space-y-2 text-center">
                       <p className="text-destructive text-sm">
                         Verification failed. Please try again.
                       </p>
-                      <button
-                        onClick={() => {
-                          if (window.turnstile && widgetId) window.turnstile.reset(widgetId)
-                          setTurnstileError(false)
-                          setTurnstileToken(null)
-                        }}
-                        className="text-primary text-sm underline"
-                      >
+                      <button onClick={resetChallenge} className="text-primary text-sm underline">
                         Retry
                       </button>
                     </div>
@@ -286,19 +236,25 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
               )}
             </div>
 
+            {verifyError && <p className="text-destructive text-center text-sm">{verifyError}</p>}
+
             <div className="flex gap-3">
               <button
-                onClick={() => setStep('age')}
+                onClick={() => {
+                  setVerifyError(null)
+                  resetChallenge()
+                  setStep('age')
+                }}
                 className="border-border text-muted-foreground hover:bg-muted h-11 flex-1 rounded-xl border text-sm font-medium transition-colors"
               >
                 Back
               </button>
               <button
-                onClick={onVerified}
-                disabled={!turnstileToken}
+                onClick={() => void handleEnter()}
+                disabled={!turnstileToken || verifying}
                 className="bg-primary h-11 flex-1 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Enter CRUSH
+                {verifying ? 'Verifying…' : 'Enter CRUSH'}
               </button>
             </div>
           </motion.div>

@@ -20,6 +20,7 @@ import { SafetyModule } from './safety/safety.module'
 import { UsersModule } from './users/users.module'
 import { AdminModule } from './admin/admin.module'
 import { BillingModule } from './billing/billing.module'
+import { AgeGateModule } from './age-gate/age-gate.module'
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter'
 import { MaintenanceMiddleware } from './common/middleware/maintenance.middleware'
 
@@ -52,6 +53,7 @@ import { MaintenanceMiddleware } from './common/middleware/maintenance.middlewar
     UsersModule,
     AdminModule,
     BillingModule,
+    AgeGateModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
