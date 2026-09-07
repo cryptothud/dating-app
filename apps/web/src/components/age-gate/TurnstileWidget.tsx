@@ -47,8 +47,10 @@ function loadTurnstile(): Promise<void> {
 
 interface Props {
   sitekey: string
+  /** Receives Cloudflare's error code so the caller can tell a misconfiguration
+   *  (110xxx, not retryable) from a failed challenge (300xxx/600xxx, retryable). */
+  onError: (code: string) => void
   onToken: (token: string) => void
-  onError: () => void
   onExpire: () => void
 }
 
@@ -87,8 +89,9 @@ export function TurnstileWidget({ sitekey, onToken, onError, onExpire }: Props):
           callback: (token: string) => {
             if (!cancelled) handlers.current.onToken(token)
           },
-          'error-callback': () => {
-            if (!cancelled) handlers.current.onError()
+          'error-callback': (code?: string | number) => {
+            const errorCode = code === undefined || code === '' ? 'unknown' : String(code)
+            if (!cancelled) handlers.current.onError(errorCode)
           },
           'expired-callback': () => {
             if (!cancelled) handlers.current.onExpire()
@@ -96,7 +99,7 @@ export function TurnstileWidget({ sitekey, onToken, onError, onExpire }: Props):
         })
       })
       .catch(() => {
-        if (!cancelled) handlers.current.onError()
+        if (!cancelled) handlers.current.onError('script-load-failed')
       })
 
     return () => {

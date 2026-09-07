@@ -20,7 +20,8 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
   const [birthDay, setBirthDay] = useState(0)
   const [step, setStep] = useState<'age' | 'captcha'>('age')
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-  const [turnstileError, setTurnstileError] = useState(false)
+  // Cloudflare's client-side error code, or null when the challenge is healthy.
+  const [turnstileError, setTurnstileError] = useState<string | null>(null)
   // Bumping this remounts the widget, which is how a challenge gets reset.
   const [widgetNonce, setWidgetNonce] = useState(0)
   const [verifying, setVerifying] = useState(false)
@@ -60,9 +61,14 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
 
   const resetChallenge = (): void => {
     setTurnstileToken(null)
-    setTurnstileError(false)
+    setTurnstileError(null)
     setWidgetNonce((n) => n + 1)
   }
+
+  // Cloudflare groups codes into families: 110xxx means the widget is misconfigured
+  // (wrong sitekey, or this hostname is not on its allow-list) and retrying cannot help,
+  // while 300xxx/600xxx are challenge failures that often clear on a second attempt.
+  const isConfigError = turnstileError?.startsWith('110') ?? false
 
   const handleEnter = async (): Promise<void> => {
     if (!turnstileToken || verifying) return
@@ -214,22 +220,29 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                     sitekey={SITEKEY}
                     onToken={(token) => {
                       setTurnstileToken(token)
-                      setTurnstileError(false)
+                      setTurnstileError(null)
                     }}
-                    onError={() => {
+                    onError={(code) => {
                       setTurnstileToken(null)
-                      setTurnstileError(true)
+                      setTurnstileError(code)
                     }}
                     onExpire={() => setTurnstileToken(null)}
                   />
                   {turnstileError && (
-                    <div className="space-y-2 text-center">
+                    <div className="space-y-1.5 text-center">
                       <p className="text-destructive text-sm">
-                        Verification failed. Please try again.
+                        {isConfigError
+                          ? "Verification isn't set up correctly for this site."
+                          : 'Verification failed. Please try again.'}
                       </p>
-                      <button onClick={resetChallenge} className="text-primary text-sm underline">
-                        Retry
-                      </button>
+                      <p className="text-muted-foreground text-xs">
+                        Cloudflare error {turnstileError}
+                      </p>
+                      {!isConfigError && (
+                        <button onClick={resetChallenge} className="text-primary text-sm underline">
+                          Retry
+                        </button>
+                      )}
                     </div>
                   )}
                 </>
