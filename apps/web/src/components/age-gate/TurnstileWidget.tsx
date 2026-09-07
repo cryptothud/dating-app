@@ -91,30 +91,48 @@ export function TurnstileWidget({ sitekey, onToken, onError, onExpire }: Props):
 
     let cancelled = false
 
-    loadTurnstile()
-      .then(() => {
+    // Two-argument then, deliberately: a trailing .catch() would also swallow anything
+    // turnstile.render() throws and report it as a script load failure, which is how a
+    // failing render came to be misreported as script-load-failed.
+    loadTurnstile().then(
+      () => {
         if (cancelled || !window.turnstile) return
-        widgetIdRef.current = window.turnstile.render(container, {
-          sitekey,
-          theme: 'auto',
-          callback: (token: string) => {
-            if (!cancelled) handlers.current.onToken(token)
-          },
-          'error-callback': (code?: string | number) => {
-            const errorCode = code === undefined || code === '' ? 'unknown' : String(code)
-            if (!cancelled) handlers.current.onError(errorCode)
-          },
-          'expired-callback': () => {
-            if (!cancelled) handlers.current.onExpire()
-          },
-        })
-      })
-      .catch((err: unknown) => {
+        let widgetId: string | undefined
+        try {
+          widgetId = window.turnstile.render(container, {
+            sitekey,
+            theme: 'auto',
+            callback: (token: string) => {
+              if (!cancelled) handlers.current.onToken(token)
+            },
+            'error-callback': (code?: string | number) => {
+              const errorCode = code === undefined || code === '' ? 'unknown' : String(code)
+              if (!cancelled) handlers.current.onError(errorCode)
+            },
+            'expired-callback': () => {
+              if (!cancelled) handlers.current.onExpire()
+            },
+          })
+        } catch (err: unknown) {
+          const detail = err instanceof Error ? err.message : String(err)
+          if (!cancelled) handlers.current.onError(`render-threw: ${detail.slice(0, 120)}`)
+          return
+        }
+        // Turnstile returns undefined instead of throwing for some rejections, which
+        // would otherwise leave the gate waiting on a widget that was never created.
+        if (widgetId === undefined) {
+          if (!cancelled) handlers.current.onError('render-returned-nothing')
+          return
+        }
+        widgetIdRef.current = widgetId
+      },
+      (err: unknown) => {
         const timedOut = err instanceof Error && err.message === 'turnstile_script_timeout'
         if (!cancelled) {
           handlers.current.onError(timedOut ? 'script-load-timeout' : 'script-load-failed')
         }
-      })
+      },
+    )
 
     return () => {
       cancelled = true
