@@ -69,6 +69,11 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
   // (wrong sitekey, or this hostname is not on its allow-list) and retrying cannot help,
   // while 300xxx/600xxx are challenge failures that often clear on a second attempt.
   const isConfigError = turnstileError?.startsWith('110') ?? false
+  // api.js never ran. That is almost always something on the visitor's side —
+  // a content blocker, VPN or network filter dropping challenges.cloudflare.com —
+  // so say that rather than blaming the challenge.
+  const isScriptBlocked =
+    turnstileError === 'script-load-failed' || turnstileError === 'script-load-timeout'
 
   const handleEnter = async (): Promise<void> => {
     if (!turnstileToken || verifying) return
@@ -233,11 +238,21 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
                       <p className="text-destructive text-sm">
                         {isConfigError
                           ? "Verification isn't set up correctly for this site."
-                          : 'Verification failed. Please try again.'}
+                          : isScriptBlocked
+                            ? "Couldn't load the verification challenge."
+                            : 'Verification failed. Please try again.'}
                       </p>
-                      <p className="text-muted-foreground text-xs">
-                        Cloudflare error {turnstileError}
-                      </p>
+                      {isScriptBlocked ? (
+                        <p className="text-muted-foreground text-xs leading-relaxed">
+                          An ad blocker, privacy extension, VPN or network filter may be blocking{' '}
+                          <span className="font-medium">challenges.cloudflare.com</span>. Allow it
+                          for this site, or try another browser or network.
+                        </p>
+                      ) : (
+                        <p className="text-muted-foreground text-xs">
+                          Cloudflare error {turnstileError}
+                        </p>
+                      )}
                       {!isConfigError && (
                         <button onClick={resetChallenge} className="text-primary text-sm underline">
                           Retry

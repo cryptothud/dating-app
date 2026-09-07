@@ -14,6 +14,11 @@ declare global {
 
 const API_JS = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 
+// If the tag neither loads nor errors within this window, treat it as blocked. Some
+// content blockers stall the request instead of failing it, which would otherwise
+// leave the gate waiting forever with no feedback.
+const SCRIPT_TIMEOUT_MS = 15_000
+
 // One shared load promise for the whole page: concurrent mounts await the same script
 // instead of each injecting their own tag or polling for window.turnstile.
 let scriptPromise: Promise<void> | null = null
@@ -25,7 +30,18 @@ function loadTurnstile(): Promise<void> {
   scriptPromise = new Promise<void>((resolve, reject) => {
     const callbackName = `_onTurnstileLoad_${Math.random().toString(36).slice(2)}`
     const globals = window as unknown as Record<string, unknown>
+
+    // Allow a later mount to retry after any failure.
+    const fail = (reason: string): void => {
+      clearTimeout(timer)
+      delete globals[callbackName]
+      scriptPromise = null
+      reject(new Error(reason))
+    }
+    const timer = setTimeout(() => fail('turnstile_script_timeout'), SCRIPT_TIMEOUT_MS)
+
     globals[callbackName] = (): void => {
+      clearTimeout(timer)
       delete globals[callbackName]
       resolve()
     }
@@ -33,12 +49,7 @@ function loadTurnstile(): Promise<void> {
     const script = document.createElement('script')
     script.src = `${API_JS}?onload=${callbackName}&render=explicit`
     script.async = true
-    script.onerror = (): void => {
-      delete globals[callbackName]
-      // Allow a later mount to retry a failed network load.
-      scriptPromise = null
-      reject(new Error('turnstile_script_failed'))
-    }
+    script.onerror = (): void => fail('turnstile_script_failed')
     document.head.appendChild(script)
   })
 
@@ -98,8 +109,11 @@ export function TurnstileWidget({ sitekey, onToken, onError, onExpire }: Props):
           },
         })
       })
-      .catch(() => {
-        if (!cancelled) handlers.current.onError('script-load-failed')
+      .catch((err: unknown) => {
+        const timedOut = err instanceof Error && err.message === 'turnstile_script_timeout'
+        if (!cancelled) {
+          handlers.current.onError(timedOut ? 'script-load-timeout' : 'script-load-failed')
+        }
       })
 
     return () => {
