@@ -261,7 +261,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }): 
     if (sessionStorage.getItem('crush_age_verified') === '1') {
       setGateState('clear')
     } else if (sessionStorage.getItem('crush_anon_intent') === '1') {
-      sessionStorage.removeItem('crush_anon_intent')
+      // Deliberately not cleared here. React StrictMode runs this effect twice in dev,
+      // and consuming the flag on the first pass left the second pass seeing nothing,
+      // falling through to 'required' and bouncing the visitor straight back to '/'.
+      // onVerified clears it once the gate has actually been passed.
       setGateState('anon-intent')
     } else {
       setGateState('required')
