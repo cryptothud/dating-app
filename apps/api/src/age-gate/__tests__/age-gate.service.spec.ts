@@ -100,6 +100,28 @@ describe('AgeGateService.verifyTurnstile', () => {
     expect(new URLSearchParams(init.body as string).has('remoteip')).toBe(false)
   })
 
+  it('strips a BOM and zero-width characters from the configured secret', async () => {
+    mockFetch({ success: true })
+    const service = makeService({
+      NODE_ENV: 'production',
+      // Written as escapes on purpose: this is how the sitekey reached production, and a
+      // literal BOM here would be invisible in review and easy to strip by accident.
+      TURNSTILE_SECRET_KEY: '\uFEFFsecret\u200B',
+    })
+    await service.verifyTurnstile('tok')
+
+    const [, init] = fetchCall(0)
+    expect(new URLSearchParams(init.body as string).get('secret')).toBe('secret')
+  })
+
+  it('treats a secret that is only zero-width characters as unset', async () => {
+    const service = makeService({ NODE_ENV: 'production', TURNSTILE_SECRET_KEY: '\uFEFF' })
+    await expect(service.verifyTurnstile('tok')).resolves.toEqual({
+      success: false,
+      errorCodes: ['missing-secret'],
+    })
+  })
+
   it('fails closed when the siteverify request throws', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('ECONNRESET')))
     const service = makeService({ NODE_ENV: 'production', TURNSTILE_SECRET_KEY: 'secret' })

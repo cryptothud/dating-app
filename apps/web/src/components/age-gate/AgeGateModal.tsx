@@ -27,7 +27,14 @@ export function AgeGateModal({ onVerified, onGoBack }: Props): React.JSX.Element
   const [verifying, setVerifying] = useState(false)
   const [verifyError, setVerifyError] = useState<string | null>(null)
 
-  const SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  // A value pasted into a hosting dashboard can pick up a BOM or other zero-width
+  // characters, which Cloudflare rejects outright as an invalid sitekey. That is exactly
+  // how production failed: the built bundle held a leading U+FEFF before the key. Strip
+  // them so an invisible character cannot take the gate down. Empty after stripping is
+  // treated as unset.
+  const SITEKEY =
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.replace(/[\u200B-\u200D\uFEFF]/g, '').trim() ||
+    undefined
 
   const isOldEnough = (() => {
     if (!birthMonth || !birthDay) return false

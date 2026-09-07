@@ -23,7 +23,12 @@ export class AgeGateService {
   constructor(private readonly config: ConfigService) {}
 
   async verifyTurnstile(token: string, remoteIp?: string): Promise<TurnstileResult> {
-    const secret = this.config.get<string>('TURNSTILE_SECRET_KEY')
+    // Same hazard as the sitekey: a secret pasted into a hosting dashboard can carry a
+    // BOM or zero-width characters, which would fail siteverify for no visible reason.
+    const secret = this.config
+      .get<string>('TURNSTILE_SECRET_KEY')
+      ?.replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .trim()
 
     if (!secret) {
       // Without a secret there is nothing to check the token against. Locally that is
