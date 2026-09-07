@@ -143,10 +143,12 @@ export default function AboutPage(): React.JSX.Element {
   return (
     <div className="space-y-14 sm:space-y-20">
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="relative -mx-5 -mt-8 overflow-hidden px-5 pb-12 pt-10 text-center sm:-mt-12 sm:pb-16 sm:pt-14">
-        <div className="from-primary/[0.08] via-primary/[0.04] pointer-events-none absolute inset-0 bg-gradient-to-b to-transparent" />
+      <section className="relative -mx-5 -mt-8 px-5 pb-12 pt-10 text-center sm:-mt-12 sm:pb-16 sm:pt-14">
+        {/* Backdrops break out of the layout's max-w-3xl column to span the full
+            viewport; (legal)/layout.tsx clips the resulting horizontal overflow. */}
+        <div className="from-primary/[0.08] via-primary/[0.04] pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 bg-gradient-to-b to-transparent" />
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2"
           style={{
             background:
               'radial-gradient(ellipse at 50% -10%, hsl(270 70% 60% / 0.15) 0%, transparent 65%)',

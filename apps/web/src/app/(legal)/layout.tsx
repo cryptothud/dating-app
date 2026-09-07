@@ -9,7 +9,7 @@ export default function LegalLayout({
   children: React.ReactNode
 }): React.JSX.Element {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen overflow-x-clip">
       <header className="bg-background border-border sticky top-0 z-50 border-b">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5">
           <Link href="/" className="font-display text-primary text-xl font-bold tracking-tight">
