@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt.guard'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
 import type { AuthUser } from '../common/decorators/current-user.decorator'
 import { ProfileService } from './profile.service'
@@ -9,7 +10,6 @@ import { UpsertPromptDto } from './dto/upsert-prompt.dto'
 import { PremiumService } from '../billing/premium.service'
 
 @Controller('profile')
-@UseGuards(JwtAuthGuard)
 export class ProfileController {
   constructor(
     private readonly profile: ProfileService,
@@ -17,11 +17,13 @@ export class ProfileController {
   ) {}
 
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   getMe(@CurrentUser() user: AuthUser): Promise<ProfileResponse> {
     return this.profile.getMyProfile(user.id)
   }
 
   @Get('me/viewers')
+  @UseGuards(JwtAuthGuard)
   async getViewers(
     @CurrentUser() user: AuthUser,
   ): Promise<
@@ -31,21 +33,27 @@ export class ProfileController {
     return this.profile.getProfileViewers(user.id)
   }
 
+  // Readable while signed out: anonymous visitors browse the map and open profiles.
+  // The response carries only public profile fields, and NSFW photos stay blurred
+  // because a signed-out viewer has no NSFW opt-in.
   @Get(':userId')
+  @UseGuards(OptionalJwtAuthGuard)
   getPublicProfile(
     @Param('userId') userId: string,
-    @CurrentUser() requestingUser: AuthUser,
+    @CurrentUser() requestingUser: AuthUser | null,
   ): Promise<PublicProfileResponse> {
-    void this.profile.recordProfileView(userId, requestingUser.id)
-    return this.profile.getPublicProfile(userId, requestingUser.id)
+    if (requestingUser) void this.profile.recordProfileView(userId, requestingUser.id)
+    return this.profile.getPublicProfile(userId, requestingUser?.id ?? null)
   }
 
   @Patch()
+  @UseGuards(JwtAuthGuard)
   update(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto): Promise<ProfileResponse> {
     return this.profile.updateProfile(user.id, dto)
   }
 
   @Post('prompts')
+  @UseGuards(JwtAuthGuard)
   upsertPrompt(
     @CurrentUser() user: AuthUser,
     @Body() dto: UpsertPromptDto,
@@ -54,6 +62,7 @@ export class ProfileController {
   }
 
   @Delete('prompts/:id')
+  @UseGuards(JwtAuthGuard)
   deletePrompt(
     @CurrentUser() user: AuthUser,
     @Param('id') promptId: string,

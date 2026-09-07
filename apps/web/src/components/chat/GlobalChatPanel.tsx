@@ -740,7 +740,7 @@ export function GlobalChatPanel({
                 onKeyDown={handleKeyDown}
                 placeholder="Post a message…"
                 maxLength={500}
-                className="bg-muted/70 dark:bg-white/[0.08] border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1"
+                className="bg-muted/70 border-border text-foreground placeholder:text-muted-foreground focus:ring-ring h-10 flex-1 rounded-2xl border px-4 text-sm focus:outline-none focus:ring-1 dark:bg-white/[0.08]"
               />
               <button
                 onClick={handleSend}
@@ -810,6 +810,7 @@ export function GlobalChatPanel({
       {viewingUserId && (
         <UserProfileDrawer
           userId={viewingUserId}
+          isAuthenticated={isAuthenticated}
           displayName={viewingUserName}
           onClose={() => setViewingUserId(null)}
           onMessage={() => setViewingUserId(null)}

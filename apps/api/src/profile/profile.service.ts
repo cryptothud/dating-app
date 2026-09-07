@@ -70,9 +70,10 @@ export class ProfileService {
     private readonly redis: RedisService,
   ) {}
 
+  // requestingUserId is null for signed-out visitors browsing the map anonymously.
   async getPublicProfile(
     targetUserId: string,
-    requestingUserId: string,
+    requestingUserId: string | null,
   ): Promise<PublicProfileResponse> {
     const user = await this.prisma.user.findUnique({ where: { id: targetUserId } })
     if (!user) throw new NotFoundException('Profile not found')
@@ -80,16 +81,19 @@ export class ProfileService {
     // Respect incognito mode
     if (user.incognito) throw new NotFoundException('Profile not found')
 
-    // Enforce block in both directions
-    const block = await this.prisma.block.findFirst({
-      where: {
-        OR: [
-          { blockerId: requestingUserId, blockedId: targetUserId },
-          { blockerId: targetUserId, blockedId: requestingUserId },
-        ],
-      },
-    })
-    if (block) throw new NotFoundException('Profile not found')
+    // Enforce block in both directions. Blocks are between two accounts, so there is
+    // nothing to enforce when the viewer is signed out.
+    if (requestingUserId) {
+      const block = await this.prisma.block.findFirst({
+        where: {
+          OR: [
+            { blockerId: requestingUserId, blockedId: targetUserId },
+            { blockerId: targetUserId, blockedId: requestingUserId },
+          ],
+        },
+      })
+      if (block) throw new NotFoundException('Profile not found')
+    }
 
     const [profile, viewer] = await Promise.all([
       this.prisma.profile.findUnique({
@@ -99,16 +103,20 @@ export class ProfileService {
           prompts: { orderBy: { order: 'asc' } },
         },
       }),
-      this.prisma.profile.findUnique({
-        where: { userId: requestingUserId },
-        select: { nsfwEnabled: true },
-      }),
+      requestingUserId
+        ? this.prisma.profile.findUnique({
+            where: { userId: requestingUserId },
+            select: { nsfwEnabled: true },
+          })
+        : Promise.resolve(null),
     ])
     if (!profile) throw new NotFoundException('Profile not found')
+    // A signed-out viewer has no NSFW opt-in, so NSFW photos stay blurred for them.
     const viewerNsfwEnabled = viewer?.nsfwEnabled ?? false
 
-    // Record view (non-blocking, skip self-views)
-    if (requestingUserId !== targetUserId) {
+    // Record view (non-blocking, skip self-views and anonymous views, which have
+    // no account to attribute them to)
+    if (requestingUserId && requestingUserId !== targetUserId) {
       const key = `profile_views:${targetUserId}`
       void this.redis
         .zadd(key, Date.now(), requestingUserId)

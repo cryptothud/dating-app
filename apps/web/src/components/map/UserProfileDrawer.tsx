@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { profileApi, promptLabel } from '@/lib/profile'
+import Link from 'next/link'
 import { BlockReportSheet } from '@/components/ui/block-report-sheet'
 import type { UserProfile } from '@dating-app/types'
 import Image from 'next/image'
@@ -18,6 +19,8 @@ function formatLastActive(iso: string): string {
 
 interface Props {
   userId: string
+  /** Signed-out visitors see the same profile, but act on it by signing up. */
+  isAuthenticated: boolean
   displayName: string | null
   lastActiveAt?: string
   distanceMiles?: number
@@ -28,6 +31,7 @@ interface Props {
 
 export function UserProfileDrawer({
   userId,
+  isAuthenticated,
   displayName,
   lastActiveAt,
   distanceMiles,
@@ -143,17 +147,20 @@ export function UserProfileDrawer({
               )}
             </div>
             <div className="ml-2 flex shrink-0 items-center gap-1.5">
-              <button
-                onClick={() => setShowBlockReport(true)}
-                className="bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-                aria-label="Block or report"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-                  <circle cx="12" cy="5" r="1.5" />
-                  <circle cx="12" cy="12" r="1.5" />
-                  <circle cx="12" cy="19" r="1.5" />
-                </svg>
-              </button>
+              {/* Reporting is tied to an account, so it is hidden while signed out. */}
+              {isAuthenticated && (
+                <button
+                  onClick={() => setShowBlockReport(true)}
+                  className="bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+                  aria-label="Block or report"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+                    <circle cx="12" cy="5" r="1.5" />
+                    <circle cx="12" cy="12" r="1.5" />
+                    <circle cx="12" cy="19" r="1.5" />
+                  </svg>
+                </button>
+              )}
               <button
                 onClick={onClose}
                 aria-label="Close"
@@ -331,10 +338,28 @@ export function UserProfileDrawer({
               </div>
             )}
 
-            {/* Message CTA */}
-            <button onClick={() => onMessage(userId)} className="btn-primary mt-2 w-full">
-              Message
-            </button>
+            {/* Message CTA — messaging needs an account, so signed-out visitors
+                get the sign-in path instead of a dead button. */}
+            {isAuthenticated ? (
+              <button onClick={() => onMessage(userId)} className="btn-primary mt-2 w-full">
+                Message
+              </button>
+            ) : (
+              <div className="mt-2 flex gap-2">
+                <Link
+                  href="/"
+                  className="border-border bg-muted/60 text-foreground hover:bg-muted flex-1 rounded-xl border py-2.5 text-center text-sm font-semibold transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-primary flex-1 rounded-xl py-2.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

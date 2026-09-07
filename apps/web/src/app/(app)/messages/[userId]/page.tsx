@@ -976,7 +976,7 @@ export default function DmThreadPage() {
               onKeyDown={handleKeyDown}
               placeholder="Message…"
               rows={1}
-              className="bg-muted dark:bg-white/[0.08] border-border text-foreground placeholder:text-muted-foreground focus:ring-ring flex-1 resize-none rounded-2xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-1"
+              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:ring-ring flex-1 resize-none rounded-2xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-1 dark:bg-white/[0.08]"
               style={{ fieldSizing: 'content' }}
             />
             <button
@@ -1040,6 +1040,7 @@ export default function DmThreadPage() {
       {profileOpen && otherUser && (
         <UserProfileDrawer
           userId={otherUser.id}
+          isAuthenticated={Boolean(user)}
           displayName={otherUser.displayName}
           onClose={() => setProfileOpen(false)}
           onMessage={() => setProfileOpen(false)}

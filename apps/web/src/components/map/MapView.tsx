@@ -11,7 +11,6 @@ import { locationApi } from '@/lib/location'
 import { eventsApi } from '@/lib/events'
 import { useAuth } from '@/hooks/use-auth'
 import { useSubscription } from '@/hooks/use-subscription'
-import { MiniProfileCard } from './MiniProfileCard'
 import { UserProfileDrawer } from './UserProfileDrawer'
 import { ActivelyLookingButton } from './ActivelyLookingButton'
 import { FilterPanel } from './FilterPanel'
@@ -997,42 +996,34 @@ export function MapView(): React.JSX.Element {
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedUser &&
-          (isAuthenticated ? (
-            <UserProfileDrawer
-              key={selectedUser.id}
-              userId={selectedUser.id}
-              displayName={selectedUser.displayName ?? null}
-              lastActiveAt={selectedUser.lastActiveAt}
-              activelyLooking={selectedUser.activelyLooking}
-              distanceMiles={
-                myGpsRef.current
-                  ? (() => {
-                      const R = 6371
-                      const toRad = (d: number) => (d * Math.PI) / 180
-                      const dLat = toRad(selectedUser.lat - myGpsRef.current.lat)
-                      const dLng = toRad(selectedUser.lng - myGpsRef.current.lng)
-                      const a =
-                        Math.sin(dLat / 2) ** 2 +
-                        Math.cos(toRad(myGpsRef.current.lat)) *
-                          Math.cos(toRad(selectedUser.lat)) *
-                          Math.sin(dLng / 2) ** 2
-                      return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) / 1.60934
-                    })()
-                  : undefined
-              }
-              onClose={() => setSelectedUser(null)}
-              onMessage={handleMessage}
-            />
-          ) : (
-            <MiniProfileCard
-              key={selectedUser.id}
-              user={selectedUser}
-              isAuthenticated={isAuthenticated}
-              onClose={() => setSelectedUser(null)}
-              onMessage={handleMessage}
-            />
-          ))}
+        {selectedUser && (
+          <UserProfileDrawer
+            key={selectedUser.id}
+            isAuthenticated={isAuthenticated}
+            userId={selectedUser.id}
+            displayName={selectedUser.displayName ?? null}
+            lastActiveAt={selectedUser.lastActiveAt}
+            activelyLooking={selectedUser.activelyLooking}
+            distanceMiles={
+              myGpsRef.current
+                ? (() => {
+                    const R = 6371
+                    const toRad = (d: number) => (d * Math.PI) / 180
+                    const dLat = toRad(selectedUser.lat - myGpsRef.current.lat)
+                    const dLng = toRad(selectedUser.lng - myGpsRef.current.lng)
+                    const a =
+                      Math.sin(dLat / 2) ** 2 +
+                      Math.cos(toRad(myGpsRef.current.lat)) *
+                        Math.cos(toRad(selectedUser.lat)) *
+                        Math.sin(dLng / 2) ** 2
+                    return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) / 1.60934
+                  })()
+                : undefined
+            }
+            onClose={() => setSelectedUser(null)}
+            onMessage={handleMessage}
+          />
+        )}
       </AnimatePresence>
 
       <AnimatePresence>
